@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Service Hogar Belgrano - Reparación de aires y línea blanca en Belgrano</title>
+<meta name="description" content="Service de aires acondicionados, lavarropas, heladeras, lavavajillas, secarropas y más en Belgrano. Técnicos matriculados, repuestos originales y garantía escrita. Presupuesto por WhatsApp.">
+<meta property="og:title" content="Service Hogar Belgrano">
+<meta property="og:description" content="Service de aires y línea blanca en Belgrano. Presupuesto por WhatsApp.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="logo.png">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Service Hogar Belgrano",
+  "description": "Servicio técnico de aires acondicionados y línea blanca.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "O'Higgins 2137, local 26",
+    "addressLocality": "Belgrano, Ciudad Autónoma de Buenos Aires",
+    "addressCountry": "AR"
+  }
+}
+</script>
+<style>
+  :root{
+    --marino:#13294B; --oro:#E9A31B; --nieve:#F2F4F8; --blanco:#FFFFFF;
+    --tinta:#0E1A2E; --gris:#556074; --linea:#D5DBE5; --wa:#147A3F;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--nieve);color:var(--tinta);
+       font:400 17px/1.55 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+       padding-bottom:88px;-webkit-text-size-adjust:100%}
+  h1,h2,h3{font-family:"Barlow Condensed","Barlow",system-ui,sans-serif;line-height:1.05;margin:0}
+  a{color:inherit}
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
+  :focus-visible{outline:3px solid var(--oro);outline-offset:3px}
+
+  /* Portada */
+  .hero{background:var(--marino);color:#fff;padding:20px 0 84px;position:relative}
+  .hero::before,.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px}
+  .hero::before{height:64px;background:var(--oro);clip-path:polygon(0 100%,100% 0,100% 100%)}
+  .hero::after{height:46px;background:var(--nieve);clip-path:polygon(0 100%,100% 0,100% 100%)}
+  .marca{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+  .logo{width:56px;height:56px;border-radius:50%;background:#fff;object-fit:contain;padding:3px;border:2px solid var(--oro);flex:none}
+  .marca strong{display:block;font:800 23px/1 "Barlow Condensed",sans-serif;letter-spacing:.02em}
+  .marca span{font-size:14px;color:#BFCADD}
+  .hero h1{font-size:clamp(44px,12vw,68px);font-weight:800;max-width:11ch;margin-bottom:16px}
+  .hero p{margin:0 0 24px;font-size:19px;color:#DCE4F1;max-width:34ch}
+  .btn{display:inline-block;text-align:center;text-decoration:none;font:700 18px/1.2 "Barlow",sans-serif;padding:15px 22px;border-radius:12px;border:0;cursor:pointer}
+  .btn.oro{background:var(--oro);color:var(--marino)}
+  .btn.wa{background:var(--wa);color:#fff}
+  .garantias{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:8px;font-weight:600}
+  .garantias li{display:flex;align-items:center;gap:10px}
+  .garantias svg{flex:none}
+
+  /* Secciones */
+  section{padding:32px 0}
+  h2{font-size:34px;font-weight:800;margin-bottom:14px}
+  .lead{margin:0 0 18px;color:var(--gris)}
+
+  /* Presupuesto */
+  .tarjeta{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:20px}
+  label{display:block;font-weight:600;margin:0 0 6px}
+  .campo{margin-bottom:16px}
+  select,input,textarea{width:100%;font:400 16px/1.4 "Barlow",sans-serif;color:var(--tinta);
+       padding:12px;border:1.5px solid var(--linea);border-radius:10px;background:#fff}
+  textarea{min-height:88px;resize:vertical}
+  .envios{display:grid;gap:10px;margin-top:4px}
+  .error{color:#B3261E;font-weight:600;min-height:1.4em;margin:0 0 8px}
+
+  /* Servicios */
+  .servicios{list-style:none;margin:0;padding:0;columns:2;column-gap:28px}
+  .servicios li{break-inside:avoid;padding:11px 0;border-bottom:1px solid var(--linea);font-weight:600}
+  .nota{margin:16px 0 0;color:var(--gris)}
+
+  /* Aires */
+  .aires{background:var(--marino);color:#fff;border-radius:16px;padding:24px 20px}
+  .aires h2{color:#fff}
+  .aires ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+  .aires li{display:flex;gap:10px;align-items:flex-start}
+  .aires svg{flex:none;margin-top:4px}
+
+  /* Datos */
+  .marcas{margin:0;color:var(--gris)}
+  .promesas{display:grid;gap:14px;margin:0}
+  .promesas dt{font:800 22px/1.1 "Barlow Condensed",sans-serif}
+  .promesas dd{margin:2px 0 0;color:var(--gris)}
+  .contacto p{margin:0 0 6px}
+  .contacto .btn{margin-top:10px}
+  .btn.borde{background:transparent;color:var(--marino);border:2px solid var(--marino)}
+  .redes{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-weight:600}
+  footer{padding:8px 0 24px;color:var(--gris);font-size:14px}
+
+  /* Barra fija */
+  .barra{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linea);
+         padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10}
+  .barra div{max-width:720px;margin:0 auto;display:flex;gap:10px}
+  .barra .btn{flex:1;padding:13px 8px;font-size:16px}
+
+  @media print{.barra{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="marca">
+      <img class="logo" src="logo.png" alt="Logo de Service Hogar Belgrano" onerror="this.style.display='none'">
+      <div>
+        <strong>Service Hogar Belgrano</strong>
+        <span>Servicio técnico de electrodomésticos</span>
+      </div>
+    </div>
+    <h1>Service de aires y línea blanca</h1>
+    <p>Técnicos matriculados en Belgrano. Pedí tu presupuesto por WhatsApp.</p>
+    <a class="btn oro" href="#presupuesto">Pedir presupuesto</a>
+    <ul class="garantias">
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Atención rápida</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Repuestos originales</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Garantía escrita</li>
+    </ul>
+  </div>
+</header>
+
+<main>
+  <section id="presupuesto">
+    <div class="wrap">
+      <h2>Contanos qué le pasa a tu equipo</h2>
+      <p class="lead">Completá los datos y se abre WhatsApp con el mensaje listo para enviar.</p>
+      <div class="tarjeta">
+        <div class="campo">
+          <label for="equipo">Equipo</label>
+          <select id="equipo">
+            <option value="">Elegí el equipo</option>
+            <option>Aire acondicionado</option>
+            <option>Lavarropas</option>
+            <option>Lavavajillas</option>
+            <option>Secarropas</option>
+            <option>Secadora</option>
+            <option>Heladera</option>
+            <option>Heladera no frost</option>
+            <option>Heladera vinera</option>
+            <option>Cocina</option>
+            <option>Microondas</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="marca">Marca (opcional)</label>
+          <input id="marca" type="text" autocomplete="off">
+        </div>
+        <div class="campo">
+          <label for="falla">¿Qué le pasa? (opcional)</label>
+          <textarea id="falla"></textarea>
+        </div>
+        <p class="error" id="error" role="alert"></p>
+        <div class="envios">
+          <button type="button" class="btn wa" data-tecnico="bruno">Enviar a Bruno por WhatsApp</button>
+          <button type="button" class="btn wa" data-tecnico="mauricio">Enviar a Mauricio por WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Qué reparamos</h2>
+      <ul class="servicios">
+        <li>Aire acondicionado</li>
+        <li>Lavarropas</li>
+        <li>Lavavajillas</li>
+        <li>Secarropas</li>
+        <li>Secadoras</li>
+        <li>Heladeras</li>
+        <li>Heladeras no frost</li>
+        <li>Heladeras vineras</li>
+        <li>Cocinas</li>
+        <li>Microondas</li>
+      </ul>
+      <p class="nota">También hacemos burletes de heladera a medida, para todas las marcas.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="aires">
+        <h2>Aires acondicionados</h2>
+        <ul>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Instalación de equipos</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Mantenimiento y limpieza</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Detección de fugas de refrigerante</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Carga de gas R410, R22 y R32</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Reparación de placas</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Cómo trabajamos</h2>
+      <dl class="promesas">
+        <div><dt>Presupuesto por WhatsApp</dt><dd>Escribinos con el equipo y la falla, y te respondemos por ahí.</dd></div>
+        <div><dt>Repuestos originales</dt><dd>Usamos repuestos originales en cada reparación.</dd></div>
+        <div><dt>Garantía escrita</dt><dd>El trabajo queda respaldado por escrito.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Marcas</h2>
+      <p class="marcas">Samsung, York, Oster, LG, Whirlpool, Mabe, White-Westinghouse, Patrick, Lennox y GE.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap contacto">
+      <h2>Dónde estamos</h2>
+      <p><strong>O'Higgins 2137, local 26</strong></p>
+      <p>Belgrano, Ciudad de Buenos Aires</p>
+      <a class="btn borde" href="https://www.google.com/maps/search/?api=1&query=O'Higgins+2137+Belgrano+Buenos+Aires">Cómo llegar</a>
+      <div class="redes">
+        <a href="https://www.instagram.com/servicehogarbelgrano">Instagram</a>
+        <a href="https://www.tiktok.com/@servicehogarbelgrano">TikTok</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Service Hogar Belgrano. O'Higgins 2137, local 26.</div>
+</footer>
+
+<nav class="barra" aria-label="Contacto rápido">
+  <div>
+    <a class="btn wa" href="https://wa.me/5491167489192?text=Hola%2C%20quiero%20pedir%20un%20presupuesto.">WhatsApp Bruno</a>
+    <a class="btn wa" href="https://wa.me/5491165711314?text=Hola%2C%20quiero%20pedir%20un%20presupuesto.">WhatsApp Mauricio</a>
+  </div>
+</nav>
+
+<script>
+  const TECNICOS = { bruno: "5491167489192", mauricio: "5491165711314" };
+
+  document.querySelectorAll("[data-tecnico]").forEach(function (boton) {
+    boton.addEventListener("click", function () {
+      const equipo = document.getElementById("equipo");
+      const error = document.getElementById("error");
+      const marca = document.getElementById("marca").value.trim();
+      const falla = document.getElementById("falla").value.trim();
+
+      if (!equipo.value) {
+        error.textContent = "Elegí qué equipo querés reparar.";
+        equipo.focus();
+        return;
+      }
+      error.textContent = "";
+
+      let mensaje = "Hola, quiero pedir un presupuesto.\nEquipo: " + equipo.value;
+      if (marca) mensaje += "\nMarca: " + marca;
+      if (falla) mensaje += "\nProblema: " + falla;
+
+      const url = "https://wa.me/" + TECNICOS[boton.dataset.tecnico] + "?text=" + encodeURIComponent(mensaje);
+      window.open(url, "_blank", "noopener");
+    });
+  });
+</script>
+</body>
+</html>
