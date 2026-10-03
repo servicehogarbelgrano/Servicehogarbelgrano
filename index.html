@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Service Hogar Belgrano - Reparación de aires y línea blanca en Belgrano</title>
-<meta name="description" content="Service de aires acondicionados, heladeras, lavarropas, cocinas, hornos eléctricos y calefones en Belgrano. Técnicos y gasistas matriculados, repuestos originales y garantía escrita. Presupuesto por WhatsApp.">
+<title>Service Hogar Belgrano - Reparación de aires y línea blanca en Belgrano, Núñez, Saavedra y Palermo</title>
+<meta name="description" content="Service de aires acondicionados, heladeras, lavarropas, cocinas, hornos eléctricos y calefones en Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo. Técnicos y gasistas matriculados, repuestos originales y garantía escrita. Presupuesto por WhatsApp.">
 <meta property="og:title" content="Service Hogar Belgrano">
-<meta property="og:description" content="Service de aires y línea blanca en Belgrano. Presupuesto por WhatsApp.">
+<meta property="og:description" content="Service de aires y línea blanca en Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo. Presupuesto por WhatsApp.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="logo.png">
 <link rel="icon" href="logo.png">
@@ -24,7 +24,15 @@
     "streetAddress": "O'Higgins 2137, local 26",
     "addressLocality": "Belgrano, Ciudad Autónoma de Buenos Aires",
     "addressCountry": "AR"
-  }
+  },
+  "areaServed": [
+    {"@type": "Place", "name": "Belgrano, Ciudad Autónoma de Buenos Aires"},
+    {"@type": "Place", "name": "Núñez, Ciudad Autónoma de Buenos Aires"},
+    {"@type": "Place", "name": "Saavedra, Ciudad Autónoma de Buenos Aires"},
+    {"@type": "Place", "name": "Villa Urquiza, Ciudad Autónoma de Buenos Aires"},
+    {"@type": "Place", "name": "Colegiales, Ciudad Autónoma de Buenos Aires"},
+    {"@type": "Place", "name": "Palermo, Ciudad Autónoma de Buenos Aires"}
+  ]
 }
 </script>
 <style>
@@ -99,6 +107,10 @@
   .redes{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-weight:600}
   footer{padding:8px 0 24px;color:var(--gris);font-size:14px}
 
+  /* Zonas */
+  .zonas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+  .zonas li{background:var(--blanco);border:1px solid var(--linea);border-radius:999px;padding:9px 18px;font-weight:600;color:var(--marino)}
+
   /* Barra fija */
   .barra{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linea);
          padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10}
@@ -120,7 +132,7 @@
       </div>
     </div>
     <h1>Service de aires y línea blanca</h1>
-    <p>Técnicos y gasistas matriculados en Belgrano. Pedí tu presupuesto por WhatsApp.</p>
+    <p>Técnicos y gasistas matriculados en Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo. Pedí tu presupuesto por WhatsApp.</p>
     <a class="btn oro" href="#presupuesto">Pedir presupuesto</a>
     <ul class="garantias">
       <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Atención rápida</li>
@@ -227,6 +239,22 @@
       <h2>Marcas</h2>
       <p class="marcas">Aires y línea blanca: Samsung, York, Oster, LG, Whirlpool, Mabe, White-Westinghouse, Patrick, Lennox y GE.</p>
       <p class="marcas">Cocinas, hornos y calefones: Domec, Emege, Fornax, Coppens, Eskabe, Mabe, Orbis, Patrick, Longvie, Escorial y Volcán.</p>
+    </div>
+  </section>
+
+  <section id="zonas">
+    <div class="wrap">
+      <h2>Zonas de atención</h2>
+      <p class="lead">Reparamos aires y línea blanca en Belgrano y en los barrios vecinos:</p>
+      <ul class="zonas">
+        <li>Belgrano</li>
+        <li>Núñez</li>
+        <li>Saavedra</li>
+        <li>Villa Urquiza</li>
+        <li>Colegiales</li>
+        <li>Palermo</li>
+        <li>Alrededores</li>
+      </ul>
     </div>
   </section>
 
