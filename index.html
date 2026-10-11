@@ -157,6 +157,14 @@
   .zonas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
   .zonas li{background:var(--blanco);border:1px solid var(--linea);border-radius:999px;padding:9px 18px;font-weight:600;color:var(--marino)}
 
+
+  /* Trabajos (Instagram) */
+  .carrusel{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 20px 16px;margin:0 -20px;-webkit-overflow-scrolling:touch}
+  .carrusel .item{flex:0 0 min(86%,340px);scroll-snap-align:center;min-width:0}
+  .carrusel .item .instagram-media{margin:0!important;max-width:100%!important;min-width:0!important;width:100%!important}
+  .ig-enlace{display:block;padding:18px;background:var(--blanco);border:1px solid var(--linea);border-radius:12px;font-weight:600;text-align:center;color:var(--marino)}
+  .trabajos-cta{margin-top:8px}
+
   /* Barra fija */
   .barra{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linea);
          padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10}
@@ -280,6 +288,36 @@
     </div>
   </section>
 
+  <section id="trabajos">
+    <div class="wrap">
+      <h2>Nuestros trabajos</h2>
+      <p class="lead">Mirá cómo trabajamos. Deslizá para ver más.</p>
+      <div class="carrusel">
+        <div class="item">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DeDb-QmMaPq/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14">
+            <a class="ig-enlace" href="https://www.instagram.com/p/DeDb-QmMaPq/" target="_blank" rel="noopener">Ver este trabajo en Instagram</a>
+          </blockquote>
+        </div>
+        <div class="item">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Dd_oPRzxG0_/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14">
+            <a class="ig-enlace" href="https://www.instagram.com/p/Dd_oPRzxG0_/" target="_blank" rel="noopener">Ver este trabajo en Instagram</a>
+          </blockquote>
+        </div>
+        <div class="item">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Dd-Q9iIsAiw/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14">
+            <a class="ig-enlace" href="https://www.instagram.com/p/Dd-Q9iIsAiw/" target="_blank" rel="noopener">Ver este trabajo en Instagram</a>
+          </blockquote>
+        </div>
+        <div class="item">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DduYZ-nsJOj/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14">
+            <a class="ig-enlace" href="https://www.instagram.com/p/DduYZ-nsJOj/" target="_blank" rel="noopener">Ver este trabajo en Instagram</a>
+          </blockquote>
+        </div>
+      </div>
+      <a class="btn borde trabajos-cta" href="https://www.instagram.com/servicehogarbelgrano" target="_blank" rel="noopener">Ver más en Instagram</a>
+    </div>
+  </section>
+
   <section>
     <div class="wrap">
       <h2>Marcas</h2>
@@ -354,6 +392,27 @@
       window.open(url, "_blank", "noopener");
     });
   });
+
+  /* Instagram: se carga solo cuando el cliente llega a la sección */
+  (function () {
+    var sec = document.getElementById("trabajos");
+    var cargado = false;
+    function cargar() {
+      if (cargado) return;
+      cargado = true;
+      var sc = document.createElement("script");
+      sc.async = true;
+      sc.src = "https://www.instagram.com/embed.js";
+      document.body.appendChild(sc);
+    }
+    if (sec && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (e, o) {
+        if (e[0].isIntersecting) { cargar(); o.disconnect(); }
+      }, { rootMargin: "400px" }).observe(sec);
+    } else {
+      cargar();
+    }
+  })();
 </script>
 </body>
 </html>
