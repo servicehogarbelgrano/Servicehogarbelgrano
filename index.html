@@ -98,7 +98,15 @@
   :focus-visible{outline:3px solid var(--oro);outline-offset:3px}
 
   /* Portada */
-  .hero{background:var(--marino);color:#fff;padding:20px 0 84px;position:relative}
+  .hero{color:#fff;padding:20px 0 84px;position:relative;
+         background:
+           radial-gradient(circle at 88% 12%,rgba(233,163,27,.28),transparent 42%),
+           repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 22px),
+           linear-gradient(135deg,#13294B 0%,#1B3A6B 55%,#2A5190 100%)}
+  .hero.con-foto{background:
+           linear-gradient(135deg,rgba(19,41,75,.90) 0%,rgba(19,41,75,.76) 55%,rgba(19,41,75,.55) 100%),
+           url("hero.jpg") 6% 28%/cover no-repeat,
+           var(--marino)}
   .hero::before,.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px}
   .hero::before{height:64px;background:var(--oro);clip-path:polygon(0 100%,100% 0,100% 100%)}
   .hero::after{height:46px;background:var(--nieve);clip-path:polygon(0 100%,100% 0,100% 100%)}
@@ -106,7 +114,9 @@
   .logo{width:56px;height:56px;border-radius:50%;background:#fff;object-fit:contain;padding:3px;border:2px solid var(--oro);flex:none}
   .marca strong{display:block;font:800 23px/1 "Barlow Condensed",sans-serif;letter-spacing:.02em}
   .marca span{font-size:14px;color:#BFCADD}
-  .hero h1{font-size:clamp(44px,12vw,68px);font-weight:800;max-width:11ch;margin-bottom:16px}
+  .hero .kicker{margin:0 0 12px;font:700 14px/1.2 "Barlow",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--oro);max-width:none}
+  .hero h1{font-size:clamp(38px,10.5vw,60px);font-weight:800;max-width:15ch;margin-bottom:16px}
+  .hero h1 em{font-style:normal;color:var(--oro)}
   .hero p{margin:0 0 24px;font-size:19px;color:#DCE4F1;max-width:34ch}
   .btn{display:inline-block;text-align:center;text-decoration:none;font:700 18px/1.2 "Barlow",sans-serif;padding:15px 22px;border-radius:12px;border:0;cursor:pointer}
   .btn.oro{background:var(--oro);color:var(--marino)}
@@ -185,8 +195,9 @@
         <span>Servicio técnico de electrodomésticos</span>
       </div>
     </div>
-    <h1>Service de aires y línea blanca</h1>
-    <p>Técnicos y gasistas matriculados en Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo. Pedí tu presupuesto por WhatsApp.</p>
+    <p class="kicker">Service técnico a domicilio · Belgrano</p>
+    <h1>¿Se rompió tu aire o tu heladera? <em>Lo arreglamos en tu casa</em></h1>
+    <p>Técnicos y gasistas matriculados, repuestos originales y garantía escrita en Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo. Pedí tu presupuesto por WhatsApp.</p>
     <a class="btn oro" href="#presupuesto">Pedir presupuesto</a>
     <ul class="garantias">
       <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Atención rápida</li>
@@ -412,6 +423,16 @@
     } else {
       cargar();
     }
+  })();
+
+  /* Portada: si existe hero.jpg en el repo, se usa como foto de fondo */
+  (function () {
+    var img = new Image();
+    img.onload = function () {
+      var h = document.querySelector(".hero");
+      if (h) h.classList.add("con-foto");
+    };
+    img.src = "hero.jpg";
   })();
 </script>
 </body>
