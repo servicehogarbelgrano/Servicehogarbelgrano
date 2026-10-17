@@ -174,7 +174,7 @@
 
 <div class="v" id="adm"><div class="card"><h2>Equipos</h2>
  <input id="q" placeholder="Buscar por clave, cliente, equipo o marca">
- <button id="bq">Buscar</button><button class="s" id="bn">+ Nuevo equipo</button>
+ <button id="bq">Actualizar</button><button class="s" id="bn">+ Nuevo equipo</button>
  <div id="lst" style="margin-top:10px"></div></div></div>
 
 <div class="v" id="eq"></div>
@@ -241,16 +241,24 @@ $('back1').onclick=()=>{$('cl').value='';show('login')};
 $('toAdm').onclick=()=>show('alog');$('back2').onclick=()=>show('login');
 
 // ----- TÉCNICO -----
-$('ba').onclick=()=>guard(async()=>{PASS=$('pw').value;const r=await run('admin_buscar',PASS,'');$('pw').value='';await lista(r);show('adm')});
+let DB={equipos:[],services:[]},Q=Promise.resolve();
+const norm=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+const cargar=async()=>{DB=await run('admin_todo',PASS)};
+const fichaLocal=k=>{const n=norm(k);return{equipo:Object.assign({},DB.equipos.find(e=>norm(e.clave)===n)),services:DB.services.filter(s=>norm(s.clave)===n).sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)))}};
+// guarda en segundo plano (en orden) sin hacer esperar al técnico
+const bg=(fn,...a)=>{Q=Q.then(()=>run(fn,...a)).catch(async e=>{alert('No se pudo guardar ('+(e.message||e)+'). Se vuelven a cargar los datos.');try{await cargar()}catch(_){}})};
+$('ba').onclick=()=>guard(async()=>{PASS=$('pw').value;DB=await run('admin_todo',PASS);$('pw').value='';lista();show('adm')});
 $('pw').onkeydown=e=>{if(e.key==='Enter')$('ba').click()};
-async function lista(r){
- r=r||await run('admin_buscar',PASS,$('q').value);
+function lista(){
+ const q=$('q').value.toLowerCase();
+ const r=DB.equipos.filter(e=>!q||[e.clave,e.cliente,e.telefono,e.direccion,e.equipo,e.marca,e.modelo].join(' ').toLowerCase().includes(q)).slice().reverse().slice(0,50);
  $('lst').innerHTML=r.length?r.map(e=>'<div class="it" data-k="'+esc(e.clave)+'"><b>'+esc(e.clave)+'</b> · '+esc(e.equipo)+' '+esc(e.marca)+'<br><small>'+esc(e.cliente)+(e.direccion?' · '+esc(e.direccion):'')+'</small></div>').join(''):'<small>Sin resultados.</small>';
- $('lst').querySelectorAll('.it').forEach(el=>el.onclick=()=>guard(()=>abrir(el.dataset.k)));
+ $('lst').querySelectorAll('.it').forEach(el=>el.onclick=()=>abrir(el.dataset.k));
 }
-$('bq').onclick=()=>guard(lista);
+$('q').oninput=lista;
+$('bq').onclick=()=>guard(async()=>{await cargar();lista()});
 $('bn').onclick=()=>{CUR={equipo:{},services:[]};EDS=null;pintar()};
-async function abrir(k){CUR=await run('admin_ficha',PASS,k);EDS=null;pintar()}
+function abrir(k){CUR=fichaLocal(k);EDS=null;pintar()}
 
 function pintar(){
  const e=CUR.equipo,has=!!e.clave;
@@ -272,20 +280,21 @@ function pintar(){
  $('vl').onclick=()=>guard(async()=>{await lista();show('adm')});
  $('se').onclick=()=>guard(async()=>{
   const d={};['cliente','telefono','direccion','equipo','marca','modelo','serie'].forEach(k=>d[k]=$('e_'+k).value.trim());
-  if(has){CUR=await run('admin_editEquipo',PASS,e.clave,d);EDS=null;pintar();alert('Datos guardados')}
-  else{if(!d.equipo){alert('Indicá el equipo');return}CUR=await run('admin_crear',PASS,d);EDS=null;pintar()}});
+  if(has){Object.assign(DB.equipos.find(x=>x.clave===e.clave),d);bg('admin_editEquipo',PASS,e.clave,d);CUR=fichaLocal(e.clave);EDS=null;pintar();alert('Datos guardados')}
+  else{if(!d.equipo){alert('Indicá el equipo');return}const n=await run('admin_crear',PASS,d);DB.equipos.push(n.equipo);CUR=fichaLocal(n.equipo.clave);EDS=null;pintar()}});
  if(!has)return;
  $('ss').onclick=()=>guard(async()=>{
   const s={fecha:$('s_fecha').value,tipo:$('s_tipo').value,detalle:$('s_det').value.trim(),repuestos:$('s_rep').value.trim(),garantia:$('s_gar').value,tecnico:$('s_tec').value.trim()};
   if(!s.fecha){alert('Indicá la fecha');return}
-  CUR=EDS?await run('admin_editService',PASS,EDS,s):await run('admin_addService',PASS,e.clave,s);
-  EDS=null;pintar()});
+  if(EDS){Object.assign(DB.services.find(x=>x.id===EDS),s);bg('admin_editService',PASS,EDS,s)}
+  else{s.id=Math.random().toString(36).slice(2,10);DB.services.push(Object.assign({},s,{clave:e.clave}));bg('admin_addService',PASS,e.clave,s)}
+  CUR=fichaLocal(e.clave);EDS=null;pintar()});
  $('sc').onclick=()=>{EDS=null;pintar()};
  $('eq').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{
   const s=CUR.services.find(x=>x.id===b.dataset.ed);EDS=s.id;
   $('s_fecha').value=s.fecha;$('s_gar').value=s.garantia;$('s_tipo').value=s.tipo;$('s_det').value=s.detalle;$('s_rep').value=s.repuestos;$('s_tec').value=s.tecnico;
   $('sft').textContent='Editando service';$('ss').textContent='Guardar cambios';$('sc').style.display='';$('sf').scrollIntoView()});
- $('eq').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('¿Borrar este service?'))guard(async()=>{CUR=await run('admin_delService',PASS,b.dataset.del);EDS=null;pintar()})});
+ $('eq').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('¿Borrar este service?'))guard(async()=>{DB.services=DB.services.filter(x=>x.id!==b.dataset.del);bg('admin_delService',PASS,b.dataset.del);CUR=fichaLocal(e.clave);EDS=null;pintar()})});
 }
 </script>
 </body>
