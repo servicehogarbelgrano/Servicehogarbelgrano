@@ -181,6 +181,13 @@
   .barra div{max-width:720px;margin:0 auto;display:flex;gap:10px}
   .barra .btn{flex:1;padding:13px 8px;font-size:16px}
 
+  /* Solapa y acceso a la ficha */
+  .solapa{margin-left:auto;text-decoration:none;font:700 15px/1 "Barlow",sans-serif;color:#fff;border:2px solid var(--oro);border-radius:999px;padding:10px 16px;white-space:nowrap}
+  .hero .btn{margin:0 10px 10px 0}
+  .btn.claro{background:transparent;color:#fff;border:2px solid #fff;padding:13px 20px}
+  .ficha-cta{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+  .ficha-cta p{margin:0;color:var(--gris)}
+
   @media print{.barra{display:none}}
 </style>
 </head>
@@ -194,11 +201,13 @@
         <strong>Service Hogar Belgrano</strong>
         <span>Servicio técnico de electrodomésticos</span>
       </div>
+      <a class="solapa" href="ficha.html">Mi ficha</a>
     </div>
     <p class="kicker">Service técnico a domicilio · Belgrano</p>
     <h1>¿Se rompió tu aire o tu heladera? <em>Lo arreglamos en tu casa</em></h1>
     <p>Técnicos y gasistas matriculados, repuestos originales y garantía escrita en Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo. Pedí tu presupuesto por WhatsApp.</p>
     <a class="btn oro" href="#presupuesto">Pedir presupuesto</a>
+    <a class="btn claro" href="ficha.html">Consultá tu ficha</a>
     <ul class="garantias">
       <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Atención rápida</li>
       <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Repuestos originales</li>
@@ -350,6 +359,16 @@
         <li>Palermo</li>
         <li>Alrededores</li>
       </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Ficha de tu equipo</h2>
+      <div class="tarjeta ficha-cta">
+        <p>¿Ya te hicimos un service? Con la clave del sticker pegado en tu equipo ves el historial de trabajos y la garantía.</p>
+        <a class="btn oro" href="ficha.html">Ver mi ficha</a>
+      </div>
     </div>
   </section>
 
