@@ -119,6 +119,22 @@
   .visor{padding:0;overflow:hidden}
   .visor iframe{display:block;width:100%;height:760px;border:0;background:var(--blanco)}
   .abrir{margin:12px 0 0;font-size:15px;color:var(--gris)}
+
+  #app .v{display:none}#app .v.on{display:block}
+  #app .card{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:18px;margin:0 0 14px}
+  #app h2{font-size:28px;margin:0 0 8px}
+  #app small{color:var(--gris)}
+  #app label{font-size:14px;color:var(--gris);margin:10px 0 4px}
+  #app .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  #app button{margin:12px 8px 0 0;padding:13px 18px;border:0;border-radius:12px;background:var(--oro);color:var(--marino);font:700 17px/1.2 "Barlow",sans-serif;cursor:pointer}
+  #app button.s{background:transparent;color:var(--marino);border:2px solid var(--marino)}
+  #app .lk,#app a.l{color:var(--marino);cursor:pointer;text-decoration:underline;font-weight:600}
+  #app .kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--linea)}
+  #app .kv:last-child{border:0}#app .kv span:first-child{color:var(--gris)}#app .kv span:last-child{text-align:right;font-weight:600}
+  #app .b{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:700;border:2px solid currentColor}
+  #app .ok{color:var(--wa)}#app .bad{color:#B3261E}
+  #app .key{font:800 34px/1 "Barlow Condensed",sans-serif;letter-spacing:.12em;text-align:center;padding:14px;border:2px dashed var(--oro);border-radius:12px}
+  #app .it{padding:10px 0;border-bottom:1px solid var(--linea);cursor:pointer}#app .it:last-child{border:0}
 </style>
 </head>
 <body>
@@ -141,10 +157,28 @@
 <main>
   <section>
     <div class="wrap">
-      <div class="tarjeta visor">
-        <iframe id="app" title="Ficha del equipo" loading="lazy"></iframe>
-      </div>
-      <p class="abrir">¿No se ve bien? <a id="abrir" href="#">Abrila en pantalla completa</a>.</p>
+      <div id="app">
+
+<div class="v on" id="login"><div class="card">
+ <h2>Ficha de tu equipo</h2><small>Ingresá la clave escrita en el sticker.</small>
+ <label>Clave</label><input id="cl" placeholder="Ej: K7M-4PX" autocapitalize="characters" autocomplete="off">
+ <button id="bc">Ver ficha</button></div>
+ <a class="l" id="toAdm">Acceso técnico</a></div>
+
+<div class="v" id="ficha"><div id="fv"></div><button class="s" id="back1">← Volver</button></div>
+
+<div class="v" id="alog"><div class="card"><h2>Acceso técnico</h2>
+ <label>Contraseña</label><input id="pw" type="password">
+ <button id="ba">Entrar</button><button class="s" id="back2">Volver</button></div></div>
+
+<div class="v" id="adm"><div class="card"><h2>Equipos</h2>
+ <input id="q" placeholder="Buscar por clave, cliente, equipo o marca">
+ <button id="bq">Buscar</button><button class="s" id="bn">+ Nuevo equipo</button>
+ <div id="lst" style="margin-top:10px"></div></div></div>
+
+<div class="v" id="eq"></div>
+
+</div>
       <noscript><p class="nota">Necesitás activar JavaScript para ver tu ficha.</p></noscript>
     </div>
   </section>
@@ -162,16 +196,90 @@
 </nav>
 
 <script>
-  // ▼▼ PEGÁ ACÁ la dirección que te da Google al implementar (termina en /exec) ▼▼
   const APP_URL = "https://script.google.com/macros/s/AKfycbwPkNL200XxXsNQXv52sgDtAcc4G7nokLCtVMz5_u723Rop1KIKR-6Rz5rK5YoZjvRv/exec";
-  // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-  if (APP_URL.indexOf("https://") === 0) {
-    document.getElementById("app").src = APP_URL;
-    document.getElementById("abrir").href = APP_URL;
-  } else {
-    document.querySelector(".visor").innerHTML = '<p style="padding:20px;margin:0">La ficha todavía no está conectada.</p>';
-  }
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=d=>d?String(d).split('-').reverse().join('/'):'';
+const run=async(fn,...args)=>{
+ let r;try{r=await fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})})}
+ catch(e){throw new Error('No se pudo conectar. Revisá tu internet y probá de nuevo.')}
+ const j=await r.json();if(!j.ok)throw new Error(j.error);return j.data};
+const show=id=>{document.querySelectorAll('.v').forEach(e=>e.classList.toggle('on',e.id===id))};
+const guard=async f=>{try{await f()}catch(e){alert(e.message||e)}};
+const TIPOS=['Reparación','Mantenimiento preventivo','Instalación','Cambio de repuesto','Diagnóstico'];
+let PASS='',CUR=null,EDS=null;
+
+function venc(s){const d=new Date(s.fecha+'T12:00:00');d.setDate(d.getDate()+(+s.garantia||0));return d}
+function vigente(s){return venc(s)>=new Date()}
+
+// ----- CLIENTE -----
+$('bc').onclick=()=>guard(async()=>{
+ const f=await run('getFicha',$('cl').value);
+ if(!f){alert('Clave no encontrada. Revisá cómo está escrita en el sticker.');return}
+ const e=f.equipo,any=f.services.some(vigente);
+ $('fv').innerHTML='<div class="card"><h2>'+esc(e.equipo)+' '+esc(e.marca)+' '+esc(e.modelo)+'</h2>'+
+  (e.cliente?'<small>Cliente: '+esc(e.cliente)+'</small><br>':'')+
+  (e.serie?'<small>N° de serie: '+esc(e.serie)+'</small><br>':'')+
+  (f.services.length?'<span class="b '+(any?'ok':'bad')+'">'+(any?'✔ Garantía vigente':'Garantía vencida')+'</span>':'<small>Sin services registrados.</small>')+'</div>'+
+  f.services.map(s=>'<div class="card"><div class="kv"><span>Fecha</span><span>'+fmt(s.fecha)+'</span></div>'+
+  '<div class="kv"><span>Trabajo</span><span>'+esc(s.tipo)+'</span></div>'+
+  (s.detalle?'<div class="kv"><span>Detalle</span><span>'+esc(s.detalle)+'</span></div>':'')+
+  (s.repuestos?'<div class="kv"><span>Repuestos</span><span>'+esc(s.repuestos)+'</span></div>':'')+
+  (s.tecnico?'<div class="kv"><span>Técnico</span><span>'+esc(s.tecnico)+'</span></div>':'')+
+  '<div class="kv"><span>Garantía</span><span class="'+(vigente(s)?'ok':'bad')+'">'+s.garantia+' días · vence '+venc(s).toLocaleDateString('es-AR')+'</span></div></div>').join('');
+ show('ficha')});
+$('cl').onkeydown=e=>{if(e.key==='Enter')$('bc').click()};
+$('back1').onclick=()=>{$('cl').value='';show('login')};
+$('toAdm').onclick=()=>show('alog');$('back2').onclick=()=>show('login');
+
+// ----- TÉCNICO -----
+$('ba').onclick=()=>guard(async()=>{PASS=$('pw').value;await run('admin_buscar',PASS,'');$('pw').value='';await lista();show('adm')});
+$('pw').onkeydown=e=>{if(e.key==='Enter')$('ba').click()};
+async function lista(){
+ const r=await run('admin_buscar',PASS,$('q').value);
+ $('lst').innerHTML=r.length?r.map(e=>'<div class="it" data-k="'+esc(e.clave)+'"><b>'+esc(e.clave)+'</b> · '+esc(e.equipo)+' '+esc(e.marca)+'<br><small>'+esc(e.cliente)+(e.direccion?' · '+esc(e.direccion):'')+'</small></div>').join(''):'<small>Sin resultados.</small>';
+ $('lst').querySelectorAll('.it').forEach(el=>el.onclick=()=>guard(()=>abrir(el.dataset.k)));
+}
+$('bq').onclick=()=>guard(lista);
+$('bn').onclick=()=>{CUR={equipo:{},services:[]};EDS=null;pintar()};
+async function abrir(k){CUR=await run('admin_ficha',PASS,k);EDS=null;pintar()}
+
+function pintar(){
+ const e=CUR.equipo,has=!!e.clave;
+ const hoy=new Date().toISOString().slice(0,10);
+ $('eq').innerHTML=(has?'<div class="card"><small>Clave para escribir en el sticker</small><div class="key">'+esc(e.clave)+'</div></div>':'')+
+ '<div class="card"><h2>'+(has?'Datos del equipo':'Nuevo equipo')+'</h2>'+
+ '<small>El teléfono y la dirección solo los ves vos. El cliente ve su nombre.</small>'+
+ '<label>Cliente (nombre)</label><input id="e_cliente" value="'+esc(e.cliente)+'">'+
+ '<div class="row"><div><label>Teléfono</label><input id="e_telefono" type="tel" value="'+esc(e.telefono)+'"></div><div><label>Dirección</label><input id="e_direccion" value="'+esc(e.direccion)+'"></div></div>'+
+ '<div class="row"><div><label>Equipo</label><input id="e_equipo" value="'+esc(e.equipo)+'" placeholder="Lavarropas"></div><div><label>Marca</label><input id="e_marca" value="'+esc(e.marca)+'"></div></div>'+
+ '<div class="row"><div><label>Modelo</label><input id="e_modelo" value="'+esc(e.modelo)+'"></div><div><label>N° de serie</label><input id="e_serie" value="'+esc(e.serie)+'"></div></div>'+
+ '<button id="se">'+(has?'Guardar datos':'Crear y generar clave')+'</button><button class="s" id="vl">← Lista</button></div>'+
+ (has?'<div class="card"><h2>Services</h2>'+(CUR.services.map(s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+' · '+s.garantia+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+s.id+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+s.id+'">Borrar</span></div>').join('')||'<small>Todavía no hay services.</small>')+'</div>'+
+ '<div class="card" id="sf"><h2 id="sft">Agregar service</h2><div class="row"><div><label>Fecha</label><input id="s_fecha" type="date" value="'+hoy+'"></div><div><label>Garantía (días)</label><input id="s_gar" type="number" value="90"></div></div>'+
+ '<label>Tipo</label><select id="s_tipo">'+TIPOS.map(t=>'<option>'+t+'</option>').join('')+'</select>'+
+ '<label>Detalle del trabajo</label><textarea id="s_det" rows="3"></textarea><label>Repuestos</label><input id="s_rep"><label>Técnico</label><input id="s_tec" list="tecs" placeholder="Elegí o escribí"><datalist id="tecs"><option value="Bruno"><option value="Mauricio"></datalist>'+
+ '<button id="ss">Agregar service</button><button class="s" id="sc" style="display:none">Cancelar edición</button></div>':'');
+ show('eq');
+ $('vl').onclick=()=>guard(async()=>{await lista();show('adm')});
+ $('se').onclick=()=>guard(async()=>{
+  const d={};['cliente','telefono','direccion','equipo','marca','modelo','serie'].forEach(k=>d[k]=$('e_'+k).value.trim());
+  if(has){await run('admin_editEquipo',PASS,e.clave,d);alert('Datos guardados');await abrir(e.clave)}
+  else{if(!d.equipo){alert('Indicá el equipo');return}const k=await run('admin_crear',PASS,d);await abrir(k)}});
+ if(!has)return;
+ $('ss').onclick=()=>guard(async()=>{
+  const s={fecha:$('s_fecha').value,tipo:$('s_tipo').value,detalle:$('s_det').value.trim(),repuestos:$('s_rep').value.trim(),garantia:$('s_gar').value,tecnico:$('s_tec').value.trim()};
+  if(!s.fecha){alert('Indicá la fecha');return}
+  if(EDS)await run('admin_editService',PASS,EDS,s);else await run('admin_addService',PASS,e.clave,s);
+  await abrir(e.clave)});
+ $('sc').onclick=()=>{EDS=null;pintar()};
+ $('eq').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{
+  const s=CUR.services.find(x=>x.id===b.dataset.ed);EDS=s.id;
+  $('s_fecha').value=s.fecha;$('s_gar').value=s.garantia;$('s_tipo').value=s.tipo;$('s_det').value=s.detalle;$('s_rep').value=s.repuestos;$('s_tec').value=s.tecnico;
+  $('sft').textContent='Editando service';$('ss').textContent='Guardar cambios';$('sc').style.display='';$('sf').scrollIntoView()});
+ $('eq').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('¿Borrar este service?'))guard(async()=>{await run('admin_delService',PASS,b.dataset.del);await abrir(e.clave)})});
+}
 </script>
 </body>
 </html>
