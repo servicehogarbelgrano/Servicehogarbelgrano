@@ -120,6 +120,7 @@
   .visor iframe{display:block;width:100%;height:760px;border:0;background:var(--blanco)}
   .abrir{margin:12px 0 0;font-size:15px;color:var(--gris)}
 
+  #app #ld{display:none;position:sticky;top:0;z-index:5;background:var(--oro);color:var(--marino);font-weight:700;text-align:center;padding:8px;border-radius:10px;margin-bottom:10px}
   #app .v{display:none}#app .v.on{display:block}
   #app .card{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:18px;margin:0 0 14px}
   #app h2{font-size:28px;margin:0 0 8px}
@@ -157,7 +158,7 @@
 <main>
   <section>
     <div class="wrap">
-      <div id="app">
+      <div id="app"><div id="ld">Cargando…</div>
 
 <div class="v on" id="login"><div class="card">
  <h2>Ficha de tu equipo</h2><small>Ingresá la clave escrita en el sticker.</small>
@@ -201,10 +202,16 @@
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=d=>d?String(d).split('-').reverse().join('/'):'';
+let pend=0;
 const run=async(fn,...args)=>{
- let r;try{r=await fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})})}
- catch(e){throw new Error('No se pudo conectar. Revisá tu internet y probá de nuevo.')}
- const j=await r.json();if(!j.ok)throw new Error(j.error);return j.data};
+ pend++;$('ld').style.display='block';
+ try{
+  let r;try{r=await fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})})}
+  catch(e){throw new Error('No se pudo conectar. Revisá tu internet y probá de nuevo.')}
+  const j=await r.json();if(!j.ok)throw new Error(j.error);return j.data;
+ }finally{pend--;if(!pend)$('ld').style.display='none'}};
+// Despierta el servidor de Google apenas se abre la página (así responde más rápido al buscar)
+fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:'ping',args:[]})}).catch(()=>{});
 const show=id=>{document.querySelectorAll('.v').forEach(e=>e.classList.toggle('on',e.id===id))};
 const guard=async f=>{try{await f()}catch(e){alert(e.message||e)}};
 const TIPOS=['Reparación','Mantenimiento preventivo','Instalación','Cambio de repuesto','Diagnóstico'];
@@ -234,10 +241,10 @@ $('back1').onclick=()=>{$('cl').value='';show('login')};
 $('toAdm').onclick=()=>show('alog');$('back2').onclick=()=>show('login');
 
 // ----- TÉCNICO -----
-$('ba').onclick=()=>guard(async()=>{PASS=$('pw').value;await run('admin_buscar',PASS,'');$('pw').value='';await lista();show('adm')});
+$('ba').onclick=()=>guard(async()=>{PASS=$('pw').value;const r=await run('admin_buscar',PASS,'');$('pw').value='';await lista(r);show('adm')});
 $('pw').onkeydown=e=>{if(e.key==='Enter')$('ba').click()};
-async function lista(){
- const r=await run('admin_buscar',PASS,$('q').value);
+async function lista(r){
+ r=r||await run('admin_buscar',PASS,$('q').value);
  $('lst').innerHTML=r.length?r.map(e=>'<div class="it" data-k="'+esc(e.clave)+'"><b>'+esc(e.clave)+'</b> · '+esc(e.equipo)+' '+esc(e.marca)+'<br><small>'+esc(e.cliente)+(e.direccion?' · '+esc(e.direccion):'')+'</small></div>').join(''):'<small>Sin resultados.</small>';
  $('lst').querySelectorAll('.it').forEach(el=>el.onclick=()=>guard(()=>abrir(el.dataset.k)));
 }
@@ -265,20 +272,20 @@ function pintar(){
  $('vl').onclick=()=>guard(async()=>{await lista();show('adm')});
  $('se').onclick=()=>guard(async()=>{
   const d={};['cliente','telefono','direccion','equipo','marca','modelo','serie'].forEach(k=>d[k]=$('e_'+k).value.trim());
-  if(has){await run('admin_editEquipo',PASS,e.clave,d);alert('Datos guardados');await abrir(e.clave)}
-  else{if(!d.equipo){alert('Indicá el equipo');return}const k=await run('admin_crear',PASS,d);await abrir(k)}});
+  if(has){CUR=await run('admin_editEquipo',PASS,e.clave,d);EDS=null;pintar();alert('Datos guardados')}
+  else{if(!d.equipo){alert('Indicá el equipo');return}CUR=await run('admin_crear',PASS,d);EDS=null;pintar()}});
  if(!has)return;
  $('ss').onclick=()=>guard(async()=>{
   const s={fecha:$('s_fecha').value,tipo:$('s_tipo').value,detalle:$('s_det').value.trim(),repuestos:$('s_rep').value.trim(),garantia:$('s_gar').value,tecnico:$('s_tec').value.trim()};
   if(!s.fecha){alert('Indicá la fecha');return}
-  if(EDS)await run('admin_editService',PASS,EDS,s);else await run('admin_addService',PASS,e.clave,s);
-  await abrir(e.clave)});
+  CUR=EDS?await run('admin_editService',PASS,EDS,s):await run('admin_addService',PASS,e.clave,s);
+  EDS=null;pintar()});
  $('sc').onclick=()=>{EDS=null;pintar()};
  $('eq').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{
   const s=CUR.services.find(x=>x.id===b.dataset.ed);EDS=s.id;
   $('s_fecha').value=s.fecha;$('s_gar').value=s.garantia;$('s_tipo').value=s.tipo;$('s_det').value=s.detalle;$('s_rep').value=s.repuestos;$('s_tec').value=s.tecnico;
   $('sft').textContent='Editando service';$('ss').textContent='Guardar cambios';$('sc').style.display='';$('sf').scrollIntoView()});
- $('eq').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('¿Borrar este service?'))guard(async()=>{await run('admin_delService',PASS,b.dataset.del);await abrir(e.clave)})});
+ $('eq').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('¿Borrar este service?'))guard(async()=>{CUR=await run('admin_delService',PASS,b.dataset.del);EDS=null;pintar()})});
 }
 </script>
 </body>
