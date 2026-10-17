@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ficha de tu equipo | Service Hogar Belgrano</title>
+<meta name="description" content="Consultá el historial de service y la garantía de tu equipo con la clave del sticker.">
+<link rel="canonical" href="https://servicehogarbelgrano.com.ar/ficha.html">
+<link rel="icon" type="image/png" sizes="192x192" href="https://servicehogarbelgrano.com.ar/favicon.png">
+<link rel="apple-touch-icon" href="https://servicehogarbelgrano.com.ar/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --marino:#13294B; --oro:#E9A31B; --nieve:#F2F4F8; --blanco:#FFFFFF;
+    --tinta:#0E1A2E; --gris:#556074; --linea:#D5DBE5; --wa:#147A3F;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--nieve);color:var(--tinta);
+       font:400 17px/1.55 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+       padding-bottom:88px;-webkit-text-size-adjust:100%}
+  h1,h2,h3{font-family:"Barlow Condensed","Barlow",system-ui,sans-serif;line-height:1.05;margin:0}
+  a{color:inherit}
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
+  :focus-visible{outline:3px solid var(--oro);outline-offset:3px}
+
+  /* Portada */
+  .hero{color:#fff;padding:20px 0 84px;position:relative;
+         background:
+           radial-gradient(circle at 88% 12%,rgba(233,163,27,.28),transparent 42%),
+           repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 22px),
+           linear-gradient(135deg,#13294B 0%,#1B3A6B 55%,#2A5190 100%)}
+  .hero.con-foto{background:
+           linear-gradient(135deg,rgba(19,41,75,.90) 0%,rgba(19,41,75,.76) 55%,rgba(19,41,75,.55) 100%),
+           url("hero.jpg") 6% 28%/cover no-repeat,
+           var(--marino)}
+  .hero::before,.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px}
+  .hero::before{height:64px;background:var(--oro);clip-path:polygon(0 100%,100% 0,100% 100%)}
+  .hero::after{height:46px;background:var(--nieve);clip-path:polygon(0 100%,100% 0,100% 100%)}
+  .marca{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+  .logo{width:56px;height:56px;border-radius:50%;background:#fff;object-fit:contain;padding:3px;border:2px solid var(--oro);flex:none}
+  .marca strong{display:block;font:800 23px/1 "Barlow Condensed",sans-serif;letter-spacing:.02em}
+  .marca span{font-size:14px;color:#BFCADD}
+  .hero .kicker{margin:0 0 12px;font:700 14px/1.2 "Barlow",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--oro);max-width:none}
+  .hero h1{font-size:clamp(38px,10.5vw,60px);font-weight:800;max-width:15ch;margin-bottom:16px}
+  .hero h1 em{font-style:normal;color:var(--oro)}
+  .hero p{margin:0 0 24px;font-size:19px;color:#DCE4F1;max-width:34ch}
+  .btn{display:inline-block;text-align:center;text-decoration:none;font:700 18px/1.2 "Barlow",sans-serif;padding:15px 22px;border-radius:12px;border:0;cursor:pointer}
+  .btn.oro{background:var(--oro);color:var(--marino)}
+  .btn.wa{background:var(--wa);color:#fff}
+  .garantias{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:8px;font-weight:600}
+  .garantias li{display:flex;align-items:center;gap:10px}
+  .garantias svg{flex:none}
+
+  /* Secciones */
+  section{padding:32px 0}
+  h2{font-size:34px;font-weight:800;margin-bottom:14px}
+  .lead{margin:0 0 18px;color:var(--gris)}
+
+  /* Presupuesto */
+  .tarjeta{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:20px}
+  label{display:block;font-weight:600;margin:0 0 6px}
+  .campo{margin-bottom:16px}
+  select,input,textarea{width:100%;font:400 16px/1.4 "Barlow",sans-serif;color:var(--tinta);
+       padding:12px;border:1.5px solid var(--linea);border-radius:10px;background:#fff}
+  textarea{min-height:88px;resize:vertical}
+  .envios{display:grid;gap:10px;margin-top:4px}
+  .error{color:#B3261E;font-weight:600;min-height:1.4em;margin:0 0 8px}
+
+  /* Servicios */
+  .servicios{list-style:none;margin:0;padding:0;columns:2;column-gap:28px}
+  .servicios li{break-inside:avoid;padding:11px 0;border-bottom:1px solid var(--linea);font-weight:600}
+  .nota{margin:16px 0 0;color:var(--gris)}
+
+  /* Aires */
+  .aires{background:var(--marino);color:#fff;border-radius:16px;padding:24px 20px}
+  .aires h2{color:#fff}
+  .aires ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+  .aires li{display:flex;gap:10px;align-items:flex-start}
+  .aires svg{flex:none;margin-top:4px}
+
+  /* Datos */
+  .marcas{margin:0;color:var(--gris)}
+  .promesas{display:grid;gap:14px;margin:0}
+  .promesas dt{font:800 22px/1.1 "Barlow Condensed",sans-serif}
+  .promesas dd{margin:2px 0 0;color:var(--gris)}
+  .contacto p{margin:0 0 6px}
+  .contacto .btn{margin-top:10px}
+  .btn.borde{background:transparent;color:var(--marino);border:2px solid var(--marino)}
+  .redes{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-weight:600}
+  footer{padding:8px 0 24px;color:var(--gris);font-size:14px}
+
+  /* Zonas */
+  .zonas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+  .zonas li{background:var(--blanco);border:1px solid var(--linea);border-radius:999px;padding:9px 18px;font-weight:600;color:var(--marino)}
+
+
+  /* Trabajos (Instagram) */
+  .carrusel{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 20px 16px;margin:0 -20px;-webkit-overflow-scrolling:touch}
+  .carrusel .item{flex:0 0 min(86%,340px);scroll-snap-align:center;min-width:0}
+  .carrusel .item .instagram-media{margin:0!important;max-width:100%!important;min-width:0!important;width:100%!important}
+  .ig-enlace{display:block;padding:18px;background:var(--blanco);border:1px solid var(--linea);border-radius:12px;font-weight:600;text-align:center;color:var(--marino)}
+  .trabajos-cta{margin-top:8px}
+
+  /* Barra fija */
+  .barra{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linea);
+         padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10}
+  .barra div{max-width:720px;margin:0 auto;display:flex;gap:10px}
+  .barra .btn{flex:1;padding:13px 8px;font-size:16px}
+
+  @media print{.barra{display:none}}
+</style>
+<style>
+  .hero.chico{padding-bottom:84px}
+  .hero.chico h1{max-width:18ch}
+  .visor{padding:0;overflow:hidden}
+  .visor iframe{display:block;width:100%;height:760px;border:0;background:var(--blanco)}
+  .abrir{margin:12px 0 0;font-size:15px;color:var(--gris)}
+</style>
+</head>
+<body>
+<header class="hero chico">
+  <div class="wrap">
+    <div class="marca">
+      <img class="logo" src="logo.png" alt="Logo de Service Hogar Belgrano" onerror="this.style.display='none'">
+      <div>
+        <strong>Service Hogar Belgrano</strong>
+        <span>Servicio técnico de electrodomésticos</span>
+      </div>
+      <a class="solapa" href="index.html">← Inicio</a>
+    </div>
+    <p class="kicker">Historial y garantía</p>
+    <h1>Ficha de <em>tu equipo</em></h1>
+    <p>Ingresá la clave que escribimos a mano en el sticker de tu equipo.</p>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <div class="tarjeta visor">
+        <iframe id="app" title="Ficha del equipo" loading="lazy"></iframe>
+      </div>
+      <p class="abrir">¿No se ve bien? <a id="abrir" href="#">Abrila en pantalla completa</a>.</p>
+      <noscript><p class="nota">Necesitás activar JavaScript para ver tu ficha.</p></noscript>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Service Hogar Belgrano. O'Higgins 2137, local 26.</div>
+</footer>
+
+<nav class="barra" aria-label="Contacto rápido">
+  <div>
+    <a class="btn wa" href="https://wa.me/5491167489192?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Bruno</a>
+    <a class="btn wa" href="https://wa.me/5491165711314?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Mauricio</a>
+  </div>
+</nav>
+
+<script>
+  // ▼▼ PEGÁ ACÁ la dirección que te da Google al implementar (termina en /exec) ▼▼
+  const APP_URL = "https://script.google.com/macros/s/AKfycbwPkNL200XxXsNQXv52sgDtAcc4G7nokLCtVMz5_u723Rop1KIKR-6Rz5rK5YoZjvRv/exec";
+  // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+  if (APP_URL.indexOf("https://") === 0) {
+    document.getElementById("app").src = APP_URL;
+    document.getElementById("abrir").href = APP_URL;
+  } else {
+    document.querySelector(".visor").innerHTML = '<p style="padding:20px;margin:0">La ficha todavía no está conectada.</p>';
+  }
+</script>
+</body>
+</html>
