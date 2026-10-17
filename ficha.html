@@ -128,6 +128,7 @@
   #app label{font-size:14px;color:var(--gris);margin:10px 0 4px}
   #app .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   #app button{margin:12px 8px 0 0;padding:13px 18px;border:0;border-radius:12px;background:var(--oro);color:var(--marino);font:700 17px/1.2 "Barlow",sans-serif;cursor:pointer}
+  #app button.d{background:#B3261E;color:#fff}
   #app button.s{background:transparent;color:var(--marino);border:2px solid var(--marino)}
   #app .lk,#app a.l{color:var(--marino);cursor:pointer;text-decoration:underline;font-weight:600}
   #app .kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--linea)}
@@ -270,7 +271,7 @@ function pintar(){
  '<div class="row"><div><label>Teléfono</label><input id="e_telefono" type="tel" value="'+esc(e.telefono)+'"></div><div><label>Dirección</label><input id="e_direccion" value="'+esc(e.direccion)+'"></div></div>'+
  '<div class="row"><div><label>Equipo</label><input id="e_equipo" value="'+esc(e.equipo)+'" placeholder="Lavarropas"></div><div><label>Marca</label><input id="e_marca" value="'+esc(e.marca)+'"></div></div>'+
  '<div class="row"><div><label>Modelo</label><input id="e_modelo" value="'+esc(e.modelo)+'"></div><div><label>N° de serie</label><input id="e_serie" value="'+esc(e.serie)+'"></div></div>'+
- '<button id="se">'+(has?'Guardar datos':'Crear y generar clave')+'</button><button class="s" id="vl">← Lista</button></div>'+
+ '<button id="se">'+(has?'Guardar datos':'Crear y generar clave')+'</button><button class="s" id="vl">← Lista</button>'+(has?'<button class="d" id="de">Borrar equipo</button>':'')+'</div>'+
  (has?'<div class="card"><h2>Services</h2>'+(CUR.services.map(s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+' · '+s.garantia+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+s.id+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+s.id+'">Borrar</span></div>').join('')||'<small>Todavía no hay services.</small>')+'</div>'+
  '<div class="card" id="sf"><h2 id="sft">Agregar service</h2><div class="row"><div><label>Fecha</label><input id="s_fecha" type="date" value="'+hoy+'"></div><div><label>Garantía (días)</label><input id="s_gar" type="number" value="90"></div></div>'+
  '<label>Tipo</label><select id="s_tipo">'+TIPOS.map(t=>'<option>'+t+'</option>').join('')+'</select>'+
@@ -278,6 +279,11 @@ function pintar(){
  '<button id="ss">Agregar service</button><button class="s" id="sc" style="display:none">Cancelar edición</button></div>':'');
  show('eq');
  $('vl').onclick=()=>guard(async()=>{await lista();show('adm')});
+ if(has)$('de').onclick=()=>{
+  const n=CUR.services.length;
+  if(!confirm('¿Borrar el equipo '+e.clave+(e.cliente?' ('+e.cliente+')':'')+' y sus '+n+' service(s)?\nEsto no se puede deshacer.'))return;
+  DB.equipos=DB.equipos.filter(x=>x.clave!==e.clave);DB.services=DB.services.filter(x=>norm(x.clave)!==norm(e.clave));
+  bg('admin_delEquipo',PASS,e.clave);lista();show('adm')};
  $('se').onclick=()=>guard(async()=>{
   const d={};['cliente','telefono','direccion','equipo','marca','modelo','serie'].forEach(k=>d[k]=$('e_'+k).value.trim());
   if(has){Object.assign(DB.equipos.find(x=>x.clave===e.clave),d);bg('admin_editEquipo',PASS,e.clave,d);CUR=fichaLocal(e.clave);EDS=null;pintar();alert('Datos guardados')}
