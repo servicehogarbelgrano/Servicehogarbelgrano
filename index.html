@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="es-AR">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-54420PDL6K"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-54420PDL6K');
-</script>
 <meta charset="utf-8">
 <link rel="canonical" href="https://servicehogarbelgrano.com.ar/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,6 +27,7 @@
   "image": "https://servicehogarbelgrano.com.ar/logo.png",
   "telephone": "+54 9 11 6571-1314",
   "sameAs": [
+    "https://maps.app.goo.gl/c3rx3zzUeSsJWMx27",
     "https://www.instagram.com/servicehogarbelgrano",
     "https://www.tiktok.com/@servicehogarbelgrano"
   ],
@@ -152,7 +144,19 @@
   /* Servicios */
   .servicios{list-style:none;margin:0;padding:0;columns:2;column-gap:28px}
   .servicios li{break-inside:avoid;padding:11px 0;border-bottom:1px solid var(--linea);font-weight:600}
+  .servicios a{display:flex;justify-content:space-between;gap:8px;text-decoration:none;color:var(--marino)}
+  .servicios a::after{content:"\203A";color:var(--oro);font-size:24px;line-height:1}
   .nota{margin:16px 0 0;color:var(--gris)}
+
+  .guias{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  .guias a{display:block;text-decoration:none;background:var(--blanco);border:1px solid var(--linea);border-left:5px solid var(--oro);border-radius:12px;padding:14px 16px;font:800 22px/1.1 "Barlow Condensed",sans-serif;color:var(--marino)}
+  .guias a span{display:block;font:400 15px/1.4 "Barlow",sans-serif;color:var(--gris);margin-top:4px}
+
+  .resenas{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+  .resenas p{margin:0;color:var(--gris)}
+
+  .mapa{margin-top:18px;border-radius:16px;overflow:hidden;border:1px solid var(--linea);background:var(--blanco)}
+  .mapa iframe{display:block;width:100%;height:320px;border:0}
 
   /* Aires */
   .aires{background:var(--marino);color:#fff;border-radius:16px;padding:24px 20px}
@@ -271,23 +275,37 @@
   <section>
     <div class="wrap">
       <h2>Qué reparamos</h2>
+      <p class="lead">Tocá cada servicio para ver las fallas más comunes y más información.</p>
       <ul class="servicios">
-        <li>Aire acondicionado</li>
-        <li>Lavarropas</li>
-        <li>Lavavajillas</li>
-        <li>Secarropas</li>
-        <li>Secadoras</li>
-        <li>Heladeras</li>
-        <li>Heladeras no frost</li>
-        <li>Heladeras vineras</li>
-        <li>Cocinas</li>
-        <li>Hornos eléctricos</li>
-        <li>Calefones</li>
-        <li>Estufas</li>
-        <li>Microondas</li>
+        <li><a href="servicios/aires-acondicionados-belgrano.html">Aire acondicionado</a></li>
+        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html">Lavarropas</a></li>
+        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html">Lavavajillas</a></li>
+        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html">Secarropas</a></li>
+        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html">Secadoras</a></li>
+        <li><a href="servicios/heladeras-belgrano.html">Heladeras</a></li>
+        <li><a href="servicios/heladeras-belgrano.html">Heladeras no frost</a></li>
+        <li><a href="servicios/heladeras-belgrano.html">Heladeras vineras</a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Cocinas</a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Hornos eléctricos</a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Calefones</a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Estufas</a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Microondas</a></li>
       </ul>
       <p class="nota">También hacemos burletes de heladera a medida, para todas las marcas.</p>
       <p class="nota">Los trabajos de gas están a cargo de gasistas matriculados.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Fallas y guías por servicio</h2>
+      <p class="lead">Tocá una tarjeta para ver las fallas más comunes de tu equipo y qué revisar antes de llamarnos.</p>
+      <ul class="guias">
+        <li><a href="servicios/aires-acondicionados-belgrano.html">Aires acondicionados<span>No enfría, pierde agua, hace ruido, carga de gas</span></a></li>
+        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html">Lavarropas, lavavajillas y secarropas<span>No centrifuga, no desagota, pierde agua</span></a></li>
+        <li><a href="servicios/heladeras-belgrano.html">Heladeras<span>No enfría, hace hielo, burletes a medida</span></a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Cocinas, hornos y calefones<span>Hornalla que no prende, calefón que no enciende</span></a></li>
+      </ul>
     </div>
   </section>
 
@@ -375,8 +393,18 @@
     <div class="wrap">
       <h2>Ficha de tu equipo</h2>
       <div class="tarjeta ficha-cta">
-        <p>¿Ya te hicimos un service? Con la clave del sticker pegado en tu equipo podés acceder al historial de trabajos y la garantía.</p>
+        <p>¿Ya te hicimos un service? Con la clave del sticker pegado en tu equipo ves el historial de trabajos y la garantía.</p>
         <a class="btn oro" href="ficha.html">Ver mi ficha</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Opiniones de nuestros clientes</h2>
+      <div class="tarjeta resenas">
+        <p>Mirá lo que dicen quienes ya nos eligieron. Si te hicimos un service, tu reseña en Google nos ayuda a que más vecinos nos encuentren.</p>
+        <a class="btn oro" href="https://maps.app.goo.gl/c3rx3zzUeSsJWMx27" target="_blank" rel="noopener">Ver y dejar reseñas en Google</a>
       </div>
     </div>
   </section>
@@ -386,7 +414,9 @@
       <h2>Dónde estamos</h2>
       <p><strong>O'Higgins 2137, local 26</strong></p>
       <p>Belgrano, Ciudad de Buenos Aires</p>
+      <p>Lunes a viernes de 10 a 18 h</p>
       <a class="btn borde" href="https://www.google.com/maps/search/?api=1&query=O'Higgins+2137+Belgrano+Buenos+Aires">Cómo llegar</a>
+      <div class="mapa"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4646.767653430283!2d-58.45343187731493!3d-34.55960829874019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d82024b49d%3A0xde90245a0d7a686e!2sService%20hogar%20Belgrano!5e0!3m2!1ses!2sar!4v1792323701956!5m2!1ses!2sar" title="Mapa de Service Hogar Belgrano en Google Maps" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
       <div class="redes">
         <a href="https://www.instagram.com/servicehogarbelgrano">Instagram</a>
         <a href="https://www.tiktok.com/@servicehogarbelgrano">TikTok</a>
