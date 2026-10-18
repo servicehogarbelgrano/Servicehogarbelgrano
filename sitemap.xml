@@ -2,8 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://servicehogarbelgrano.com.ar/</loc>
-    <lastmod>2026-10-10</lastmod>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://servicehogarbelgrano.com.ar/servicios/aires-acondicionados-belgrano.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://servicehogarbelgrano.com.ar/servicios/lavarropas-secarropas-lavavajillas-belgrano.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://servicehogarbelgrano.com.ar/servicios/heladeras-belgrano.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://servicehogarbelgrano.com.ar/servicios/cocinas-hornos-calefones-belgrano.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <priority>0.8</priority>
   </url>
 </urlset>
