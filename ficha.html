@@ -138,7 +138,14 @@
   #app .key{font:800 34px/1 "Barlow Condensed",sans-serif;letter-spacing:.12em;text-align:center;padding:14px;border:2px dashed var(--oro);border-radius:12px}
   #app .it{padding:10px 0;border-bottom:1px solid var(--linea);cursor:pointer}#app .it:last-child{border:0}
   /* Ojito para ver/ocultar la contraseña */
+  #app button:disabled{opacity:.4;cursor:default}
+  #app button.bio{width:100%;margin:0 0 14px;background:var(--marino);color:#fff}
+  #app .vall{width:100%;margin:4px 0 14px}
+  #app .pag{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+  #app .pag button{margin:0;padding:11px 12px;font-size:16px}
+  #app .pag span{color:var(--gris);font-weight:600;font-size:15px;text-align:center}
   .pwbox{position:relative}
+  .sr{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
   #app .pwbox input{padding-right:52px}
   #app .pwbox .ojo{position:absolute;right:6px;top:50%;transform:translateY(-50%);margin:0;padding:9px;
     background:transparent;color:var(--gris);border:0;border-radius:8px;line-height:0;display:flex;cursor:pointer}
@@ -176,14 +183,19 @@
 <div class="v" id="ficha"><div id="fv"></div><button class="s" id="back1">← Volver</button></div>
 
 <div class="v" id="alog"><div class="card"><h2>Acceso técnico</h2>
+ <button type="button" id="bio" class="bio" style="display:none">🔐 Entrar con huella / Face ID</button>
+ <form id="flog" autocomplete="on">
+ <input class="sr" type="text" id="usr" name="username" value="tecnico" autocomplete="username" tabindex="-1" aria-hidden="true">
  <label for="pw">Contraseña</label>
- <div class="pwbox"><input id="pw" type="password" autocomplete="current-password"><button type="button" id="ver" class="ojo" aria-label="Mostrar contraseña" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
- <button id="ba">Entrar</button><button class="s" id="back2">Volver</button></div></div>
+ <div class="pwbox"><input id="pw" name="password" type="password" autocomplete="current-password"><button type="button" id="ver" class="ojo" aria-label="Mostrar contraseña" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+ <button type="submit" id="ba">Entrar</button><button type="button" class="s" id="back2">Volver</button>
+ </form></div></div>
 
 <div class="v" id="adm"><div class="card"><h2>Equipos</h2>
  <input id="q" placeholder="Buscar por clave, cliente, equipo o marca">
  <button id="bq">Actualizar</button><button class="s" id="bn">+ Nuevo equipo</button>
- <div id="lst" style="margin-top:10px"></div></div></div>
+ <div id="lst" style="margin-top:10px"></div>
+ <div id="bioset" style="display:none;margin-top:16px"><span class="lk" id="bioact"></span></div></div></div>
 
 <div class="v" id="eq"></div>
 
@@ -229,23 +241,53 @@ function venc(s){const d=new Date(s.fecha+'T12:00:00');d.setDate(d.getDate()+(+s
 function vigente(s){return venc(s)>=new Date()}
 
 // ----- CLIENTE -----
+let FF=null,FMODE='res',FPAG=0,TMODE='res',TPAG=0;
+const PORPAG=20,ULT=5;
+const dsvc=s=>(s.detalle?'<div class="kv"><span>Detalle</span><span>'+esc(s.detalle)+'</span></div>':'')+
+  (s.repuestos?'<div class="kv"><span>Repuestos</span><span>'+esc(s.repuestos)+'</span></div>':'')+
+  (s.tecnico?'<div class="kv"><span>Técnico</span><span>'+esc(s.tecnico)+'</span></div>':'');
+const garS=s=>s.garantia+' días · vence '+venc(s).toLocaleDateString('es-AR');
+const cardSvc=s=>'<div class="card"><div class="kv"><span>Fecha</span><span>'+fmt(s.fecha)+'</span></div>'+
+  '<div class="kv"><span>Trabajo</span><span>'+esc(s.tipo)+'</span></div>'+dsvc(s)+
+  '<div class="kv"><span>Garantía</span><span class="'+(vigente(s)?'ok':'bad')+'">'+garS(s)+'</span></div></div>';
+const filaSvc=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+
+  (s.detalle?'<br><small>'+esc(s.detalle)+'</small>':'')+
+  (s.repuestos?'<br><small>Repuestos: '+esc(s.repuestos)+'</small>':'')+
+  (s.tecnico?'<br><small>Técnico: '+esc(s.tecnico)+'</small>':'')+
+  '<br><small class="'+(vigente(s)?'ok':'bad')+'">Garantía: '+garS(s)+'</small></div>';
+function pintarFicha(){
+ const f=FF,e=f.equipo;
+ const L=f.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+ const any=L.some(vigente),pags=Math.max(1,Math.ceil(L.length/PORPAG));
+ FPAG=Math.min(Math.max(FPAG,0),pags-1);
+ let h='<div class="card"><h2>'+esc(e.equipo)+' '+esc(e.marca)+' '+esc(e.modelo)+'</h2>'+
+  (e.cliente?'<small>Cliente: '+esc(e.cliente)+'</small><br>':'')+
+  (e.serie?'<small>N° de serie: '+esc(e.serie)+'</small><br>':'')+
+  (L.length?'<span class="b '+(any?'ok':'bad')+'">'+(any?'✔ Garantía vigente':'Garantía vencida')+'</span>':'<small>Sin services registrados.</small>')+'</div>';
+ if(FMODE==='res'||L.length<=ULT){
+  h+=L.slice(0,ULT).map(cardSvc).join('');
+  if(L.length>ULT)h+='<button type="button" class="s vall" data-acc="all">Ver lista completa ('+L.length+' services)</button>';
+ }else{
+  h+='<div class="card"><h2>Lista completa</h2><small>'+L.length+' services · del más reciente al más antiguo</small>'+
+     L.slice(FPAG*PORPAG,(FPAG+1)*PORPAG).map(filaSvc).join('')+
+     '<div class="pag"><button type="button" class="s" data-acc="prev"'+(FPAG===0?' disabled':'')+'>← Anterior</button>'+
+     '<span>Página '+(FPAG+1)+' de '+pags+'</span>'+
+     '<button type="button" class="s" data-acc="next"'+(FPAG>=pags-1?' disabled':'')+'>Siguiente →</button></div></div>'+
+     '<button type="button" class="s vall" data-acc="res">Ver solo los últimos '+ULT+'</button>';
+ }
+ $('fv').innerHTML=h;
+}
+$('fv').onclick=ev=>{const b=ev.target.closest('[data-acc]');if(!b||b.disabled)return;
+ const a=b.dataset.acc;
+ if(a==='all'){FMODE='lista';FPAG=0}else if(a==='res'){FMODE='res'}else if(a==='prev'){FPAG--}else if(a==='next'){FPAG++}
+ pintarFicha();window.scrollTo({top:0,behavior:'smooth'})};
 $('bc').onclick=()=>guard(async()=>{
  const f=await run('getFicha',$('cl').value);
  if(!f){alert('Clave no encontrada. Revisá cómo está escrita en el sticker.');return}
- const e=f.equipo,any=f.services.some(vigente);
- $('fv').innerHTML='<div class="card"><h2>'+esc(e.equipo)+' '+esc(e.marca)+' '+esc(e.modelo)+'</h2>'+
-  (e.cliente?'<small>Cliente: '+esc(e.cliente)+'</small><br>':'')+
-  (e.serie?'<small>N° de serie: '+esc(e.serie)+'</small><br>':'')+
-  (f.services.length?'<span class="b '+(any?'ok':'bad')+'">'+(any?'✔ Garantía vigente':'Garantía vencida')+'</span>':'<small>Sin services registrados.</small>')+'</div>'+
-  f.services.map(s=>'<div class="card"><div class="kv"><span>Fecha</span><span>'+fmt(s.fecha)+'</span></div>'+
-  '<div class="kv"><span>Trabajo</span><span>'+esc(s.tipo)+'</span></div>'+
-  (s.detalle?'<div class="kv"><span>Detalle</span><span>'+esc(s.detalle)+'</span></div>':'')+
-  (s.repuestos?'<div class="kv"><span>Repuestos</span><span>'+esc(s.repuestos)+'</span></div>':'')+
-  (s.tecnico?'<div class="kv"><span>Técnico</span><span>'+esc(s.tecnico)+'</span></div>':'')+
-  '<div class="kv"><span>Garantía</span><span class="'+(vigente(s)?'ok':'bad')+'">'+s.garantia+' días · vence '+venc(s).toLocaleDateString('es-AR')+'</span></div></div>').join('');
+ FF=f;FMODE='res';FPAG=0;pintarFicha();
  show('ficha')});
 $('cl').onkeydown=e=>{if(e.key==='Enter')$('bc').click()};
-$('back1').onclick=()=>{$('cl').value='';show('login')};
+$('back1').onclick=()=>{$('cl').value='';FF=null;FMODE='res';FPAG=0;show('login')};
 $('toAdm').onclick=()=>show('alog');$('back2').onclick=()=>show('login');
 
 // ----- TÉCNICO -----
@@ -255,8 +297,62 @@ const cargar=async()=>{DB=await run('admin_todo',PASS)};
 const fichaLocal=k=>{const n=norm(k);return{equipo:Object.assign({},DB.equipos.find(e=>norm(e.clave)===n)),services:DB.services.filter(s=>norm(s.clave)===n).sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)))}};
 // guarda en segundo plano (en orden) sin hacer esperar al técnico
 const bg=(fn,...a)=>{Q=Q.then(()=>run(fn,...a)).catch(async e=>{alert('No se pudo guardar ('+(e.message||e)+'). Se vuelven a cargar los datos.');try{await cargar()}catch(_){}})};
-$('ba').onclick=()=>guard(async()=>{PASS=$('pw').value;DB=await run('admin_todo',PASS);$('pw').value='';verPw(false);lista();show('adm')});
-$('pw').onkeydown=e=>{if(e.key==='Enter')$('ba').click()};
+const entrar=p=>guard(async()=>{PASS=p;DB=await run('admin_todo',PASS);$('pw').value='';verPw(false);lista();show('adm');bioUI()});
+$('ba').onclick=()=>entrar($('pw').value);
+$('flog').onsubmit=e=>e.preventDefault();
+
+// ----- ENTRAR CON HUELLA / FACE ID (la clave queda cifrada en este dispositivo; solo la huella/Face ID puede abrirla) -----
+const BIO_KEY='sh_bio';let BIO_OK=false,BIO_PEND=null;
+const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u)));
+const ub64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+const bioGet=()=>{try{return JSON.parse(localStorage.getItem(BIO_KEY)||'null')}catch(_){return null}};
+function bioUI(){
+ const on=!!bioGet();
+ $('bio').style.display=(BIO_OK&&on)?'':'none';
+ $('bioset').style.display=(BIO_OK&&PASS)?'':'none';
+ $('bioact').textContent=on?'🔐 Desactivar huella / Face ID en este dispositivo':(BIO_PEND?'🔐 Tocá acá para confirmar con huella / Face ID':'🔐 Activar huella / Face ID en este dispositivo');
+}
+(async()=>{try{BIO_OK=!!(window.PublicKeyCredential&&window.crypto&&crypto.subtle&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())}catch(_){BIO_OK=false}bioUI()})();
+const bioGuard=f=>guard(async()=>{try{await f()}catch(e){if(e&&(e.name==='NotAllowedError'||e.name==='AbortError'))return;throw e}});
+const aesKey=raw=>crypto.subtle.importKey('raw',raw,'AES-GCM',false,['encrypt','decrypt']);
+const prfClave=async(cid,salt)=>{
+ const a=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rpId:location.hostname,
+  allowCredentials:[{type:'public-key',id:ub64(cid)}],userVerification:'required',timeout:60000,extensions:{prf:{eval:{first:salt}}}}});
+ const r=a.getClientExtensionResults().prf;
+ if(!r||!r.results||!r.results.first)throw new Error('Este dispositivo o navegador no permite entrar con huella de forma segura. Usá el autocompletado de contraseñas.');
+ return aesKey(r.results.first);
+};
+const bioGuardar=async(cid,salt,key)=>{
+ const iv=crypto.getRandomValues(new Uint8Array(12));
+ const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(PASS));
+ localStorage.setItem(BIO_KEY,JSON.stringify({cid,salt:b64(salt),iv:b64(iv),ct:b64(ct)}));
+ BIO_PEND=null;
+};
+async function bioActivar(){
+ if(BIO_PEND){const p=BIO_PEND;await bioGuardar(p.cid,p.salt,await prfClave(p.cid,p.salt));return}
+ const salt=crypto.getRandomValues(new Uint8Array(32));
+ const cred=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),
+  rp:{name:'Service Hogar Belgrano',id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'tecnico',displayName:'Técnico'},
+  pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+  authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'required',userVerification:'required'},
+  timeout:60000,extensions:{prf:{eval:{first:salt}}}}});
+ const ex=cred.getClientExtensionResults().prf;
+ if(!ex||!ex.enabled)throw new Error('Este dispositivo o navegador todavía no permite guardar la contraseña con huella de forma segura. Seguí usando el autocompletado de contraseñas.');
+ const cid=b64(cred.rawId);
+ if(ex.results&&ex.results.first){await bioGuardar(cid,salt,await aesKey(ex.results.first));return}
+ BIO_PEND={cid,salt};   // algunos iPhone piden un segundo toque para completar
+ alert('Casi listo: tocá otra vez "Confirmar con huella / Face ID" para terminar.');
+}
+$('bioact').onclick=()=>bioGuard(async()=>{
+ if(bioGet()){if(confirm('¿Desactivar el ingreso con huella / Face ID en este dispositivo?')){localStorage.removeItem(BIO_KEY);BIO_PEND=null;alert('Desactivado.')}}
+ else{await bioActivar();if(bioGet())alert('Listo. La próxima vez podés entrar con huella / Face ID.')}
+ bioUI()});
+$('bio').onclick=()=>bioGuard(async()=>{
+ const d=bioGet();if(!d)return;
+ const key=await prfClave(d.cid,ub64(d.salt));
+ const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64(d.iv)},key,ub64(d.ct));
+ await entrar(new TextDecoder().decode(pt))});
+
 const OJO_ON='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',OJO_OFF='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 const verPw=m=>{const p=$('pw'),b=$('ver');p.type=m?'text':'password';b.innerHTML=m?OJO_OFF:OJO_ON;b.setAttribute('aria-pressed',m?'true':'false');b.setAttribute('aria-label',m?'Ocultar contraseña':'Mostrar contraseña')};
 $('ver').onclick=()=>{verPw($('pw').type==='password');$('pw').focus()};
@@ -268,8 +364,8 @@ function lista(){
 }
 $('q').oninput=lista;
 $('bq').onclick=()=>guard(async()=>{await cargar();lista()});
-$('bn').onclick=()=>{CUR={equipo:{},services:[]};EDS=null;pintar()};
-function abrir(k){CUR=fichaLocal(k);EDS=null;pintar()}
+$('bn').onclick=()=>{CUR={equipo:{},services:[]};EDS=null;TMODE='res';TPAG=0;pintar()};
+function abrir(k){CUR=fichaLocal(k);EDS=null;TMODE='res';TPAG=0;pintar()}
 
 function pintar(){
  const e=CUR.equipo,has=!!e.clave;
@@ -282,7 +378,7 @@ function pintar(){
  '<div class="row"><div><label>Equipo</label><input id="e_equipo" value="'+esc(e.equipo)+'" placeholder="Lavarropas"></div><div><label>Marca</label><input id="e_marca" value="'+esc(e.marca)+'"></div></div>'+
  '<div class="row"><div><label>Modelo</label><input id="e_modelo" value="'+esc(e.modelo)+'"></div><div><label>N° de serie</label><input id="e_serie" value="'+esc(e.serie)+'"></div></div>'+
  '<button id="se">'+(has?'Guardar datos':'Crear y generar clave')+'</button><button class="s" id="vl">← Lista</button>'+(has?'<button class="d" id="de">Borrar equipo</button>':'')+'</div>'+
- (has?'<div class="card"><h2>Services</h2>'+(CUR.services.map(s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+' · '+s.garantia+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+s.id+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+s.id+'">Borrar</span></div>').join('')||'<small>Todavía no hay services.</small>')+'</div>'+
+ (has?'<div class="card"><h2>Services</h2><div id="sl"></div></div>'+
  '<div class="card" id="sf"><h2 id="sft">Agregar service</h2><div class="row"><div><label>Fecha</label><input id="s_fecha" type="date" value="'+hoy+'"></div><div><label>Garantía (días)</label><input id="s_gar" type="number" value="90"></div></div>'+
  '<label>Tipo</label><select id="s_tipo">'+TIPOS.map(t=>'<option>'+t+'</option>').join('')+'</select>'+
  '<label>Detalle del trabajo</label><textarea id="s_det" rows="3"></textarea><label>Repuestos</label><input id="s_rep"><label>Técnico</label><input id="s_tec" list="tecs" placeholder="Elegí o escribí"><datalist id="tecs"><option value="Bruno"><option value="Mauricio"></datalist>'+
@@ -306,11 +402,38 @@ function pintar(){
   else{s.id=Math.random().toString(36).slice(2,10);DB.services.push(Object.assign({},s,{clave:e.clave}));bg('admin_addService',PASS,e.clave,s)}
   CUR=fichaLocal(e.clave);EDS=null;pintar()});
  $('sc').onclick=()=>{EDS=null;pintar()};
- $('eq').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{
-  const s=CUR.services.find(x=>x.id===b.dataset.ed);EDS=s.id;
-  $('s_fecha').value=s.fecha;$('s_gar').value=s.garantia;$('s_tipo').value=s.tipo;$('s_det').value=s.detalle;$('s_rep').value=s.repuestos;$('s_tec').value=s.tecnico;
-  $('sft').textContent='Editando service';$('ss').textContent='Guardar cambios';$('sc').style.display='';$('sf').scrollIntoView()});
- $('eq').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('¿Borrar este service?'))guard(async()=>{DB.services=DB.services.filter(x=>x.id!==b.dataset.del);bg('admin_delService',PASS,b.dataset.del);CUR=fichaLocal(e.clave);EDS=null;pintar()})});
+ const filaT=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+' · '+s.garantia+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+s.id+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+s.id+'">Borrar</span></div>';
+ function pintarSvc(){
+  const L=CUR.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+  const pags=Math.max(1,Math.ceil(L.length/PORPAG));
+  TPAG=Math.min(Math.max(TPAG,0),pags-1);
+  let h;
+  if(!L.length)h='<small>Todavía no hay services.</small>';
+  else if(TMODE==='res'||L.length<=ULT){
+   h=L.slice(0,ULT).map(filaT).join('');
+   if(L.length>ULT)h+='<button type="button" class="s vall" data-acc="all">Listado completo ('+L.length+' services)</button>';
+  }else{
+   h='<small>'+L.length+' services · del más reciente al más antiguo</small>'+
+     L.slice(TPAG*PORPAG,(TPAG+1)*PORPAG).map(filaT).join('')+
+     '<div class="pag"><button type="button" class="s" data-acc="prev"'+(TPAG===0?' disabled':'')+'>← Anterior</button>'+
+     '<span>Página '+(TPAG+1)+' de '+pags+'</span>'+
+     '<button type="button" class="s" data-acc="next"'+(TPAG>=pags-1?' disabled':'')+'>Siguiente →</button></div>'+
+     '<button type="button" class="s vall" data-acc="res" style="margin-top:12px">Ver solo los últimos '+ULT+'</button>';
+  }
+  $('sl').innerHTML=h;
+ }
+ $('sl').onclick=ev=>{
+  const t=ev.target.closest('[data-acc],[data-ed],[data-del]');if(!t||t.disabled)return;
+  if(t.dataset.acc){const a=t.dataset.acc;
+   if(a==='all'){TMODE='lista';TPAG=0}else if(a==='res'){TMODE='res'}else if(a==='prev'){TPAG--}else if(a==='next'){TPAG++}
+   pintarSvc();return}
+  if(t.dataset.ed){
+   const s=CUR.services.find(x=>x.id===t.dataset.ed);EDS=s.id;
+   $('s_fecha').value=s.fecha;$('s_gar').value=s.garantia;$('s_tipo').value=s.tipo;$('s_det').value=s.detalle;$('s_rep').value=s.repuestos;$('s_tec').value=s.tecnico;
+   $('sft').textContent='Editando service';$('ss').textContent='Guardar cambios';$('sc').style.display='';$('sf').scrollIntoView();return}
+  if(t.dataset.del){const id=t.dataset.del;
+   if(confirm('¿Borrar este service?'))guard(async()=>{DB.services=DB.services.filter(x=>x.id!==id);bg('admin_delService',PASS,id);CUR=fichaLocal(e.clave);EDS=null;pintar()})}};
+ pintarSvc();
 }
 </script>
 </body>
