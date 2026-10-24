@@ -177,8 +177,7 @@
 <div class="v on" id="login"><div class="card">
  <h2>Ficha de tu equipo</h2><small>Ingresá la clave escrita en el sticker.</small>
  <label>Clave</label><input id="cl" placeholder="Ej: K7M-4PX" autocapitalize="characters" autocomplete="off">
- <button id="bc">Ver ficha</button></div>
- <a class="l" id="toAdm">Acceso técnico</a></div>
+ <button id="bc">Ver ficha</button></div></div>
 
 <div class="v" id="ficha"><div id="fv"></div><button class="s" id="back1">← Volver</button></div>
 
@@ -206,7 +205,7 @@
 </main>
 
 <footer>
-  <div class="wrap">Service Hogar Belgrano. O'Higgins 2137, local 26.</div>
+  <div class="wrap">Service Hogar Belgrano. O'Higgins 2183, local 11.</div>
 </footer>
 
 <nav class="barra" aria-label="Contacto rápido">
@@ -288,7 +287,10 @@ $('bc').onclick=()=>guard(async()=>{
  show('ficha')});
 $('cl').onkeydown=e=>{if(e.key==='Enter')$('bc').click()};
 $('back1').onclick=()=>{$('cl').value='';FF=null;FMODE='res';FPAG=0;show('login')};
-$('toAdm').onclick=()=>show('alog');$('back2').onclick=()=>show('login');
+// Acceso técnico: no hay link a la vista; solo se abre entrando a ficha.html#tecnico
+$('back2').onclick=()=>{history.replaceState(null,'',location.pathname+location.search);show('login')};
+const hashAdm=()=>{if(location.hash==='#tecnico'&&!PASS)show('alog')};
+window.addEventListener('hashchange',hashAdm);hashAdm();
 
 // ----- TÉCNICO -----
 let DB={equipos:[],services:[]},Q=Promise.resolve();
@@ -402,7 +404,7 @@ function pintar(){
   else{s.id=Math.random().toString(36).slice(2,10);DB.services.push(Object.assign({},s,{clave:e.clave}));bg('admin_addService',PASS,e.clave,s)}
   CUR=fichaLocal(e.clave);EDS=null;pintar()});
  $('sc').onclick=()=>{EDS=null;pintar()};
- const filaT=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+' · '+s.garantia+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+s.id+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+s.id+'">Borrar</span></div>';
+ const filaT=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+' · '+s.garantia+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+esc(s.id)+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+esc(s.id)+'">Borrar</span></div>';
  function pintarSvc(){
   const L=CUR.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
   const pags=Math.max(1,Math.ceil(L.length/PORPAG));
