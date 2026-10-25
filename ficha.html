@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ficha de tu equipo | Service Hogar Belgrano</title>
 <meta name="description" content="Consultá el historial de service y la garantía de tu equipo con la clave del sticker.">
-<link rel="canonical" href="https://servicehogarbelgrano.com.ar/ficha.html">
 <link rel="icon" type="image/png" sizes="192x192" href="https://servicehogarbelgrano.com.ar/favicon.png">
 <link rel="apple-touch-icon" href="https://servicehogarbelgrano.com.ar/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,17 +25,12 @@
   a{color:inherit}
   .wrap{max-width:720px;margin:0 auto;padding:0 20px}
   :focus-visible{outline:3px solid var(--oro);outline-offset:3px}
-
-  /* Portada */
   .hero{color:#fff;padding:20px 0 84px;position:relative;
-         background:
-           radial-gradient(circle at 88% 12%,rgba(233,163,27,.28),transparent 42%),
+         background:radial-gradient(circle at 88% 12%,rgba(233,163,27,.28),transparent 42%),
            repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 22px),
            linear-gradient(135deg,#13294B 0%,#1B3A6B 55%,#2A5190 100%)}
-  .hero.con-foto{background:
-           linear-gradient(135deg,rgba(19,41,75,.90) 0%,rgba(19,41,75,.76) 55%,rgba(19,41,75,.55) 100%),
-           url("hero.jpg") 6% 28%/cover no-repeat,
-           var(--marino)}
+  .hero.con-foto{background:linear-gradient(135deg,rgba(19,41,75,.90) 0%,rgba(19,41,75,.76) 55%,rgba(19,41,75,.55) 100%),
+           url("hero.jpg") 6% 28%/cover no-repeat,var(--marino)}
   .hero::before,.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px}
   .hero::before{height:64px;background:var(--oro);clip-path:polygon(0 100%,100% 0,100% 100%)}
   .hero::after{height:46px;background:var(--nieve);clip-path:polygon(0 100%,100% 0,100% 100%)}
@@ -48,108 +42,30 @@
   .hero h1{font-size:clamp(38px,10.5vw,60px);font-weight:800;max-width:15ch;margin-bottom:16px}
   .hero h1 em{font-style:normal;color:var(--oro)}
   .hero p{margin:0 0 24px;font-size:19px;color:#DCE4F1;max-width:34ch}
-  .btn{display:inline-block;text-align:center;text-decoration:none;font:700 18px/1.2 "Barlow",sans-serif;padding:15px 22px;border-radius:12px;border:0;cursor:pointer}
-  .btn.oro{background:var(--oro);color:var(--marino)}
-  .btn.wa{background:var(--wa);color:#fff}
-  .garantias{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:8px;font-weight:600}
-  .garantias li{display:flex;align-items:center;gap:10px}
-  .garantias svg{flex:none}
-
-  /* Secciones */
+  .solapa{margin-left:auto;text-decoration:none;font:700 15px/1 "Barlow",sans-serif;color:#fff;border:2px solid var(--oro);border-radius:999px;padding:10px 16px;white-space:nowrap;transition:background .2s,color .2s}
+  .solapa:hover{background:var(--oro);color:var(--marino)}
   section{padding:32px 0}
-  h2{font-size:34px;font-weight:800;margin-bottom:14px}
-  .lead{margin:0 0 18px;color:var(--gris)}
-
-  /* Presupuesto */
-  .tarjeta{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:20px}
-  label{display:block;font-weight:600;margin:0 0 6px}
-  .campo{margin-bottom:16px}
-  select,input,textarea{width:100%;font:400 16px/1.4 "Barlow",sans-serif;color:var(--tinta);
-       padding:12px;border:1.5px solid var(--linea);border-radius:10px;background:#fff}
-  textarea{min-height:88px;resize:vertical}
-  .envios{display:grid;gap:10px;margin-top:4px}
-  .error{color:#B3261E;font-weight:600;min-height:1.4em;margin:0 0 8px}
-
-  /* Servicios */
-  .servicios{list-style:none;margin:0;padding:0;columns:2;column-gap:28px}
-  .servicios li{break-inside:avoid;padding:11px 0;border-bottom:1px solid var(--linea);font-weight:600}
-  .nota{margin:16px 0 0;color:var(--gris)}
-
-  /* Aires */
-  .aires{background:var(--marino);color:#fff;border-radius:16px;padding:24px 20px}
-  .aires h2{color:#fff}
-  .aires ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
-  .aires li{display:flex;gap:10px;align-items:flex-start}
-  .aires svg{flex:none;margin-top:4px}
-
-  /* Datos */
-  .marcas{margin:0;color:var(--gris)}
-  .promesas{display:grid;gap:14px;margin:0}
-  .promesas dt{font:800 22px/1.1 "Barlow Condensed",sans-serif}
-  .promesas dd{margin:2px 0 0;color:var(--gris)}
-  .contacto p{margin:0 0 6px}
-  .contacto .btn{margin-top:10px}
-  .btn.borde{background:transparent;color:var(--marino);border:2px solid var(--marino)}
-  .redes{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-weight:600}
-  footer{padding:8px 0 24px;color:var(--gris);font-size:14px}
-
-  /* Zonas */
-  .zonas{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
-  .zonas li{background:var(--blanco);border:1px solid var(--linea);border-radius:999px;padding:9px 18px;font-weight:600;color:var(--marino)}
-
-
-  /* Trabajos (Instagram) */
-  .carrusel{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 20px 16px;margin:0 -20px;-webkit-overflow-scrolling:touch}
-  .carrusel .item{flex:0 0 min(86%,340px);scroll-snap-align:center;min-width:0}
-  .carrusel .item .instagram-media{margin:0!important;max-width:100%!important;min-width:0!important;width:100%!important}
-  .ig-enlace{display:block;padding:18px;background:var(--blanco);border:1px solid var(--linea);border-radius:12px;font-weight:600;text-align:center;color:var(--marino)}
-  .trabajos-cta{margin-top:8px}
-
-  /* Barra fija */
-  .barra{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linea);
-         padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10}
-  .barra div{max-width:720px;margin:0 auto;display:flex;gap:10px}
-  .barra .btn{flex:1;padding:13px 8px;font-size:16px}
-
-  @media print{.barra{display:none}}
-</style>
-<style>
-  .hero.chico{padding-bottom:84px}
-  .hero.chico h1{max-width:18ch}
-  .visor{padding:0;overflow:hidden}
-  .visor iframe{display:block;width:100%;height:760px;border:0;background:var(--blanco)}
-  .abrir{margin:12px 0 0;font-size:15px;color:var(--gris)}
-
-  #app #ld{display:none;position:sticky;top:0;z-index:5;background:var(--oro);color:var(--marino);font-weight:700;text-align:center;padding:8px;border-radius:10px;margin-bottom:10px}
+  .card{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:20px;margin:0 0 14px}
   #app .v{display:none}#app .v.on{display:block}
-  #app .card{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:18px;margin:0 0 14px}
   #app h2{font-size:28px;margin:0 0 8px}
   #app small{color:var(--gris)}
-  #app label{font-size:14px;color:var(--gris);margin:10px 0 4px}
-  #app .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  #app label{font-size:14px;color:var(--gris);margin:10px 0 4px;display:block;font-weight:600}
+  #app input{width:100%;font:400 16px/1.4 "Barlow",sans-serif;color:var(--tinta);padding:12px;border:1.5px solid var(--linea);border-radius:10px;background:#fff}
   #app button{margin:12px 8px 0 0;padding:13px 18px;border:0;border-radius:12px;background:var(--oro);color:var(--marino);font:700 17px/1.2 "Barlow",sans-serif;cursor:pointer}
-  #app button.d{background:#B3261E;color:#fff}
   #app button.s{background:transparent;color:var(--marino);border:2px solid var(--marino)}
-  #app .lk,#app a.l{color:var(--marino);cursor:pointer;text-decoration:underline;font-weight:600}
   #app .kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--linea)}
   #app .kv:last-child{border:0}#app .kv span:first-child{color:var(--gris)}#app .kv span:last-child{text-align:right;font-weight:600}
   #app .b{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:700;border:2px solid currentColor}
   #app .ok{color:var(--wa)}#app .bad{color:#B3261E}
-  #app .key{font:800 34px/1 "Barlow Condensed",sans-serif;letter-spacing:.12em;text-align:center;padding:14px;border:2px dashed var(--oro);border-radius:12px}
   #app .it{padding:10px 0;border-bottom:1px solid var(--linea);cursor:pointer}#app .it:last-child{border:0}
-  /* Ojito para ver/ocultar la contraseña */
-  #app button:disabled{opacity:.4;cursor:default}
-  #app button.bio{width:100%;margin:0 0 14px;background:var(--marino);color:#fff}
   #app .vall{width:100%;margin:4px 0 14px}
   #app .pag{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
   #app .pag button{margin:0;padding:11px 12px;font-size:16px}
   #app .pag span{color:var(--gris);font-weight:600;font-size:15px;text-align:center}
-  .pwbox{position:relative}
-  .sr{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
-  #app .pwbox input{padding-right:52px}
-  #app .pwbox .ojo{position:absolute;right:6px;top:50%;transform:translateY(-50%);margin:0;padding:9px;
-    background:transparent;color:var(--gris);border:0;border-radius:8px;line-height:0;display:flex;cursor:pointer}
-  #app .pwbox .ojo[aria-pressed="true"]{color:var(--marino)}
+  #app #ld{display:none;position:sticky;top:0;z-index:5;background:var(--oro);color:var(--marino);font-weight:700;text-align:center;padding:8px;border-radius:10px;margin-bottom:10px}
+  .barra{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--linea);padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10}
+  .barra div{max-width:720px;margin:0 auto;display:flex;gap:10px}
+  .barra .btn{flex:1;padding:13px 8px;font-size:16px;text-align:center;text-decoration:none;font:700 18px/1.2 "Barlow",sans-serif;border-radius:12px;background:var(--wa);color:#fff}
 </style>
 </head>
 <body>
@@ -172,271 +88,111 @@
 <main>
   <section>
     <div class="wrap">
-      <div id="app"><div id="ld">Cargando…</div>
-
-<div class="v on" id="login"><div class="card">
- <h2>Ficha de tu equipo</h2><small>Ingresá la clave escrita en el sticker.</small>
- <label>Clave</label><input id="cl" placeholder="Ej: K7M-4PX" autocapitalize="characters" autocomplete="off">
- <button id="bc">Ver ficha</button></div></div>
-
-<div class="v" id="ficha"><div id="fv"></div><button class="s" id="back1">← Volver</button></div>
-
-<div class="v" id="alog"><div class="card"><h2>Acceso técnico</h2>
- <button type="button" id="bio" class="bio" style="display:none">🔐 Entrar con huella / Face ID</button>
- <form id="flog" autocomplete="on">
- <input class="sr" type="text" id="usr" name="username" value="tecnico" autocomplete="username" tabindex="-1" aria-hidden="true">
- <label for="pw">Contraseña</label>
- <div class="pwbox"><input id="pw" name="password" type="password" autocomplete="current-password"><button type="button" id="ver" class="ojo" aria-label="Mostrar contraseña" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
- <button type="submit" id="ba">Entrar</button><button type="button" class="s" id="back2">Volver</button>
- </form></div></div>
-
-<div class="v" id="adm"><div class="card"><h2>Equipos</h2>
- <input id="q" placeholder="Buscar por clave, cliente, equipo o marca">
- <button id="bq">Actualizar</button><button class="s" id="bn">+ Nuevo equipo</button>
- <div id="lst" style="margin-top:10px"></div>
- <div id="bioset" style="display:none;margin-top:16px"><span class="lk" id="bioact"></span></div></div></div>
-
-<div class="v" id="eq"></div>
-
-</div>
-      <noscript><p class="nota">Necesitás activar JavaScript para ver tu ficha.</p></noscript>
+      <div id="app">
+        <div id="ld">Cargando…</div>
+        <div class="v on" id="login">
+          <div class="card">
+            <h2>Ficha de tu equipo</h2><small>Ingresá la clave escrita en el sticker.</small>
+            <label>Clave</label>
+            <input id="cl" placeholder="Ej: K7M-4PX" autocapitalize="characters" autocomplete="off">
+            <button id="bc">Ver ficha</button>
+          </div>
+        </div>
+        <div class="v" id="ficha">
+          <div id="fv"></div>
+          <button class="s" id="back1">← Volver</button>
+        </div>
+      </div>
+      <noscript><p>Necesitás activar JavaScript para ver tu ficha.</p></noscript>
     </div>
   </section>
 </main>
 
-<footer>
-  <div class="wrap">Service Hogar Belgrano. O'Higgins 2183, local 11.</div>
-</footer>
-
 <nav class="barra" aria-label="Contacto rápido">
   <div>
-    <a class="btn wa" href="https://wa.me/5491167489192?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Bruno</a>
-    <a class="btn wa" href="https://wa.me/5491165711314?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Mauricio</a>
+    <a class="btn" href="https://wa.me/5491167489192?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Bruno</a>
+    <a class="btn" href="https://wa.me/5491165711314?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Mauricio</a>
   </div>
 </nav>
 
 <script>
   const APP_URL = "https://script.google.com/macros/s/AKfycbwTp6vLxClVClJ10mtN99URYymwLQ2TIlppeHxueZec-Xk2slxhg8lbnl3leiwOzYsR/exec";
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const fmt=d=>d?String(d).split('-').reverse().join('/'):'';
+  let pend=0;
+  
+  const run=async(fn,...args)=>{
+    pend++;$('ld').style.display='block';
+    try{
+      let r;try{r=await fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})})}
+      catch(e){throw new Error('No se pudo conectar. Revisá tu internet y probá de nuevo.')}
+      const j=await r.json();if(!j.ok)throw new Error(j.error);return j.data;
+    }finally{pend--;if(!pend)$('ld').style.display='none'}
+  };
+  
+  fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:'ping',args:[]})}).catch(()=>{});
+  const show=id=>{document.querySelectorAll('.v').forEach(e=>e.classList.toggle('on',e.id===id))};
+  const guard=async f=>{try{await f()}catch(e){alert(e.message||e)}};
+  
+  function venc(s){const d=new Date(s.fecha+'T12:00:00');d.setDate(d.getDate()+(+s.garantia||0));return d}
+  function vigente(s){return venc(s)>=new Date()}
 
-const $=id=>document.getElementById(id);
-const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmt=d=>d?String(d).split('-').reverse().join('/'):'';
-let pend=0;
-const run=async(fn,...args)=>{
- pend++;$('ld').style.display='block';
- try{
-  let r;try{r=await fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})})}
-  catch(e){throw new Error('No se pudo conectar. Revisá tu internet y probá de nuevo.')}
-  const j=await r.json();if(!j.ok)throw new Error(j.error);return j.data;
- }finally{pend--;if(!pend)$('ld').style.display='none'}};
-// Despierta el servidor de Google apenas se abre la página (así responde más rápido al buscar)
-fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:'ping',args:[]})}).catch(()=>{});
-const show=id=>{document.querySelectorAll('.v').forEach(e=>e.classList.toggle('on',e.id===id))};
-const guard=async f=>{try{await f()}catch(e){alert(e.message||e)}};
-const TIPOS=['Reparación','Mantenimiento preventivo','Instalación','Cambio de repuesto','Diagnóstico'];
-let PASS='',CUR=null,EDS=null;
-
-function venc(s){const d=new Date(s.fecha+'T12:00:00');d.setDate(d.getDate()+(+s.garantia||0));return d}
-function vigente(s){return venc(s)>=new Date()}
-
-// ----- CLIENTE -----
-let FF=null,FMODE='res',FPAG=0,TMODE='res',TPAG=0;
-const PORPAG=20,ULT=5;
-const dsvc=s=>(s.detalle?'<div class="kv"><span>Detalle</span><span>'+esc(s.detalle)+'</span></div>':'')+
-  (s.repuestos?'<div class="kv"><span>Repuestos</span><span>'+esc(s.repuestos)+'</span></div>':'')+
-  (s.tecnico?'<div class="kv"><span>Técnico</span><span>'+esc(s.tecnico)+'</span></div>':'');
-const garS=s=>s.garantia+' días · vence '+venc(s).toLocaleDateString('es-AR');
-const cardSvc=s=>'<div class="card"><div class="kv"><span>Fecha</span><span>'+fmt(s.fecha)+'</span></div>'+
-  '<div class="kv"><span>Trabajo</span><span>'+esc(s.tipo)+'</span></div>'+dsvc(s)+
-  '<div class="kv"><span>Garantía</span><span class="'+(vigente(s)?'ok':'bad')+'">'+garS(s)+'</span></div></div>';
-const filaSvc=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+
-  (s.detalle?'<br><small>'+esc(s.detalle)+'</small>':'')+
-  (s.repuestos?'<br><small>Repuestos: '+esc(s.repuestos)+'</small>':'')+
-  (s.tecnico?'<br><small>Técnico: '+esc(s.tecnico)+'</small>':'')+
-  '<br><small class="'+(vigente(s)?'ok':'bad')+'">Garantía: '+garS(s)+'</small></div>';
-function pintarFicha(){
- const f=FF,e=f.equipo;
- const L=f.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
- const any=L.some(vigente),pags=Math.max(1,Math.ceil(L.length/PORPAG));
- FPAG=Math.min(Math.max(FPAG,0),pags-1);
- let h='<div class="card"><h2>'+esc(e.equipo)+' '+esc(e.marca)+' '+esc(e.modelo)+'</h2>'+
-  (e.cliente?'<small>Cliente: '+esc(e.cliente)+'</small><br>':'')+
-  (e.serie?'<small>N° de serie: '+esc(e.serie)+'</small><br>':'')+
-  (L.length?'<span class="b '+(any?'ok':'bad')+'">'+(any?'✔ Garantía vigente':'Garantía vencida')+'</span>':'<small>Sin services registrados.</small>')+'</div>';
- if(FMODE==='res'||L.length<=ULT){
-  h+=L.slice(0,ULT).map(cardSvc).join('');
-  if(L.length>ULT)h+='<button type="button" class="s vall" data-acc="all">Ver lista completa ('+L.length+' services)</button>';
- }else{
-  h+='<div class="card"><h2>Lista completa</h2><small>'+L.length+' services · del más reciente al más antiguo</small>'+
-     L.slice(FPAG*PORPAG,(FPAG+1)*PORPAG).map(filaSvc).join('')+
-     '<div class="pag"><button type="button" class="s" data-acc="prev"'+(FPAG===0?' disabled':'')+'>← Anterior</button>'+
-     '<span>Página '+(FPAG+1)+' de '+pags+'</span>'+
-     '<button type="button" class="s" data-acc="next"'+(FPAG>=pags-1?' disabled':'')+'>Siguiente →</button></div></div>'+
-     '<button type="button" class="s vall" data-acc="res">Ver solo los últimos '+ULT+'</button>';
- }
- $('fv').innerHTML=h;
-}
-$('fv').onclick=ev=>{const b=ev.target.closest('[data-acc]');if(!b||b.disabled)return;
- const a=b.dataset.acc;
- if(a==='all'){FMODE='lista';FPAG=0}else if(a==='res'){FMODE='res'}else if(a==='prev'){FPAG--}else if(a==='next'){FPAG++}
- pintarFicha();window.scrollTo({top:0,behavior:'smooth'})};
-$('bc').onclick=()=>guard(async()=>{
- const f=await run('getFicha',$('cl').value);
- if(!f){alert('Clave no encontrada. Revisá cómo está escrita en el sticker.');return}
- FF=f;FMODE='res';FPAG=0;pintarFicha();
- show('ficha')});
-$('cl').onkeydown=e=>{if(e.key==='Enter')$('bc').click()};
-$('back1').onclick=()=>{$('cl').value='';FF=null;FMODE='res';FPAG=0;show('login')};
-// Acceso técnico: no hay link a la vista; solo se abre entrando a ficha.html#tecnico
-$('back2').onclick=()=>{history.replaceState(null,'',location.pathname+location.search);show('login')};
-const hashAdm=()=>{if(location.hash==='#tecnico'&&!PASS)show('alog')};
-window.addEventListener('hashchange',hashAdm);hashAdm();
-
-// ----- TÉCNICO -----
-let DB={equipos:[],services:[]},Q=Promise.resolve();
-const norm=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-const cargar=async()=>{DB=await run('admin_todo',PASS)};
-const fichaLocal=k=>{const n=norm(k);return{equipo:Object.assign({},DB.equipos.find(e=>norm(e.clave)===n)),services:DB.services.filter(s=>norm(s.clave)===n).sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)))}};
-// guarda en segundo plano (en orden) sin hacer esperar al técnico
-const bg=(fn,...a)=>{Q=Q.then(()=>run(fn,...a)).catch(async e=>{alert('No se pudo guardar ('+(e.message||e)+'). Se vuelven a cargar los datos.');try{await cargar()}catch(_){}})};
-const entrar=p=>guard(async()=>{PASS=p;DB=await run('admin_todo',PASS);$('pw').value='';verPw(false);lista();show('adm');bioUI()});
-$('ba').onclick=()=>entrar($('pw').value);
-$('flog').onsubmit=e=>e.preventDefault();
-
-// ----- ENTRAR CON HUELLA / FACE ID (la clave queda cifrada en este dispositivo; solo la huella/Face ID puede abrirla) -----
-const BIO_KEY='sh_bio';let BIO_OK=false,BIO_PEND=null;
-const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u)));
-const ub64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
-const bioGet=()=>{try{return JSON.parse(localStorage.getItem(BIO_KEY)||'null')}catch(_){return null}};
-function bioUI(){
- const on=!!bioGet();
- $('bio').style.display=(BIO_OK&&on)?'':'none';
- $('bioset').style.display=(BIO_OK&&PASS)?'':'none';
- $('bioact').textContent=on?'🔐 Desactivar huella / Face ID en este dispositivo':(BIO_PEND?'🔐 Tocá acá para confirmar con huella / Face ID':'🔐 Activar huella / Face ID en este dispositivo');
-}
-(async()=>{try{BIO_OK=!!(window.PublicKeyCredential&&window.crypto&&crypto.subtle&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())}catch(_){BIO_OK=false}bioUI()})();
-const bioGuard=f=>guard(async()=>{try{await f()}catch(e){if(e&&(e.name==='NotAllowedError'||e.name==='AbortError'))return;throw e}});
-const aesKey=raw=>crypto.subtle.importKey('raw',raw,'AES-GCM',false,['encrypt','decrypt']);
-const prfClave=async(cid,salt)=>{
- const a=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rpId:location.hostname,
-  allowCredentials:[{type:'public-key',id:ub64(cid)}],userVerification:'required',timeout:60000,extensions:{prf:{eval:{first:salt}}}}});
- const r=a.getClientExtensionResults().prf;
- if(!r||!r.results||!r.results.first)throw new Error('Este dispositivo o navegador no permite entrar con huella de forma segura. Usá el autocompletado de contraseñas.');
- return aesKey(r.results.first);
-};
-const bioGuardar=async(cid,salt,key)=>{
- const iv=crypto.getRandomValues(new Uint8Array(12));
- const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(PASS));
- localStorage.setItem(BIO_KEY,JSON.stringify({cid,salt:b64(salt),iv:b64(iv),ct:b64(ct)}));
- BIO_PEND=null;
-};
-async function bioActivar(){
- if(BIO_PEND){const p=BIO_PEND;await bioGuardar(p.cid,p.salt,await prfClave(p.cid,p.salt));return}
- const salt=crypto.getRandomValues(new Uint8Array(32));
- const cred=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),
-  rp:{name:'Service Hogar Belgrano',id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'tecnico',displayName:'Técnico'},
-  pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
-  authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'required',userVerification:'required'},
-  timeout:60000,extensions:{prf:{eval:{first:salt}}}}});
- const ex=cred.getClientExtensionResults().prf;
- if(!ex||!ex.enabled)throw new Error('Este dispositivo o navegador todavía no permite guardar la contraseña con huella de forma segura. Seguí usando el autocompletado de contraseñas.');
- const cid=b64(cred.rawId);
- if(ex.results&&ex.results.first){await bioGuardar(cid,salt,await aesKey(ex.results.first));return}
- BIO_PEND={cid,salt};   // algunos iPhone piden un segundo toque para completar
- alert('Casi listo: tocá otra vez "Confirmar con huella / Face ID" para terminar.');
-}
-$('bioact').onclick=()=>bioGuard(async()=>{
- if(bioGet()){if(confirm('¿Desactivar el ingreso con huella / Face ID en este dispositivo?')){localStorage.removeItem(BIO_KEY);BIO_PEND=null;alert('Desactivado.')}}
- else{await bioActivar();if(bioGet())alert('Listo. La próxima vez podés entrar con huella / Face ID.')}
- bioUI()});
-$('bio').onclick=()=>bioGuard(async()=>{
- const d=bioGet();if(!d)return;
- const key=await prfClave(d.cid,ub64(d.salt));
- const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64(d.iv)},key,ub64(d.ct));
- await entrar(new TextDecoder().decode(pt))});
-
-const OJO_ON='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',OJO_OFF='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-const verPw=m=>{const p=$('pw'),b=$('ver');p.type=m?'text':'password';b.innerHTML=m?OJO_OFF:OJO_ON;b.setAttribute('aria-pressed',m?'true':'false');b.setAttribute('aria-label',m?'Ocultar contraseña':'Mostrar contraseña')};
-$('ver').onclick=()=>{verPw($('pw').type==='password');$('pw').focus()};
-function lista(){
- const q=$('q').value.toLowerCase();
- const r=DB.equipos.filter(e=>!q||[e.clave,e.cliente,e.telefono,e.direccion,e.equipo,e.marca,e.modelo].join(' ').toLowerCase().includes(q)).slice().reverse().slice(0,50);
- $('lst').innerHTML=r.length?r.map(e=>'<div class="it" data-k="'+esc(e.clave)+'"><b>'+esc(e.clave)+'</b> · '+esc(e.equipo)+' '+esc(e.marca)+'<br><small>'+esc(e.cliente)+(e.direccion?' · '+esc(e.direccion):'')+'</small></div>').join(''):'<small>Sin resultados.</small>';
- $('lst').querySelectorAll('.it').forEach(el=>el.onclick=()=>abrir(el.dataset.k));
-}
-$('q').oninput=lista;
-$('bq').onclick=()=>guard(async()=>{await cargar();lista()});
-$('bn').onclick=()=>{CUR={equipo:{},services:[]};EDS=null;TMODE='res';TPAG=0;pintar()};
-function abrir(k){CUR=fichaLocal(k);EDS=null;TMODE='res';TPAG=0;pintar()}
-
-function pintar(){
- const e=CUR.equipo,has=!!e.clave;
- const hoy=new Date().toISOString().slice(0,10);
- $('eq').innerHTML=(has?'<div class="card"><small>Clave para escribir en el sticker</small><div class="key">'+esc(e.clave)+'</div></div>':'')+
- '<div class="card"><h2>'+(has?'Datos del equipo':'Nuevo equipo')+'</h2>'+
- '<small>El teléfono y la dirección solo los ves vos. El cliente ve su nombre.</small>'+
- '<label>Cliente (nombre)</label><input id="e_cliente" value="'+esc(e.cliente)+'">'+
- '<div class="row"><div><label>Teléfono</label><input id="e_telefono" type="tel" value="'+esc(e.telefono)+'"></div><div><label>Dirección</label><input id="e_direccion" value="'+esc(e.direccion)+'"></div></div>'+
- '<div class="row"><div><label>Equipo</label><input id="e_equipo" value="'+esc(e.equipo)+'" placeholder="Lavarropas"></div><div><label>Marca</label><input id="e_marca" value="'+esc(e.marca)+'"></div></div>'+
- '<div class="row"><div><label>Modelo</label><input id="e_modelo" value="'+esc(e.modelo)+'"></div><div><label>N° de serie</label><input id="e_serie" value="'+esc(e.serie)+'"></div></div>'+
- '<button id="se">'+(has?'Guardar datos':'Crear y generar clave')+'</button><button class="s" id="vl">← Lista</button>'+(has?'<button class="d" id="de">Borrar equipo</button>':'')+'</div>'+
- (has?'<div class="card"><h2>Services</h2><div id="sl"></div></div>'+
- '<div class="card" id="sf"><h2 id="sft">Agregar service</h2><div class="row"><div><label>Fecha</label><input id="s_fecha" type="date" value="'+hoy+'"></div><div><label>Garantía (días)</label><input id="s_gar" type="number" value="90"></div></div>'+
- '<label>Tipo</label><select id="s_tipo">'+TIPOS.map(t=>'<option>'+t+'</option>').join('')+'</select>'+
- '<label>Detalle del trabajo</label><textarea id="s_det" rows="3"></textarea><label>Repuestos</label><input id="s_rep"><label>Técnico</label><input id="s_tec" list="tecs" placeholder="Elegí o escribí"><datalist id="tecs"><option value="Bruno"><option value="Mauricio"></datalist>'+
- '<button id="ss">Agregar service</button><button class="s" id="sc" style="display:none">Cancelar edición</button></div>':'');
- show('eq');
- $('vl').onclick=()=>guard(async()=>{await lista();show('adm')});
- if(has)$('de').onclick=()=>{
-  const n=CUR.services.length;
-  if(!confirm('¿Borrar el equipo '+e.clave+(e.cliente?' ('+e.cliente+')':'')+' y sus '+n+' service(s)?\nEsto no se puede deshacer.'))return;
-  DB.equipos=DB.equipos.filter(x=>x.clave!==e.clave);DB.services=DB.services.filter(x=>norm(x.clave)!==norm(e.clave));
-  bg('admin_delEquipo',PASS,e.clave);lista();show('adm')};
- $('se').onclick=()=>guard(async()=>{
-  const d={};['cliente','telefono','direccion','equipo','marca','modelo','serie'].forEach(k=>d[k]=$('e_'+k).value.trim());
-  if(has){Object.assign(DB.equipos.find(x=>x.clave===e.clave),d);bg('admin_editEquipo',PASS,e.clave,d);CUR=fichaLocal(e.clave);EDS=null;pintar();alert('Datos guardados')}
-  else{if(!d.equipo){alert('Indicá el equipo');return}const n=await run('admin_crear',PASS,d);DB.equipos.push(n.equipo);CUR=fichaLocal(n.equipo.clave);EDS=null;pintar()}});
- if(!has)return;
- $('ss').onclick=()=>guard(async()=>{
-  const s={fecha:$('s_fecha').value,tipo:$('s_tipo').value,detalle:$('s_det').value.trim(),repuestos:$('s_rep').value.trim(),garantia:$('s_gar').value,tecnico:$('s_tec').value.trim()};
-  if(!s.fecha){alert('Indicá la fecha');return}
-  if(EDS){Object.assign(DB.services.find(x=>x.id===EDS),s);bg('admin_editService',PASS,EDS,s)}
-  else{s.id=Math.random().toString(36).slice(2,10);DB.services.push(Object.assign({},s,{clave:e.clave}));bg('admin_addService',PASS,e.clave,s)}
-  CUR=fichaLocal(e.clave);EDS=null;pintar()});
- $('sc').onclick=()=>{EDS=null;pintar()};
- const filaT=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+' · '+s.garantia+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+esc(s.id)+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+esc(s.id)+'">Borrar</span></div>';
- function pintarSvc(){
-  const L=CUR.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
-  const pags=Math.max(1,Math.ceil(L.length/PORPAG));
-  TPAG=Math.min(Math.max(TPAG,0),pags-1);
-  let h;
-  if(!L.length)h='<small>Todavía no hay services.</small>';
-  else if(TMODE==='res'||L.length<=ULT){
-   h=L.slice(0,ULT).map(filaT).join('');
-   if(L.length>ULT)h+='<button type="button" class="s vall" data-acc="all">Listado completo ('+L.length+' services)</button>';
-  }else{
-   h='<small>'+L.length+' services · del más reciente al más antiguo</small>'+
-     L.slice(TPAG*PORPAG,(TPAG+1)*PORPAG).map(filaT).join('')+
-     '<div class="pag"><button type="button" class="s" data-acc="prev"'+(TPAG===0?' disabled':'')+'>← Anterior</button>'+
-     '<span>Página '+(TPAG+1)+' de '+pags+'</span>'+
-     '<button type="button" class="s" data-acc="next"'+(TPAG>=pags-1?' disabled':'')+'>Siguiente →</button></div>'+
-     '<button type="button" class="s vall" data-acc="res" style="margin-top:12px">Ver solo los últimos '+ULT+'</button>';
+  let FF=null,FMODE='res',FPAG=0;
+  const PORPAG=20,ULT=5;
+  const dsvc=s=>(s.detalle?'<div class="kv"><span>Detalle</span><span>'+esc(s.detalle)+'</span></div>':'')+
+    (s.repuestos?'<div class="kv"><span>Repuestos</span><span>'+esc(s.repuestos)+'</span></div>':'')+
+    (s.tecnico?'<div class="kv"><span>Técnico</span><span>'+esc(s.tecnico)+'</span></div>':'');
+  const garS=s=>s.garantia+' días · vence '+venc(s).toLocaleDateString('es-AR');
+  const cardSvc=s=>'<div class="card"><div class="kv"><span>Fecha</span><span>'+fmt(s.fecha)+'</span></div>'+
+    '<div class="kv"><span>Trabajo</span><span>'+esc(s.tipo)+'</span></div>'+dsvc(s)+
+    '<div class="kv"><span>Garantía</span><span class="'+(vigente(s)?'ok':'bad')+'">'+garS(s)+'</span></div></div>';
+  const filaSvc=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+
+    (s.detalle?'<br><small>'+esc(s.detalle)+'</small>':'')+
+    (s.repuestos?'<br><small>Repuestos: '+esc(s.repuestos)+'</small>':'')+
+    (s.tecnico?'<br><small>Técnico: '+esc(s.tecnico)+'</small>':'')+
+    '<br><small class="'+(vigente(s)?'ok':'bad')+'">Garantía: '+garS(s)+'</small></div>';
+    
+  function pintarFicha(){
+    const f=FF,e=f.equipo;
+    const L=f.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+    const any=L.some(vigente),pags=Math.max(1,Math.ceil(L.length/PORPAG));
+    FPAG=Math.min(Math.max(FPAG,0),pags-1);
+    let h='<div class="card"><h2>'+esc(e.equipo)+' '+esc(e.marca)+' '+esc(e.modelo)+'</h2>'+
+      (e.cliente?'<small>Cliente: '+esc(e.cliente)+'</small><br>':'')+
+      (e.serie?'<small>N° de serie: '+esc(e.serie)+'</small><br>':'')+
+      (L.length?'<span class="b '+(any?'ok':'bad')+'">'+(any?'✔ Garantía vigente':'Garantía vencida')+'</span>':'<small>Sin services registrados.</small>')+'</div>';
+    
+    if(FMODE==='res'||L.length<=ULT){
+      h+=L.slice(0,ULT).map(cardSvc).join('');
+      if(L.length>ULT)h+='<button type="button" class="s vall" data-acc="all">Ver lista completa ('+L.length+' services)</button>';
+    }else{
+      h+='<div class="card"><h2>Lista completa</h2><small>'+L.length+' services · del más reciente al más antiguo</small>'+
+        L.slice(FPAG*PORPAG,(FPAG+1)*PORPAG).map(filaSvc).join('')+
+        '<div class="pag"><button type="button" class="s" data-acc="prev"'+(FPAG===0?' disabled':'')+'>← Anterior</button>'+
+        '<span>Página '+(FPAG+1)+' de '+pags+'</span>'+
+        '<button type="button" class="s" data-acc="next"'+(FPAG>=pags-1?' disabled':'')+'>Siguiente →</button></div></div>'+
+        '<button type="button" class="s vall" data-acc="res">Ver solo los últimos '+ULT+'</button>';
+    }
+    $('fv').innerHTML=h;
   }
-  $('sl').innerHTML=h;
- }
- $('sl').onclick=ev=>{
-  const t=ev.target.closest('[data-acc],[data-ed],[data-del]');if(!t||t.disabled)return;
-  if(t.dataset.acc){const a=t.dataset.acc;
-   if(a==='all'){TMODE='lista';TPAG=0}else if(a==='res'){TMODE='res'}else if(a==='prev'){TPAG--}else if(a==='next'){TPAG++}
-   pintarSvc();return}
-  if(t.dataset.ed){
-   const s=CUR.services.find(x=>x.id===t.dataset.ed);EDS=s.id;
-   $('s_fecha').value=s.fecha;$('s_gar').value=s.garantia;$('s_tipo').value=s.tipo;$('s_det').value=s.detalle;$('s_rep').value=s.repuestos;$('s_tec').value=s.tecnico;
-   $('sft').textContent='Editando service';$('ss').textContent='Guardar cambios';$('sc').style.display='';$('sf').scrollIntoView();return}
-  if(t.dataset.del){const id=t.dataset.del;
-   if(confirm('¿Borrar este service?'))guard(async()=>{DB.services=DB.services.filter(x=>x.id!==id);bg('admin_delService',PASS,id);CUR=fichaLocal(e.clave);EDS=null;pintar()})}};
- pintarSvc();
-}
+  
+  $('fv').onclick=ev=>{
+    const b=ev.target.closest('[data-acc]');if(!b||b.disabled)return;
+    const a=b.dataset.acc;
+    if(a==='all'){FMODE='lista';FPAG=0}else if(a==='res'){FMODE='res'}else if(a==='prev'){FPAG--}else if(a==='next'){FPAG++}
+    pintarFicha();window.scrollTo({top:0,behavior:'smooth'})
+  };
+  
+  $('bc').onclick=()=>guard(async()=>{
+    const f=await run('getFicha',$('cl').value);
+    if(!f){alert('Clave no encontrada. Revisá cómo está escrita en el sticker.');return}
+    FF=f;FMODE='res';FPAG=0;pintarFicha();
+    show('ficha')
+  });
+  
+  $('cl').onkeydown=e=>{if(e.key==='Enter')$('bc').click()};
+  $('back1').onclick=()=>{$('cl').value='';FF=null;FMODE='res';FPAG=0;show('login')};
 </script>
 </body>
 </html>
