@@ -66,6 +66,14 @@
   .barra{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--linea);padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10}
   .barra div{max-width:720px;margin:0 auto;display:flex;gap:10px}
   .barra .btn{flex:1;padding:13px 8px;font-size:16px;text-align:center;text-decoration:none;font:700 18px/1.2 "Barlow",sans-serif;border-radius:12px;background:var(--wa);color:#fff}
+  .rep h2{font-size:28px;margin:0 0 12px}
+  .rep ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .rep a{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:16px 10px;background:var(--blanco);border:1px solid var(--linea);border-radius:14px;text-decoration:none;color:var(--marino);font-weight:600;line-height:1.2;transition:border-color .2s,transform .15s}
+  .rep a:hover{border-color:var(--oro);transform:translateY(-2px)}
+  .rep a b{font-size:34px;line-height:1}
+  .rep a small{color:var(--gris);font-weight:400;font-size:13px}
+  @media (min-width:600px){.rep ul{grid-template-columns:repeat(4,1fr)}}
+  @media (prefers-reduced-motion:reduce){.rep a{transition:none}}
 </style>
 </head>
 <body>
@@ -104,6 +112,17 @@
         </div>
       </div>
       <noscript><p>Necesitás activar JavaScript para ver tu ficha.</p></noscript>
+    </div>
+  </section>
+  <section class="rep">
+    <div class="wrap">
+      <h2>Qué reparamos</h2>
+      <ul>
+        <li><a href="servicios/aires-acondicionados-belgrano.html"><b>❄️</b>Aires acondicionados</a></li>
+        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html"><b>🧺</b>Lavarropas, lavavajillas y secarropas</a></li>
+        <li><a href="servicios/heladeras-belgrano.html"><b>🧊</b>Heladeras</a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html"><b>🔥</b>Cocinas, hornos y calefones</a></li>
+      </ul>
     </div>
   </section>
 </main>
