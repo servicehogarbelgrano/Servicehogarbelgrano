@@ -58,6 +58,27 @@ section{padding:36px 0}
 .pick-g svg{width:32px;height:32px;fill:none;stroke:var(--naranja);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .garantias{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 18px;font-weight:600;font-size:15px}
 .garantias li::before{content:"\2713";color:var(--naranja);font-weight:700;margin-right:6px}
+.hero h1 em{font-style:normal;color:var(--naranja)}
+.h1b{display:block;margin-top:10px;font-size:.6em;font-weight:700;color:#E4E6E8}
+.rot{display:inline-block;transition:opacity .3s,transform .3s}.rot.out{opacity:0;transform:translateY(10px)}
+.hero .btn.oro{margin:18px 0 0}
+.pick{margin-top:20px}
+
+/* Chat de ejemplo de la portada */
+.chat{width:100%;max-width:460px;justify-self:center;background:#15181B;border:1px solid rgba(255,255,255,.18);border-radius:8px;overflow:hidden}
+.chat-h{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.12)}
+.chat-h img{width:40px;height:40px;border-radius:50%;background:#fff;object-fit:contain;padding:2px}
+.chat-h b{display:block;font-size:17px;line-height:1.1}.chat-h small{color:#C9CDD1;font-size:13px}
+.chat-b{min-height:240px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.bur{max-width:88%;padding:10px 13px;border-radius:12px;font-size:16px;line-height:1.35;animation:burbuja .3s both}
+.bur.cli{background:rgba(255,255,255,.14);align-self:flex-start;border-top-left-radius:3px}
+.bur.nos{background:var(--verde);align-self:flex-end;border-top-right-radius:3px}
+.bur.esc{display:flex;gap:4px;padding:14px}
+.bur.esc i{width:7px;height:7px;border-radius:50%;background:#D6D8DA;animation:punto 1s infinite}
+.bur.esc i:nth-child(2){animation-delay:.15s}.bur.esc i:nth-child(3){animation-delay:.3s}
+@keyframes burbuja{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes punto{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.chat-f{display:block;margin:0 14px 14px;padding:12px 16px;border-radius:999px;background:rgba(255,255,255,.1);color:#D6D8DA;text-decoration:none;font-size:15px}
 
 /* Presupuesto */
 .tarjeta{background:var(--etiqueta);border:1px solid var(--linea);border-radius:8px;padding:20px}
@@ -71,19 +92,27 @@ textarea{min-height:88px;resize:vertical}
 .error{color:var(--rojo);font-weight:600;min-height:1.4em;margin:0 0 8px}
 
 /* Qué reparamos */
-.equipos{border-top:2px solid var(--carbon)}
-.equipos details{border-bottom:1px solid var(--linea)}
-.equipos summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0;cursor:pointer;list-style:none;font:800 clamp(25px,5vw,32px)/1.05 var(--titulo);color:var(--carbon)}
-.equipos summary::-webkit-details-marker{display:none}
-.equipos summary::after{content:"+";flex:none;font-size:32px;line-height:1;color:var(--naranja)}
-.equipos details[open] summary::after{content:"\2212"}
-.equipo-c{padding:0 0 22px;max-width:760px}
-.equipo-c>p{margin:0 0 12px;color:var(--gris)}
+.eq{margin-bottom:22px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chips button{font:700 16px/1 "Barlow",sans-serif;padding:11px 16px;border-radius:999px;border:1.5px solid var(--linea);background:#fff;color:var(--carbon);cursor:pointer}
+.chips button:hover{border-color:var(--carbon)}
+.chips button[aria-pressed=true]{background:var(--naranja);border-color:var(--naranja)}
+.eq-p h3{font-size:32px;margin-bottom:10px}
+.eq-p .nota{margin:0 0 10px}
+.eq-p .nota a{color:var(--carbon);font-weight:700}
 .fallas{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.fallas a{display:block;text-decoration:none;font-weight:600;background:#fff;border:1px solid var(--linea);border-radius:4px;padding:7px 12px}
-.fallas a:hover{border-color:var(--carbon)}
+.fallas a{display:block;text-decoration:none;font-weight:600;background:var(--chapa);border:1px solid var(--linea);border-radius:999px;padding:7px 14px}
+.fallas a:hover{border-color:var(--carbon);background:#fff}
 .acc{display:flex;flex-wrap:wrap;gap:10px}
-.equipo-c .cod a{color:var(--carbon);font-weight:700}
+.servicios{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.servicios li{background:var(--etiqueta);border:1px solid var(--linea);border-radius:8px;font-weight:600}
+.servicios li:hover{border-color:var(--naranja)}
+.servicios a{display:flex;justify-content:space-between;gap:8px;padding:14px 16px;text-decoration:none;color:var(--carbon)}
+.servicios a::after{content:"\203A";color:var(--naranja);font-size:24px;line-height:1}
+.aires{background:var(--carbon);color:#fff;border-radius:8px;padding:28px 22px}
+.aires h2{color:#fff}
+.aires ul{margin:8px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;font-weight:600}
+.aires li::before{content:"\2713";color:var(--naranja);font-weight:700;margin-right:8px}
 
 /* Herramientas */
 .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
@@ -251,5 +280,5 @@ ol.pasos{margin:0 0 14px;padding-left:22px;max-width:70ch}ol.pasos li{margin-bot
   .presu-g,.donde-g{grid-template-columns:.8fr 1.2fr}
   .ficha-g{grid-template-columns:1.2fr .8fr}
 }
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bur,.bur.esc i,.rot{animation:none;transition:none}}
 @media print{.barra,.bar{display:none}body{padding-bottom:0}}
