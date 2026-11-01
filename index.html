@@ -83,7 +83,7 @@
 }
 </script>
 <style>
-  :root{--marino:#13294B;--oro:#E9A31B;--nieve:#F2F4F8;--blanco:#fff;--tinta:#0E1A2E;--gris:#556074;--linea:#D5DBE5;--wa:#147A3F;--sombra:0 10px 30px -12px rgba(19,41,75,.28)}
+  :root{--marino:#262B30;--oro:#F26A1B;--nieve:#F5F4F1;--blanco:#fff;--tinta:#1A1D21;--gris:#5E6369;--linea:#DEDBD4;--wa:#147A3F;--sombra:0 10px 30px -12px rgba(38,43,48,.28)}
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--nieve);color:var(--tinta);font:400 17px/1.55 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:88px;-webkit-text-size-adjust:100%}
@@ -94,24 +94,24 @@
 
   /* Portada */
   .hero{color:#fff;padding:20px 0 96px;position:relative;overflow:hidden;
-    background:radial-gradient(circle at 88% 8%,rgba(233,163,27,.34),transparent 40%),radial-gradient(circle at 0% 100%,rgba(42,81,144,.9),transparent 55%),repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 22px),linear-gradient(135deg,#0F2142 0%,#1B3A6B 60%,#2A5190 100%)}
-  .hero.con-foto{background:linear-gradient(135deg,rgba(19,41,75,.92) 0%,rgba(19,41,75,.78) 55%,rgba(19,41,75,.55) 100%),url("hero.jpg") 6% 28%/cover no-repeat,var(--marino)}
+    background:radial-gradient(circle at 88% 8%,rgba(242,106,27,.34),transparent 40%),radial-gradient(circle at 0% 100%,rgba(58,66,74,.9),transparent 55%),repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 22px),linear-gradient(135deg,#1A1D21 0%,#2C3238 60%,#3A424A 100%)}
+  .hero.con-foto{background:linear-gradient(135deg,rgba(38,43,48,.92) 0%,rgba(38,43,48,.78) 55%,rgba(38,43,48,.55) 100%),url("hero.jpg") 6% 28%/cover no-repeat,var(--marino)}
   .hero::before,.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px}
   .hero::before{height:64px;background:var(--oro);clip-path:polygon(0 100%,100% 0,100% 100%)}
   .hero::after{height:46px;background:var(--nieve);clip-path:polygon(0 100%,100% 0,100% 100%)}
   .marca{display:flex;align-items:center;gap:12px;margin-bottom:26px}
   .logo{width:56px;height:56px;border-radius:50%;background:#fff;object-fit:contain;padding:3px;border:2px solid var(--oro);flex:none}
   .marca strong{display:block;font:800 23px/1 "Barlow Condensed",sans-serif;letter-spacing:.02em}
-  .marca span{font-size:14px;color:#BFCADD}
+  .marca span{font-size:14px;color:#C9C6C0}
   .solapa{margin-left:auto;text-decoration:none;font:700 15px/1 "Barlow",sans-serif;color:#fff;border:2px solid var(--oro);border-radius:999px;padding:10px 16px;white-space:nowrap;transition:background .2s,color .2s}
   .solapa:hover{background:var(--oro);color:var(--marino)}
   .estado{display:inline-flex;align-items:center;gap:9px;margin:0 0 16px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);font-size:15px;font-weight:600;color:#fff}
-  .estado i{width:10px;height:10px;border-radius:50%;background:#9AA7BC;flex:none}
+  .estado i{width:10px;height:10px;border-radius:50%;background:#A8A6A1;flex:none}
   .estado.abierto i{background:#3DDC84;animation:pulso 1.8s infinite}
   @keyframes pulso{0%{box-shadow:0 0 0 0 rgba(61,220,132,.7)}100%{box-shadow:0 0 0 10px rgba(61,220,132,0)}}
   .hero h1{font-size:clamp(44px,12vw,84px);font-weight:800;max-width:14ch;margin-bottom:18px;text-wrap:balance}
   .hero h1 em{font-style:normal;color:var(--oro)}
-  .hero .sub{margin:0 0 24px;font-size:19px;color:#DCE4F1;max-width:38ch}
+  .hero .sub{margin:0 0 24px;font-size:19px;color:#E4E2DD;max-width:38ch}
   .btn{display:inline-block;text-align:center;text-decoration:none;font:700 18px/1.2 "Barlow",sans-serif;padding:15px 22px;border-radius:12px;border:0;cursor:pointer;transition:transform .15s,box-shadow .15s}
   .btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px -8px rgba(0,0,0,.4)}
   .btn.oro{background:var(--oro);color:var(--marino)}
@@ -126,7 +126,7 @@
   .pick-g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .pick-g button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;font:700 16px/1.15 "Barlow",sans-serif;color:#fff;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);border-radius:14px;cursor:pointer;backdrop-filter:blur(4px);transition:background .2s,border-color .2s,transform .15s}
   .pick-g button span{font-size:28px;line-height:1}
-  .pick-g button:hover{background:rgba(233,163,27,.22);border-color:var(--oro);transform:translateY(-3px)}
+  .pick-g button:hover{background:rgba(242,106,27,.22);border-color:var(--oro);transform:translateY(-3px)}
   .garantias{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px 22px;font-weight:600}
   .garantias li{display:flex;align-items:center;gap:8px}
   .garantias svg{flex:none}
@@ -145,7 +145,7 @@
   label{display:block;font-weight:600;margin:0 0 6px}
   .campo{margin-bottom:16px}
   select,input,textarea{width:100%;font:400 16px/1.4 "Barlow",sans-serif;color:var(--tinta);padding:12px;border:1.5px solid var(--linea);border-radius:10px;background:#fff}
-  select:focus,input:focus,textarea:focus{border-color:var(--marino);outline:3px solid rgba(233,163,27,.5)}
+  select:focus,input:focus,textarea:focus{border-color:var(--marino);outline:3px solid rgba(242,106,27,.5)}
   textarea{min-height:88px;resize:vertical}
   .envios{display:grid;gap:10px;margin-top:4px}
   .error{color:#B3261E;font-weight:600;min-height:1.4em;margin:0 0 8px}
@@ -167,7 +167,7 @@
   .mapa iframe{display:block;width:100%;height:320px;border:0}
 
   /* Aires */
-  .aires{background:linear-gradient(135deg,#0F2142,#1B3A6B);color:#fff;border-radius:20px;padding:28px 22px;box-shadow:var(--sombra)}
+  .aires{background:linear-gradient(135deg,#1A1D21,#2C3238);color:#fff;border-radius:20px;padding:28px 22px;box-shadow:var(--sombra)}
   .aires h2{color:#fff}
   .aires ul{margin:8px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
   .aires li{display:flex;gap:10px;align-items:flex-start;font-weight:600}
@@ -203,6 +203,79 @@
   @media (min-width:720px){.pick-g{grid-template-columns:repeat(5,1fr)}.hero{padding-bottom:110px}.envios{grid-template-columns:1fr 1fr}}
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero .wrap>*,.estado.abierto i{animation:none}.btn,.pick-g button,.servicios li,.guias a{transition:none}}
   @media print{.barra{display:none}}
+
+  /* === Nuevo: ancho, portada con chat, carruseles, equipos, calculadora === */
+  .wrap{max-width:1120px}.barra div{max-width:1120px}
+  .hero .wrap{display:grid;gap:26px 48px}
+  .hero .marca{margin:0}
+  .hero h1{max-width:17ch}
+  .h1b{display:block;margin-top:10px;font-size:.6em;font-weight:700;color:#E4E2DD}
+  .rot{display:inline-block;transition:opacity .3s,transform .3s}.rot.out{opacity:0;transform:translateY(10px)}
+  @media(min-width:900px){.hero .wrap{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center}.hero .marca{grid-column:1/-1}}
+  .chat{width:100%;max-width:460px;justify-self:center;background:#15181B;border:1px solid rgba(255,255,255,.18);border-radius:20px;overflow:hidden;box-shadow:0 24px 50px -20px rgba(0,0,0,.6)}
+  .chat-h{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.12)}
+  .chat-h img{width:40px;height:40px;border-radius:50%;background:#fff;object-fit:contain;padding:2px}
+  .chat-h b{display:block;font-size:17px;line-height:1.1}.chat-h small{color:#3DDC84;font-size:13px}
+  .chat-b{min-height:240px;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .bur{max-width:88%;padding:10px 13px;border-radius:14px;font-size:16px;line-height:1.35;animation:subir .35s both}
+  .bur.cli{background:rgba(255,255,255,.14);align-self:flex-start;border-top-left-radius:4px}
+  .bur.nos{background:var(--wa);align-self:flex-end;border-top-right-radius:4px}
+  .bur.esc{display:flex;gap:4px;padding:14px}
+  .bur.esc i{width:7px;height:7px;border-radius:50%;background:#D6D3CD;animation:punto 1s infinite}
+  .bur.esc i:nth-child(2){animation-delay:.15s}.bur.esc i:nth-child(3){animation-delay:.3s}
+  @keyframes punto{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+  .chat-f{display:block;margin:0 14px 14px;padding:12px 16px;border-radius:999px;background:rgba(255,255,255,.1);color:#D6D3CD;text-decoration:none;font-size:15px}
+  .marq{overflow:hidden;margin:6px 0 18px;-webkit-mask:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+  .marq-t{display:flex;width:max-content;animation:corre var(--dur,40s) linear infinite}
+  .marq:hover .marq-t,.marq:focus-within .marq-t,.marq:active .marq-t{animation-play-state:paused}
+  @keyframes corre{to{transform:translateX(-50%)}}
+  .rv{flex:0 0 min(80vw,330px);margin-right:16px;background:#fff;border:1px solid var(--linea);border-radius:16px;padding:16px;box-shadow:var(--sombra)}
+  .rv-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .rv-a{width:40px;height:40px;border-radius:50%;background:var(--marino);color:#fff;display:grid;place-items:center;font:800 20px/1 "Barlow Condensed",sans-serif;flex:none}
+  .rv-h b{display:block;line-height:1.1}.rv-h small{color:var(--gris)}
+  .rv-g{margin-left:auto;font:700 14px/1 "Barlow",sans-serif;color:#4285F4}
+  .rv-s{color:var(--oro);letter-spacing:2px;font-size:18px;margin-bottom:6px}
+  .rv p{margin:0;color:var(--tinta);font-size:16px;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+  .lg{flex:0 0 auto;width:150px;height:84px;margin-right:14px;background:#fff;border:1px solid var(--linea);border-radius:14px;display:flex;align-items:center;justify-content:center;padding:14px}
+  .lg img{max-width:100%;max-height:100%;object-fit:contain}
+  .lg span{font:800 22px/1 "Barlow Condensed",sans-serif;color:var(--marino);text-transform:uppercase;letter-spacing:.03em;text-align:center}
+  .eq{margin-bottom:22px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .chips button{font:700 16px/1 "Barlow",sans-serif;padding:11px 16px;border-radius:999px;border:1.5px solid var(--linea);background:#fff;color:var(--marino);cursor:pointer}
+  .chips button[aria-pressed=true]{background:var(--oro);border-color:var(--oro)}
+  .eq-p h3{font-size:32px;color:var(--marino);margin-bottom:10px}
+  .fallas{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+  .fallas li{background:var(--nieve);border:1px solid var(--linea);border-radius:999px;padding:7px 14px;font-weight:600}
+  .acc{display:flex;flex-wrap:wrap;gap:10px}
+  .calc{display:grid;gap:18px}
+  @media(min-width:820px){.calc{grid-template-columns:1.3fr .7fr}}
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0 14px}
+  .res{background:linear-gradient(135deg,#1A1D21,#2C3238);color:#fff;border-radius:18px;padding:24px;box-shadow:var(--sombra);align-self:start}
+  .res .n{font:800 clamp(52px,10vw,76px)/1 "Barlow Condensed",sans-serif;color:var(--oro)}
+  .res .n small{font-size:.4em;color:#fff;margin-left:6px}
+  .res p{margin:8px 0 0;color:#E4E2DD}.res .envios{margin-top:16px}
+  .res .btn{padding:13px 10px;font-size:16px}
+  @media(prefers-reduced-motion:reduce){.marq{overflow-x:auto}.marq-t{animation:none}.bur,.rot{animation:none;transition:none}}
+
+  /* === Ronda 2: encabezado, menú, herramientas === */
+  .logo{width:78px;height:78px}.marca{gap:16px}
+  .marca strong{font-size:clamp(30px,7vw,44px);line-height:1}.marca span{font-size:16px}
+  .menu{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 24px;padding:12px 0;border-top:1px solid rgba(255,255,255,.2);border-bottom:2px solid var(--oro)}
+  .menu a{font:800 20px/1 "Barlow Condensed",sans-serif;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:#fff;padding:6px 0;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+  .menu a:hover{color:var(--oro);border-color:var(--oro)}
+  .menu .ficha{border:2px solid var(--oro);border-radius:999px;padding:8px 18px}
+  .menu .ficha:hover{background:var(--oro);color:var(--marino)}
+  .menu b{font:700 11px/1 "Barlow",sans-serif;background:var(--oro);color:var(--marino);border-radius:999px;padding:3px 7px;margin-left:6px;vertical-align:middle;letter-spacing:.04em}
+  .cod{display:none}.cod-ok .tool.cod,.cod-ok p.cod{display:block}.cod-ok .menu a.cod{display:inline-block}
+  .nota.cod a{color:var(--marino);font-weight:700}
+  .fallas a{display:block;text-decoration:none;color:inherit;padding:7px 14px;border-radius:999px;transition:background .2s}
+  .fallas li{padding:0}.fallas li:hover{border-color:var(--oro);background:#fff}
+  .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:22px}
+  .tool{display:block;text-decoration:none;background:var(--blanco);border:1px solid var(--linea);border-left:6px solid var(--oro);border-radius:14px;padding:16px 18px;box-shadow:var(--sombra);transition:transform .15s}
+  .tool:hover{transform:translateY(-3px)}
+  .tool i{font:700 12px/1 "Barlow",sans-serif;font-style:normal;letter-spacing:.06em;text-transform:uppercase;background:var(--oro);color:var(--marino);border-radius:999px;padding:4px 9px}
+  .tool h3{font-size:28px;color:var(--marino);margin:12px 0 6px}
+  .tool p{margin:0 0 10px;color:var(--gris);font-size:16px}.tool span{color:var(--marino);font-weight:700}
 </style>
 </head>
 <body>
@@ -217,11 +290,11 @@
       </div>
       <a class="solapa" href="ficha.html">Mi ficha</a>
     </div>
+    <div class="hero-txt">
     <p class="estado" id="estado"><i></i><span>Service a domicilio en Belgrano</span></p>
-    <h1>¿Se rompió tu aire o tu heladera? <em>Lo arreglamos en tu casa</em></h1>
+    <h1>¿Se rompió tu <em class="rot" id="rot">aire acondicionado</em>? <span class="h1b">Lo arreglamos en tu casa</span></h1>
     <p class="sub">Técnicos y gasistas matriculados, repuestos originales y garantía escrita en Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo. Pedí tu presupuesto por WhatsApp.</p>
     <a class="btn oro" href="#presupuesto">Pedir presupuesto</a>
-    <a class="btn claro" href="ficha.html">Consultá tu ficha</a>
     <div class="pick" role="group" aria-label="Elegí tu equipo">
       <p class="pick-t">¿Qué se rompió? Tocá y pedí presupuesto</p>
       <div class="pick-g">
@@ -233,11 +306,17 @@
       </div>
     </div>
     <ul class="garantias">
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Atención rápida</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Repuestos originales</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Garantía escrita</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Tenemos local en Belgrano: O'Higgins 2183, local 11</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Atención rápida</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Repuestos originales</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Garantía escrita</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Tenemos local en Belgrano: O'Higgins 2183, local 11</li>
     </ul>
+    </div>
+    <div class="chat" aria-label="Ejemplo de consulta por WhatsApp">
+      <div class="chat-h"><img src="logo.png" alt="" onerror="this.style.display='none'"><div><b>Service Hogar Belgrano</b><small>WhatsApp · en línea</small></div></div>
+      <div class="chat-b" id="chatb" aria-hidden="true"></div>
+      <a class="chat-f" href="#presupuesto">Escribinos por tu equipo ›</a>
+    </div>
   </div>
 </header>
 
@@ -287,7 +366,9 @@
   <section>
     <div class="wrap">
       <h2>Qué reparamos</h2>
-      <p class="lead">Tocá cada servicio para ver las fallas más comunes y más información.</p>
+      <p class="lead">Elegí tu equipo y mirá las fallas más comunes.</p>
+      <div class="eq"><div class="chips" id="eq-chips"></div><div class="tarjeta eq-p" id="eq-p" aria-live="polite"></div></div>
+      <p class="lead">Lista completa de equipos que reparamos:</p>
       <ul class="servicios">
         <li><a href="servicios/aires-acondicionados-belgrano.html">Aire acondicionado</a></li>
         <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html">Lavarropas</a></li>
@@ -310,29 +391,24 @@
 
   <section>
     <div class="wrap">
-      <h2>Fallas y guías por servicio</h2>
-      <p class="lead">Tocá una tarjeta para ver las fallas más comunes de tu equipo y qué revisar antes de llamarnos.</p>
-      <ul class="guias">
-        <li><a href="servicios/aires-acondicionados-belgrano.html">Aires acondicionados<span>No enfría, pierde agua, hace ruido, carga de gas</span></a></li>
-        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html">Lavarropas, lavavajillas y secarropas<span>No centrifuga, no desagota, pierde agua</span></a></li>
-        <li><a href="servicios/heladeras-belgrano.html">Heladeras<span>No enfría, hace hielo, burletes a medida</span></a></li>
-        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Cocinas, hornos y calefones<span>Hornalla que no prende, calefón que no enciende</span></a></li>
-      </ul>
-    </div>
-  </section>
-
-  <section>
-    <div class="wrap">
       <div class="aires">
         <h2>Aires acondicionados</h2>
         <ul>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Instalación de equipos</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Mantenimiento y limpieza</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Detección de fugas de refrigerante</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Carga de gas R410, R22 y R32</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E9A31B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Reparación de placas</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Instalación de equipos</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Mantenimiento y limpieza</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Detección de fugas de refrigerante</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Carga de gas R410, R22 y R32</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F26A1B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Reparación de placas</li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <section id="calculadora">
+    <div class="wrap">
+      <h2>Calculadora de frigorías</h2>
+      <p class="lead">Calculá qué potencia de aire acondicionado necesita tu ambiente.</p>
+      <a class="tool" href="calculadora-frigorias.html" style="max-width:560px"><h3>Calculá tus frigorías</h3><p>Cargá las medidas del ambiente y mirá cómo se calcula, con la tabla de equivalencias entre frigorías, BTU y kW.</p><span>Ir a la calculadora →</span></a>
     </div>
   </section>
 
@@ -381,6 +457,7 @@
   <section>
     <div class="wrap">
       <h2>Marcas</h2>
+      <div class="marq" id="marcas-m" role="img" aria-label="Marcas que reparamos"><div class="marq-t"></div></div>
       <p class="marcas">Aires y línea blanca: Samsung, York, Oster, LG, Whirlpool, Mabe, White-Westinghouse, Patrick, Lennox y GE.</p>
       <p class="marcas">Cocinas, hornos y calefones: Domec, Emege, Fornax, Coppens, Eskabe, Mabe, Orbis, Patrick, Longvie, Escorial y Volcán.</p>
     </div>
@@ -415,6 +492,7 @@
   <section>
     <div class="wrap">
       <h2>Opiniones de nuestros clientes</h2>
+      <div class="marq" id="resenas-m" hidden><div class="marq-t"></div></div>
       <div class="tarjeta resenas">
         <p>Mirá lo que dicen quienes ya nos eligieron. Si te hicimos un service, tu reseña en Google nos ayuda a que más vecinos nos encuentren.</p>
         <a class="btn oro" href="https://maps.app.goo.gl/c3rx3zzUeSsJWMx27" target="_blank" rel="noopener">Ver y dejar reseñas en Google</a>
@@ -530,6 +608,111 @@
       if (h) h.classList.add("con-foto");
     };
     img.src = "hero.jpg";
+  })();
+
+  /* ===== Reseñas: pegá acá las de Google. Formato: ["Nombre","hace 2 semanas","Texto de la reseña"] ===== */
+  var RESENAS = [
+  ];
+
+  var MARCAS = [["Ariston","ariston"],["BGH","bgh"],["Candy","candy"],["Drean","drean"],["Electra","electra"],["Electrolux","electrolux"],["Gafa","gafa"],["GE","ge"],["LG","lg"],["Patrick","patrik"],["Samsung","samsung"],["Surrey","surrey"],["Whirlpool","whirlpool"]];
+
+  var EQP = [
+    ["Aire acondicionado","aires-acondicionados-belgrano.html",["No enfría","Pierde agua","Hace ruido","No prende","Se congela","Carga de gas","Placa electrónica"]],
+    ["Lavarropas","lavarropas-secarropas-lavavajillas-belgrano.html",["No centrifuga","No desagota","Pierde agua","No prende","Hace ruido","No calienta"]],
+    ["Lavavajillas","lavarropas-secarropas-lavavajillas-belgrano.html",["No desagota","No lava bien","Pierde agua","No seca","No prende"]],
+    ["Secarropas","lavarropas-secarropas-lavavajillas-belgrano.html",["No gira","Hace ruido","No frena","No prende"]],
+    ["Secadora","lavarropas-secarropas-lavavajillas-belgrano.html",["No seca","No gira","Hace ruido","No prende"]],
+    ["Heladera","heladeras-belgrano.html",["No enfría","Hace hielo","Pierde agua","Hace ruido","Burletes a medida"]],
+    ["Heladera no frost","heladeras-belgrano.html",["No enfría","Hace hielo","Pierde agua","Hace ruido","Burletes a medida"]],
+    ["Heladera vinera","heladeras-belgrano.html",["No enfría","Hace ruido","Burlete gastado","No prende"]],
+    ["Cocina","cocinas-hornos-calefones-belgrano.html",["Hornalla que no prende","Horno que no calienta","Perillas","Encendido"]],
+    ["Horno eléctrico","cocinas-hornos-calefones-belgrano.html",["No calienta","Termostato","Resistencia","Puerta"]],
+    ["Calefón","cocinas-hornos-calefones-belgrano.html",["No enciende","No calienta","Pierde agua","Piloto"]],
+    ["Estufa","cocinas-hornos-calefones-belgrano.html",["No enciende","Llama débil","Piloto"]],
+    ["Microondas","cocinas-hornos-calefones-belgrano.html",["No calienta","No gira el plato","Chispas","No prende"]]
+  ];
+
+  function marq(id, list, mk, dur) {
+    var t = document.querySelector("#" + id + " .marq-t");
+    if (!t || !list.length) return false;
+    [0, 1].forEach(function (k) {
+      list.forEach(function (x) { var n = mk(x); if (k) n.setAttribute("aria-hidden", "true"); t.appendChild(n); });
+    });
+    t.style.setProperty("--dur", dur + "s");
+    return true;
+  }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; }
+
+  /* Marcas con logo (subí los logos como marcas/samsung.png, etc.; si falta uno se muestra el nombre) */
+  marq("marcas-m", MARCAS, function (m) {
+    var d = el("div", "lg"), im = new Image();
+    im.alt = m[0]; im.loading = "lazy";
+    im.onerror = function () { d.replaceChildren(el("span", "", m[0])); };
+    im.src = "marcas/" + m[1] + ".jpg";
+    d.appendChild(im);
+    return d;
+  }, 50);
+
+  /* Reseñas que corren solas */
+  if (marq("resenas-m", RESENAS, function (r) {
+    var c = el("article", "rv"), h = el("div", "rv-h"), w = el("div");
+    h.appendChild(el("div", "rv-a", r[0].charAt(0).toUpperCase()));
+    w.appendChild(el("b", "", r[0])); w.appendChild(el("small", "", r[1]));
+    h.appendChild(w); h.appendChild(el("span", "rv-g", "Google"));
+    c.appendChild(h); c.appendChild(el("div", "rv-s", "★★★★★")); c.appendChild(el("p", "", r[2]));
+    return c;
+  }, Math.max(30, RESENAS.length * 9))) document.getElementById("resenas-m").hidden = false;
+
+  var CODES = ["Aire acondicionado", "Lavarropas"];
+  var HAS = {};
+  function tieneCod(pg) {
+    if (!(pg in HAS)) HAS[pg] = (window.fetch && location.protocol.indexOf("http") === 0)
+      ? fetch("servicios/" + pg).then(function (r) { return r.ok ? r.text() : ""; }).then(function (t) { return t.indexOf('id="codigos"') > -1; }).catch(function () { return false; })
+      : Promise.resolve(false);
+    return HAS[pg];
+  }
+
+  /* Selector de equipo con fallas */
+  (function () {
+    var chips = document.getElementById("eq-chips"), p = document.getElementById("eq-p"), btns = [];
+    function ver(i) {
+      var e = EQP[i];
+      btns.forEach(function (b, j) { b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
+      p.replaceChildren();
+      p.appendChild(el("h3", "", e[0]));
+      p.appendChild(el("p", "nota", "Fallas más comunes (tocá una para ver la guía):"));
+      var ul = el("ul", "fallas"); e[2].forEach(function (f) { var li = el("li"), l = el("a", "", f); l.href = "servicios/" + e[1] + "#fallas"; li.appendChild(l); ul.appendChild(li); }); p.appendChild(ul);
+      if (CODES.indexOf(e[0]) > -1) { var c = el("p", "nota", "¿Tu " + e[0].toLowerCase() + " te tira un código? "), cl = el("a", "", "Elegí la marca y mirá qué significa →"); cl.href = "servicios/" + e[1] + "#codigos"; c.style.display = "none"; c.appendChild(cl); p.appendChild(c); tieneCod(e[1]).then(function (ok) { if (ok && p.contains(c)) c.style.display = "block"; }); }
+      var a = el("div", "acc"), b1 = el("button", "btn oro", "Pedir presupuesto"), b2 = el("a", "btn borde", "Ver guía completa");
+      b1.type = "button";
+      b1.onclick = function () { document.getElementById("equipo").value = e[0]; document.getElementById("presupuesto").scrollIntoView({ behavior: "smooth" }); };
+      b2.href = "servicios/" + e[1];
+      a.appendChild(b1); a.appendChild(b2); p.appendChild(a);
+    }
+    EQP.forEach(function (e, i) {
+      var b = el("button", "", e[0]); b.type = "button"; b.onclick = function () { ver(i); };
+      chips.appendChild(b); btns.push(b);
+    });
+    ver(0);
+  })();
+
+  /* Chat de la portada: cambia de equipo solo */
+  (function () {
+    var EQ = [["el aire acondicionado", "aire acondicionado", "Aire acondicionado"], ["la heladera", "heladera", "Heladera"], ["el lavarropas", "lavarropas", "Lavarropas"], ["la cocina", "cocina", "Cocina"], ["el calefón", "calefón", "Calefón"], ["el lavavajillas", "lavavajillas", "Lavavajillas"], ["el horno eléctrico", "horno eléctrico", "Horno eléctrico"], ["el microondas", "microondas", "Microondas"]];
+    var b = document.getElementById("chatb"), r = document.getElementById("rot"), i = 0;
+    var quieto = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function esc(c) { var d = el("div", "bur " + c + " esc"); d.innerHTML = "<i></i><i></i><i></i>"; b.appendChild(d); return d; }
+    function paso() {
+      var e = EQ[i % EQ.length]; i++;
+      b.replaceChildren(); r.classList.add("out");
+      setTimeout(function () { r.textContent = e[1]; r.classList.remove("out"); }, 300);
+      var t = esc("cli");
+      setTimeout(function () { t.remove(); b.appendChild(el("div", "bur cli", "Hola, tengo " + e[0] + " que no está funcionando o funciona mal.")); t = esc("nos"); }, 1200);
+      setTimeout(function () { t.remove(); b.appendChild(el("div", "bur nos", "¡Hola! Contanos la marca y qué le pasa, y te pasamos el presupuesto por acá.")); }, 2800);
+      if (!quieto) setTimeout(paso, 6500);
+    }
+    document.querySelector(".chat-f").addEventListener("click", function () { document.getElementById("equipo").value = EQ[(i - 1) % EQ.length][2]; });
+    paso();
   })();
 </script>
 </body>
