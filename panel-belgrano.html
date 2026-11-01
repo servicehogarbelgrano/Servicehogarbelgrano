@@ -2,9 +2,12 @@
 <html lang="es-AR">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://servicehogarbelgrano.com.ar; connect-src https://script.google.com https://script.googleusercontent.com">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Panel Técnico | Service Hogar Belgrano</title>
-  <link rel="icon" type="image/png" sizes="192x192" href="https://servicehogarbelgrano.com.ar/favicon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://servicehogarbelgrano.com.ar/favicon.png">
 <link rel="apple-touch-icon" href="https://servicehogarbelgrano.com.ar/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -222,7 +225,7 @@
     });
     $('sc').onclick=()=>{EDS=null;pintar()};
     
-    const filaT=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+' · '+s.garantia+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+esc(s.id)+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+esc(s.id)+'">Borrar</span></div>';
+    const filaT=s=>'<div class="it" style="cursor:default"><b>'+esc(fmt(s.fecha))+'</b> · '+esc(s.tipo)+' · '+esc(s.garantia)+' d<br><small>'+esc(s.detalle)+'</small><br><span class="lk" data-ed="'+esc(s.id)+'">Editar</span> &nbsp; <span class="lk bad" data-del="'+esc(s.id)+'">Borrar</span></div>';
     
     function pintarSvc(){
       const L=CUR.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));

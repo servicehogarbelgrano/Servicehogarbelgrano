@@ -2,6 +2,7 @@
 <html lang="es-AR">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://servicehogarbelgrano.com.ar; connect-src https://script.google.com https://script.googleusercontent.com">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ficha de tu equipo | Service Hogar Belgrano</title>
 <meta name="description" content="Consultá el historial de service y la garantía de tu equipo con la clave del sticker.">
@@ -9,89 +10,28 @@
 <link rel="apple-touch-icon" href="https://servicehogarbelgrano.com.ar/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --marino:#13294B; --oro:#E9A31B; --nieve:#F2F4F8; --blanco:#FFFFFF;
-    --tinta:#0E1A2E; --gris:#556074; --linea:#D5DBE5; --wa:#147A3F;
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-  body{margin:0;background:var(--nieve);color:var(--tinta);
-       font:400 17px/1.55 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
-       padding-bottom:88px;-webkit-text-size-adjust:100%}
-  h1,h2,h3{font-family:"Barlow Condensed","Barlow",system-ui,sans-serif;line-height:1.05;margin:0}
-  a{color:inherit}
-  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
-  :focus-visible{outline:3px solid var(--oro);outline-offset:3px}
-  .hero{color:#fff;padding:20px 0 84px;position:relative;
-         background:radial-gradient(circle at 88% 12%,rgba(233,163,27,.28),transparent 42%),
-           repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 22px),
-           linear-gradient(135deg,#13294B 0%,#1B3A6B 55%,#2A5190 100%)}
-  .hero.con-foto{background:linear-gradient(135deg,rgba(19,41,75,.90) 0%,rgba(19,41,75,.76) 55%,rgba(19,41,75,.55) 100%),
-           url("hero.jpg") 6% 28%/cover no-repeat,var(--marino)}
-  .hero::before,.hero::after{content:"";position:absolute;left:0;right:0;bottom:-1px}
-  .hero::before{height:64px;background:var(--oro);clip-path:polygon(0 100%,100% 0,100% 100%)}
-  .hero::after{height:46px;background:var(--nieve);clip-path:polygon(0 100%,100% 0,100% 100%)}
-  .marca{display:flex;align-items:center;gap:12px;margin-bottom:32px}
-  .logo{width:56px;height:56px;border-radius:50%;background:#fff;object-fit:contain;padding:3px;border:2px solid var(--oro);flex:none}
-  .marca strong{display:block;font:800 23px/1 "Barlow Condensed",sans-serif;letter-spacing:.02em}
-  .marca span{font-size:14px;color:#BFCADD}
-  .hero .kicker{margin:0 0 12px;font:700 14px/1.2 "Barlow",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--oro);max-width:none}
-  .hero h1{font-size:clamp(38px,10.5vw,60px);font-weight:800;max-width:15ch;margin-bottom:16px}
-  .hero h1 em{font-style:normal;color:var(--oro)}
-  .hero p{margin:0 0 24px;font-size:19px;color:#DCE4F1;max-width:34ch}
-  .solapa{margin-left:auto;text-decoration:none;font:700 15px/1 "Barlow",sans-serif;color:#fff;border:2px solid var(--oro);border-radius:999px;padding:10px 16px;white-space:nowrap;transition:background .2s,color .2s}
-  .solapa:hover{background:var(--oro);color:var(--marino)}
-  section{padding:32px 0}
-  .card{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:20px;margin:0 0 14px}
-  #app .v{display:none}#app .v.on{display:block}
-  #app h2{font-size:28px;margin:0 0 8px}
-  #app small{color:var(--gris)}
-  #app label{font-size:14px;color:var(--gris);margin:10px 0 4px;display:block;font-weight:600}
-  #app input{width:100%;font:400 16px/1.4 "Barlow",sans-serif;color:var(--tinta);padding:12px;border:1.5px solid var(--linea);border-radius:10px;background:#fff}
-  #app button{margin:12px 8px 0 0;padding:13px 18px;border:0;border-radius:12px;background:var(--oro);color:var(--marino);font:700 17px/1.2 "Barlow",sans-serif;cursor:pointer}
-  #app button.s{background:transparent;color:var(--marino);border:2px solid var(--marino)}
-  #app .kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--linea)}
-  #app .kv:last-child{border:0}#app .kv span:first-child{color:var(--gris)}#app .kv span:last-child{text-align:right;font-weight:600}
-  #app .b{display:inline-block;padding:4px 12px;border-radius:999px;font-weight:700;border:2px solid currentColor}
-  #app .ok{color:var(--wa)}#app .bad{color:#B3261E}
-  #app .it{padding:10px 0;border-bottom:1px solid var(--linea);cursor:pointer}#app .it:last-child{border:0}
-  #app .vall{width:100%;margin:4px 0 14px}
-  #app .pag{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
-  #app .pag button{margin:0;padding:11px 12px;font-size:16px}
-  #app .pag span{color:var(--gris);font-weight:600;font-size:15px;text-align:center}
-  #app #ld{display:none;position:sticky;top:0;z-index:5;background:var(--oro);color:var(--marino);font-weight:700;text-align:center;padding:8px;border-radius:10px;margin-bottom:10px}
-  .barra{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--linea);padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10}
-  .barra div{max-width:720px;margin:0 auto;display:flex;gap:10px}
-  .barra .btn{flex:1;padding:13px 8px;font-size:16px;text-align:center;text-decoration:none;font:700 18px/1.2 "Barlow",sans-serif;border-radius:12px;background:var(--wa);color:#fff}
-  .rep h2{font-size:28px;margin:0 0 12px}
-  .rep ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .rep a{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:16px 10px;background:var(--blanco);border:1px solid var(--linea);border-radius:14px;text-decoration:none;color:var(--marino);font-weight:600;line-height:1.2;transition:border-color .2s,transform .15s}
-  .rep a:hover{border-color:var(--oro);transform:translateY(-2px)}
-  .rep a b{font-size:34px;line-height:1}
-  .rep a small{color:var(--gris);font-weight:400;font-size:13px}
-  @media (min-width:600px){.rep ul{grid-template-columns:repeat(4,1fr)}}
-  @media (prefers-reduced-motion:reduce){.rep a{transition:none}}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@700;800&family=Kalam:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sitio.css">
 </head>
-<body>
-<header class="hero chico">
+<body class="angosto">
+<header class="mini">
   <div class="wrap">
     <div class="marca">
       <img class="logo" src="logo.png" alt="Logo de Service Hogar Belgrano" onerror="this.style.display='none'">
-      <div>
-        <strong>Service Hogar Belgrano</strong>
-        <span>Servicio técnico de electrodomésticos</span>
-      </div>
-      <a class="solapa" href="index.html">← Inicio</a>
+      <div><strong>Service Hogar Belgrano</strong><span>Servicio técnico de electrodomésticos</span></div>
+      <a class="solapa" href="index.html">Inicio</a>
     </div>
-    <p class="kicker">Historial y garantía</p>
-    <h1>Ficha de <em>tu equipo</em></h1>
-    <p>Ingresá la clave que escribimos a mano en el sticker de tu equipo.</p>
   </div>
 </header>
+<div class="ficha-p">
+  <div class="wrap ficha-g">
+    <div>
+      <h1>Ficha de tu equipo</h1>
+      <p>Mirá el historial de service y la garantía. Ingresá la clave que escribimos a mano en el sticker de tu equipo.</p>
+    </div>
+    <div class="sticker" aria-hidden="true"><div><small>Service Hogar Belgrano</small><b>K7M-4PX</b><em>Clave de ejemplo</em></div></div>
+  </div>
+</div>
 
 <main>
   <section>
@@ -100,10 +40,10 @@
         <div id="ld">Cargando…</div>
         <div class="v on" id="login">
           <div class="card">
-            <h2>Ficha de tu equipo</h2><small>Ingresá la clave escrita en el sticker.</small>
+            <h2>Ingresá tu clave</h2><small>Está escrita en el sticker.</small>
             <label>Clave</label>
             <input id="cl" placeholder="Ej: K7M-4PX" autocapitalize="characters" autocomplete="off">
-            <button id="bc">Ver ficha</button>
+            <button id="bc" type="button">Ver ficha</button>
           </div>
         </div>
         <div class="v" id="ficha">
@@ -118,10 +58,10 @@
     <div class="wrap">
       <h2>Qué reparamos</h2>
       <ul>
-        <li><a href="servicios/aires-acondicionados-belgrano.html"><b>❄️</b>Aires acondicionados</a></li>
-        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html"><b>🧺</b>Lavarropas, lavavajillas y secarropas</a></li>
-        <li><a href="servicios/heladeras-belgrano.html"><b>🧊</b>Heladeras</a></li>
-        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html"><b>🔥</b>Cocinas, hornos y calefones</a></li>
+        <li><a href="servicios/aires-acondicionados-belgrano.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="7" width="26" height="11" rx="2"/><path d="M7 14h18M9 22c0 2-2 2-2 4M16 22c0 2-2 2-2 4M23 22c0 2-2 2-2 4"/></svg>Aires acondicionados</a></li>
+        <li><a href="servicios/lavarropas-secarropas-lavavajillas-belgrano.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="3" width="22" height="26" rx="2"/><circle cx="16" cy="18" r="6.5"/><path d="M9 8h4M23 8h.01M10 18c3-2 5 2 12 0"/></svg>Lavarropas, lavavajillas y secarropas</a></li>
+        <li><a href="servicios/heladeras-belgrano.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="8" y="3" width="16" height="26" rx="2"/><path d="M8 13h16M12 7v3M12 17v5"/></svg>Heladeras</a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="4" width="22" height="25" rx="2"/><path d="M5 11h22M10 7.5h.01M16 7.5h.01M22 7.5h.01"/><rect x="9" y="15" width="14" height="9" rx="1"/></svg>Cocinas, hornos y calefones</a></li>
       </ul>
     </div>
   </section>
@@ -129,8 +69,8 @@
 
 <nav class="barra" aria-label="Contacto rápido">
   <div>
-    <a class="btn" href="https://wa.me/5491167489192?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Bruno</a>
-    <a class="btn" href="https://wa.me/5491165711314?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Mauricio</a>
+    <a class="btn wa" href="https://wa.me/5491167489192?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Bruno</a>
+    <a class="btn wa" href="https://wa.me/5491165711314?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Mauricio</a>
   </div>
 </nav>
 
@@ -162,11 +102,11 @@
   const dsvc=s=>(s.detalle?'<div class="kv"><span>Detalle</span><span>'+esc(s.detalle)+'</span></div>':'')+
     (s.repuestos?'<div class="kv"><span>Repuestos</span><span>'+esc(s.repuestos)+'</span></div>':'')+
     (s.tecnico?'<div class="kv"><span>Técnico</span><span>'+esc(s.tecnico)+'</span></div>':'');
-  const garS=s=>s.garantia+' días · vence '+venc(s).toLocaleDateString('es-AR');
-  const cardSvc=s=>'<div class="card"><div class="kv"><span>Fecha</span><span>'+fmt(s.fecha)+'</span></div>'+
+  const garS=s=>esc(s.garantia)+' días · vence '+venc(s).toLocaleDateString('es-AR');
+  const cardSvc=s=>'<div class="card"><div class="kv"><span>Fecha</span><span>'+esc(fmt(s.fecha))+'</span></div>'+
     '<div class="kv"><span>Trabajo</span><span>'+esc(s.tipo)+'</span></div>'+dsvc(s)+
     '<div class="kv"><span>Garantía</span><span class="'+(vigente(s)?'ok':'bad')+'">'+garS(s)+'</span></div></div>';
-  const filaSvc=s=>'<div class="it" style="cursor:default"><b>'+fmt(s.fecha)+'</b> · '+esc(s.tipo)+
+  const filaSvc=s=>'<div class="it" style="cursor:default"><b>'+esc(fmt(s.fecha))+'</b> · '+esc(s.tipo)+
     (s.detalle?'<br><small>'+esc(s.detalle)+'</small>':'')+
     (s.repuestos?'<br><small>Repuestos: '+esc(s.repuestos)+'</small>':'')+
     (s.tecnico?'<br><small>Técnico: '+esc(s.tecnico)+'</small>':'')+
