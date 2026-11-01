@@ -219,7 +219,8 @@
   <section>
     <div class="wrap">
       <h2>Opiniones de nuestros clientes</h2>
-      <div class="marq" id="resenas-m" hidden><div class="marq-t"></div></div>
+      <a class="rv-nota" href="https://maps.app.goo.gl/c3rx3zzUeSsJWMx27" target="_blank" rel="noopener"><b>4.7</b> <span class="rv-s" aria-hidden="true">★★★★★</span> 24 opiniones en Google</a>
+      <div class="marq rv-m" id="resenas-m" hidden><div class="marq-t"></div></div>
       <div class="tarjeta resenas">
         <p>Mirá lo que dicen quienes ya nos eligieron. Si te hicimos un service, tu reseña en Google nos ayuda a que más vecinos nos encuentren.</p>
         <a class="btn oro" href="https://maps.app.goo.gl/c3rx3zzUeSsJWMx27" target="_blank" rel="noopener">Ver y dejar reseñas en Google</a>
@@ -417,9 +418,15 @@
     img.src = "hero.jpg";
   })();
 
-  /* ===== Reseñas: pegá acá las de Google. Formato: ["Nombre","hace 2 semanas","Texto de la reseña"] ===== */
+  /* ===== Reseñas de Google. Formato: ["Nombre","resenas/foto.jpg","Texto de la reseña"] ===== */
   var RESENAS = [
+    ["Santiago Marini","resenas/santiago.jpg","Muy buena atención. Mauricio muy dispuesto y capaz. Soluciona inconvenientes donde otros se rinden. Recomendable 100x100"],
+    ["Nora Bell","resenas/nora.png","Excelente servicio. Mauricio verificó varias veces , una vez hecho el trabajo , que todo estuviera ok con respecto a la cocina . Lo recomiendo"],
+    ["Sofía L","resenas/sofia.jpg","Muy buena atención de Bruno, arregló mis aires acondicionados."],
+    ["Graciela Salas","resenas/graciela.jpg","Súper confiable y de rápida respuesta al llamado. Excelente trabajo."],
+    ["Ernesto Yevara","resenas/ernesto.png","Un trabajo rápido y preciso. Trato amable y cordial. Super recomendado. Saludos"]
   ];
+  var RESENAS_URL = "https://maps.app.goo.gl/c3rx3zzUeSsJWMx27";
 
   var MARCAS = [["Ariston","ariston"],["BGH","bgh"],["Candy","candy"],["Drean","drean"],["Electra","electra"],["Electrolux","electrolux"],["Gafa","gafa"],["GE","ge"],["LG","lg"],["Patrick","patrik"],["Samsung","samsung"],["Surrey","surrey"],["Whirlpool","whirlpool"]];
 
@@ -441,15 +448,49 @@
     return d;
   });
 
-  /* Reseñas: se deslizan con el dedo */
+  /* Reseñas: corren solas en bucle; se frenan al pasar el mouse o tocarlas, y se deslizan con el dedo */
   if (marq("resenas-m", RESENAS, function (r) {
-    var c = el("article", "rv"), h = el("div", "rv-h"), w = el("div");
-    h.appendChild(el("div", "rv-a", r[0].charAt(0).toUpperCase()));
-    w.appendChild(el("b", "", r[0])); w.appendChild(el("small", "", r[1]));
-    h.appendChild(w); h.appendChild(el("span", "rv-g", "Google"));
-    c.appendChild(h); c.appendChild(el("div", "rv-s", "★★★★★")); c.appendChild(el("p", "", r[2]));
+    var c = el("article", "rv"), h = el("div", "rv-h"), a = el("div", "rv-a", r[0].charAt(0).toUpperCase()), w = el("div"), im = new Image(), l = el("a", "rv-l", "Ver en Google");
+    im.alt = ""; im.width = 40; im.height = 40;
+    im.onload = function () { a.replaceChildren(im); };
+    im.src = r[1];
+    w.appendChild(el("b", "", r[0])); w.appendChild(el("small", "", "Reseña de Google"));
+    h.appendChild(a); h.appendChild(w);
+    l.href = RESENAS_URL; l.target = "_blank"; l.rel = "noopener";
+    c.appendChild(h); c.appendChild(el("div", "rv-s", "★★★★★")); c.appendChild(el("p", "", r[2])); c.appendChild(l);
     return c;
-  })) document.getElementById("resenas-m").hidden = false;
+  })) {
+    document.getElementById("resenas-m").hidden = false;
+    (function () {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var m = document.getElementById("resenas-m"), t = m.querySelector(".marq-t"), n = t.children.length;
+      /* Copia de las tarjetas para que el bucle no tenga corte */
+      Array.prototype.slice.call(t.children).forEach(function (c) {
+        var d = c.cloneNode(true);
+        d.setAttribute("aria-hidden", "true");
+        d.querySelector("a").tabIndex = -1;
+        t.appendChild(d);
+      });
+      var mouse = false, foco = false, dedo = false, seguir, pos = 0, antes = 0;
+      function ancho() { return t.children[n].offsetLeft - t.children[0].offsetLeft; }
+      m.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") mouse = true; });
+      m.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") mouse = false; });
+      m.addEventListener("focusin", function () { foco = true; });
+      m.addEventListener("focusout", function () { foco = false; });
+      m.addEventListener("touchstart", function () { clearTimeout(seguir); dedo = true; }, { passive: true });
+      m.addEventListener("touchend", function () { seguir = setTimeout(function () { dedo = false; }, 2500); }, { passive: true });
+      function paso(ahora) {
+        var dt = Math.min(ahora - antes, 100), w = ancho();
+        antes = ahora;
+        if (mouse || foco || dedo) pos = m.scrollLeft;
+        else pos += dt * 0.035;
+        if (w > 0 && pos >= w) pos -= w;
+        if (Math.abs(m.scrollLeft - pos) >= 0.5) m.scrollLeft = pos;
+        requestAnimationFrame(paso);
+      }
+      requestAnimationFrame(function (a) { antes = a; paso(a); });
+    })();
+  }
 var EQP = [
     ["Aire acondicionado","aires-acondicionados-belgrano.html",["No enfría","Pierde agua","Hace ruido","No prende","Se congela","Carga de gas","Placa electrónica"]],
     ["Lavarropas","lavarropas-secarropas-lavavajillas-belgrano.html",["No centrifuga","No desagota","Pierde agua","No prende","Hace ruido","No calienta"]],
