@@ -278,6 +278,12 @@ th{background:var(--carbon);color:#fff;font-weight:700}td:first-child{font-weigh
 ol.pasos{margin:0 0 14px;padding-left:22px;max-width:70ch}ol.pasos li{margin-bottom:8px}
 .ficha-cta{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
 .ficha-cta p{margin:0;color:var(--gris)}
+.ficha-cta h2{margin:0}
+#tabla-m2 table{min-width:0}#tabla-m2 th,#tabla-m2 td{padding:10px 8px}
+#tabla-m2 td small{display:block;font-size:14px;font-weight:400;color:var(--gris)}
+.faq details{border-bottom:1px solid var(--linea);padding:12px 0;max-width:70ch}
+.faq summary{font-weight:700;cursor:pointer}
+.faq details p{margin:8px 0 0;color:var(--gris)}
 
 @media(min-width:720px){.envios{grid-template-columns:1fr 1fr}.hero{padding-bottom:40px}}
 @media(min-width:820px){.calc{grid-template-columns:1.3fr .7fr}}
