@@ -461,35 +461,40 @@
     return c;
   })) {
     document.getElementById("resenas-m").hidden = false;
-    (function () {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      var m = document.getElementById("resenas-m"), t = m.querySelector(".marq-t"), n = t.children.length;
-      /* Copia de las tarjetas para que el bucle no tenga corte */
-      Array.prototype.slice.call(t.children).forEach(function (c) {
-        var d = c.cloneNode(true);
-        d.setAttribute("aria-hidden", "true");
-        d.querySelector("a").tabIndex = -1;
-        t.appendChild(d);
-      });
-      var mouse = false, foco = false, dedo = false, seguir, pos = 0, antes = 0;
-      function ancho() { return t.children[n].offsetLeft - t.children[0].offsetLeft; }
-      m.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") mouse = true; });
-      m.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") mouse = false; });
-      m.addEventListener("focusin", function () { foco = true; });
-      m.addEventListener("focusout", function () { foco = false; });
-      m.addEventListener("touchstart", function () { clearTimeout(seguir); dedo = true; }, { passive: true });
-      m.addEventListener("touchend", function () { seguir = setTimeout(function () { dedo = false; }, 2500); }, { passive: true });
-      function paso(ahora) {
-        var dt = Math.min(ahora - antes, 100), w = ancho();
-        antes = ahora;
-        if (mouse || foco || dedo) pos = m.scrollLeft;
-        else pos += dt * 0.035;
-        if (w > 0 && pos >= w) pos -= w;
-        if (Math.abs(m.scrollLeft - pos) >= 0.5) m.scrollLeft = pos;
-        requestAnimationFrame(paso);
-      }
-      requestAnimationFrame(function (a) { antes = a; paso(a); });
-    })();
+    bucle("resenas-m");
+  }
+  bucle("marcas-m");
+
+  /* Hace correr un carrusel en bucle; se frena al pasar el mouse o tocarlo, y se desliza con el dedo */
+  function bucle(id) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var m = document.getElementById(id), t = m.querySelector(".marq-t"), n = t.children.length;
+    /* Copia de los elementos para que el bucle no tenga corte */
+    Array.prototype.slice.call(t.children).forEach(function (c) {
+      var d = c.cloneNode(true), a = d.querySelector("a");
+      d.setAttribute("aria-hidden", "true");
+      if (a) a.tabIndex = -1;
+      t.appendChild(d);
+    });
+    var mouse = false, foco = false, dedo = false, seguir, pos = 0, antes = 0;
+    function ancho() { return t.children[n].offsetLeft - t.children[0].offsetLeft; }
+    m.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") mouse = true; });
+    m.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") mouse = false; });
+    /* Solo frena el foco de teclado: un clic no lo deja detenido */
+    m.addEventListener("focusin", function (e) { foco = e.target.matches(":focus-visible"); });
+    m.addEventListener("focusout", function () { foco = false; });
+    m.addEventListener("touchstart", function () { clearTimeout(seguir); dedo = true; }, { passive: true });
+    m.addEventListener("touchend", function () { seguir = setTimeout(function () { dedo = false; }, 2500); }, { passive: true });
+    function paso(ahora) {
+      var dt = Math.min(ahora - antes, 100), w = ancho();
+      antes = ahora;
+      if (mouse || foco || dedo) pos = m.scrollLeft;
+      else pos += dt * 0.035;
+      if (w > 0 && pos >= w) pos -= w;
+      if (Math.abs(m.scrollLeft - pos) >= 0.5) m.scrollLeft = pos;
+      requestAnimationFrame(paso);
+    }
+    requestAnimationFrame(function (a) { antes = a; paso(a); });
   }
 var EQP = [
     ["Aire acondicionado","aires-acondicionados-belgrano.html",["No enfría","Pierde agua","Hace ruido","No prende","Se congela","Carga de gas","Placa electrónica"]],

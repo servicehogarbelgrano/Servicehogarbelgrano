@@ -130,12 +130,11 @@ textarea{min-height:88px;resize:vertical}
 .marcas{margin:0 0 8px;color:var(--gris)}
 
 /* Carruseles que se deslizan con el dedo */
-.marq{overflow-x:auto;margin:6px -20px 16px;padding:0 20px 8px;scrollbar-width:thin}
+.marq{overflow-x:auto;margin:6px -20px 16px;padding:0 20px 8px;scrollbar-width:none}.marq::-webkit-scrollbar{display:none}
 .marq-t{display:flex;width:max-content;gap:10px}
 .lg{flex:none;width:136px;height:76px;background:#fff;border:1px solid var(--linea);border-radius:6px;display:flex;align-items:center;justify-content:center;padding:12px}
 .lg img{max-width:100%;max-height:100%;object-fit:contain}
 .lg span{font:800 21px/1 var(--titulo);color:var(--carbon);text-align:center}
-.rv-m{scrollbar-width:none}.rv-m::-webkit-scrollbar{display:none}
 .rv-nota{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;color:var(--gris);text-decoration:none}
 .rv-nota b{font:800 26px/1 var(--titulo);color:var(--carbon)}
 .rv-nota:hover{color:var(--carbon);text-decoration:underline}
