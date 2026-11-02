@@ -2,7 +2,9 @@
 <html lang="es-AR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' https://www.instagram.com; img-src 'self' data: https:; connect-src 'self' https://www.instagram.com; frame-src https://www.instagram.com https://www.google.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' https://www.instagram.com https://www.googletagmanager.com; img-src 'self' data: https:; connect-src 'self' https://www.instagram.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-src https://www.instagram.com https://www.google.com">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-54420PDL6K"></script>
+<script src="medir.js"></script>
 <link rel="canonical" href="https://servicehogarbelgrano.com.ar/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Service de aires y línea blanca en Belgrano | Service Hogar Belgrano</title>
@@ -358,6 +360,7 @@
       if (falla) mensaje += "\nProblema: " + falla;
 
       const url = "https://wa.me/" + TECNICOS[boton.dataset.tecnico] + "?text=" + encodeURIComponent(mensaje);
+      if (window.contarWhatsApp) contarWhatsApp();
       window.open(url, "_blank", "noopener");
     });
   });
