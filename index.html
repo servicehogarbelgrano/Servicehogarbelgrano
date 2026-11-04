@@ -79,7 +79,6 @@
       {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Reparación de heladeras vineras"}},
       {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Reparación de cocinas y hornos eléctricos"}},
       {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Reparación de calefones y estufas"}},
-      {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Reparación de microondas"}},
       {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Burletes de heladera a medida"}}
     ]
   }
@@ -156,7 +155,6 @@
             <option>Horno eléctrico</option>
             <option>Calefón</option>
             <option>Estufa</option>
-            <option>Microondas</option>
             <option>Otro</option>
           </select>
         </div>
@@ -196,7 +194,6 @@
         <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Hornos eléctricos</a></li>
         <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Calefones</a></li>
         <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Estufas</a></li>
-        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html">Microondas</a></li>
       </ul>
       <p class="nota">También hacemos burletes de heladera a medida, para todas las marcas.</p>
       <p class="nota">Los trabajos de gas están a cargo de gasistas matriculados.</p>
@@ -511,8 +508,7 @@ var EQP = [
     ["Cocina","cocinas-hornos-calefones-belgrano.html",["Hornalla que no prende","Horno que no calienta","Perillas","Encendido"]],
     ["Horno eléctrico","cocinas-hornos-calefones-belgrano.html",["No calienta","Termostato","Resistencia","Puerta"]],
     ["Calefón","cocinas-hornos-calefones-belgrano.html",["No enciende","No calienta","Pierde agua","Piloto"]],
-    ["Estufa","cocinas-hornos-calefones-belgrano.html",["No enciende","Llama débil","Piloto"]],
-    ["Microondas","cocinas-hornos-calefones-belgrano.html",["No calienta","No gira el plato","Chispas","No prende"]]
+    ["Estufa","cocinas-hornos-calefones-belgrano.html",["No enciende","Llama débil","Piloto"]]
   ];
   var CODES = { "Aire acondicionado": "aire", "Lavarropas": "lavarropas", "Lavavajillas": "lavavajillas", "Heladera": "heladera", "Heladera no frost": "heladera", "Heladera vinera": "heladera" };
 
@@ -542,7 +538,7 @@ var EQP = [
 
   /* Chat de la portada: cambia de equipo solo */
   (function () {
-    var EQ = [["el aire acondicionado", "aire acondicionado", "Aire acondicionado"], ["la heladera", "heladera", "Heladera"], ["el lavarropas", "lavarropas", "Lavarropas"], ["la cocina", "cocina", "Cocina"], ["el calefón", "calefón", "Calefón"], ["el lavavajillas", "lavavajillas", "Lavavajillas"], ["el horno eléctrico", "horno eléctrico", "Horno eléctrico"], ["el microondas", "microondas", "Microondas"]];
+    var EQ = [["el aire acondicionado", "aire acondicionado", "Aire acondicionado"], ["la heladera", "heladera", "Heladera"], ["el lavarropas", "lavarropas", "Lavarropas"], ["la cocina", "cocina", "Cocina"], ["el calefón", "calefón", "Calefón"], ["el lavavajillas", "lavavajillas", "Lavavajillas"], ["el horno eléctrico", "horno eléctrico", "Horno eléctrico"]];
     var b = document.getElementById("chatb"), r = document.getElementById("rot"), i = 0;
     var quieto = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     function esc(c) { var d = el("div", "bur " + c + " esc"); d.innerHTML = "<i></i><i></i><i></i>"; b.appendChild(d); return d; }
