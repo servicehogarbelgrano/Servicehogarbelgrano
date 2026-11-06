@@ -86,7 +86,7 @@
 </script>
 <link rel="stylesheet" href="sitio.css">
 </head>
-<body>
+<body class="home">
 
 <header class="hero">
   <div class="wrap">
@@ -132,7 +132,7 @@
 </header>
 
 <main>
-  <section id="presupuesto">
+  <section id="presupuesto" class="s-claro">
     <div class="wrap presu-g">
       <div>
         <h2>Contanos qué le pasa a tu equipo</h2>
@@ -175,12 +175,12 @@
     </div>
   </section>
 
-  <section id="reparamos">
+  <section id="reparamos" class="s-chapa">
     <div class="wrap">
       <h2>Qué reparamos</h2>
       <p class="lead">Elegí tu equipo y mirá las fallas más comunes.</p>
       <div class="eq"><div class="chips" id="eq-chips"></div><div class="tarjeta eq-p" id="eq-p" aria-live="polite"></div></div>
-      <p class="lead">Lista completa de equipos que reparamos:</p>
+      <p class="mini-t">Guías por equipo <span>(deslizá)</span></p>
       <ul class="servicios">
         <li><a href="servicios/aires-acondicionados-belgrano.html">Aire acondicionado</a></li>
         <li><a href="servicios/lavarropas-belgrano.html">Lavarropas</a></li>
@@ -200,7 +200,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="s-osc">
     <div class="wrap">
       <div class="aires">
         <h2>Aires acondicionados</h2>
@@ -215,7 +215,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="s-claro">
     <div class="wrap">
       <h2>Opiniones de nuestros clientes</h2>
       <a class="rv-nota" href="https://maps.app.goo.gl/c3rx3zzUeSsJWMx27" target="_blank" rel="noopener"><b>4.7</b> <span class="rv-s" aria-hidden="true">★★★★★</span> 24 opiniones en Google</a>
@@ -227,7 +227,7 @@
     </div>
   </section>
 
-  <section id="codigos">
+  <section id="codigos" class="s-chapa">
     <div class="wrap">
       <h2>Códigos de error y frigorías</h2>
       <p class="lead">Dos herramientas para resolver dudas antes de escribirnos.</p>
@@ -238,10 +238,12 @@
     </div>
   </section>
 
-  <section id="trabajos">
+  <section id="trabajos" class="s-osc">
     <div class="wrap">
       <h2>Nuestros trabajos</h2>
-      <p class="lead">Mirá cómo trabajamos. Deslizá para ver más.</p>
+      <p class="lead">Mirá cómo trabajamos.</p>
+      <div class="collage" id="collage" hidden></div>
+      <p class="lead">Y mirá nuestras publicaciones. Deslizá para ver más.</p>
       <div class="carrusel">
         <div class="item">
           <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DeDb-QmMaPq/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14">
@@ -264,11 +266,11 @@
           </blockquote>
         </div>
       </div>
-      <a class="btn borde trabajos-cta" href="https://www.instagram.com/servicehogarbelgrano" target="_blank" rel="noopener">Ver más en Instagram</a>
+      <a class="btn claro trabajos-cta" href="https://www.instagram.com/servicehogarbelgrano" target="_blank" rel="noopener">Ver más en Instagram</a>
     </div>
   </section>
 
-  <section>
+  <section class="s-claro">
     <div class="wrap">
       <h2>Cómo trabajamos</h2>
       <dl class="promesas">
@@ -284,7 +286,7 @@
     </div>
   </section>
 
-  <section id="zonas">
+  <section id="zonas" class="s-chapa">
     <div class="wrap donde-g">
       <div class="contacto">
         <h2>Zonas de atención y local</h2>
@@ -553,6 +555,49 @@ var EQP = [
     }
     document.querySelector(".chat-f").addEventListener("click", function () { document.getElementById("equipo").value = EQ[(i - 1) % EQ.length][2]; });
     paso();
+  })();
+
+  /* Efecto de onda al tocar botones */
+  document.addEventListener("pointerdown", function (e) {
+    var b = e.target.closest(".btn, .pick-g button, .chips button, .solapa");
+    if (!b) return;
+    var r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 1.2, o = document.createElement("span");
+    o.className = "ripple";
+    o.style.cssText = "width:" + d + "px;height:" + d + "px;left:" + (e.clientX - r.left - d / 2) + "px;top:" + (e.clientY - r.top - d / 2) + "px";
+    b.appendChild(o);
+    setTimeout(function () { o.remove(); }, 650);
+  });
+
+  /* Las secciones aparecen suavemente al llegar a ellas */
+  (function () {
+    var l = document.querySelectorAll("main > section > .wrap");
+    if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add("in"); io.unobserve(x.target); } });
+    }, { threshold: 0.05, rootMargin: "0px 0px -40px 0px" });
+    l.forEach(function (w, i) { if (i > 0) { w.classList.add("rev"); io.observe(w); } });
+  })();
+
+  /* Collage de fotos: subí las fotos a la carpeta trabajos/ como 1.jpg, 2.jpg, 3.jpg... y aparecen solas */
+  (function () {
+    var c = document.getElementById("collage"), vistas = 0;
+    if (!c) return;
+    function abrir(src) {
+      var f = el("div", "luz"), im = new Image();
+      im.src = src; im.alt = "Trabajo de Service Hogar Belgrano";
+      f.appendChild(im);
+      f.onclick = function () { f.remove(); };
+      document.body.appendChild(f);
+    }
+    for (var i = 1; i <= 30; i++) (function (n) {
+      var im = new Image();
+      im.alt = "Trabajo de Service Hogar Belgrano";
+      im.onload = function () { vistas++; c.hidden = false; };
+      im.onerror = function () { im.remove(); };
+      im.onclick = function () { abrir(im.src); };
+      im.src = "trabajos/" + n + ".jpg";
+      c.appendChild(im);
+    })(i);
   })();
 </script>
 </body>

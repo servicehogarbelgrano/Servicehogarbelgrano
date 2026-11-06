@@ -293,3 +293,87 @@ ol.pasos{margin:0 0 14px;padding-left:22px;max-width:70ch}ol.pasos li{margin-bot
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bur,.bur.esc i,.rot{animation:none;transition:none}}
 @media print{.barra,.bar{display:none}body{padding-bottom:0}}
+
+/* ===== Mejoras visuales (2026-11): botones con movimiento, fondos alternados, lista compacta ===== */
+.btn,.solapa,.pick-g button,.chips button{position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:transform .18s ease,background-color .18s,color .18s,border-color .18s,box-shadow .18s}
+.btn:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(242,106,27,.38)}
+.btn.wa:hover{box-shadow:0 10px 20px rgba(20,122,63,.38)}
+.btn.borde:hover,.btn.claro:hover{box-shadow:0 10px 20px rgba(0,0,0,.25)}
+.btn:active{transform:scale(.95);box-shadow:none;background:#B84A08;color:#fff}
+.btn.wa:active{background:#0A4D26}
+.btn.borde:active{background:var(--naranja);border-color:var(--naranja);color:var(--carbon)}
+.btn.claro:active{background:var(--naranja);border-color:var(--naranja);color:var(--carbon)}
+.solapa:active{transform:scale(.95);background:#B84A08;color:#fff}
+.pick-g button:hover{transform:translateY(-3px);border-color:var(--naranja);background:#3A4148;box-shadow:0 8px 16px rgba(0,0,0,.35)}
+.pick-g button:active{transform:scale(.94);background:var(--naranja);border-color:var(--naranja);color:var(--carbon)}
+.pick-g button:active svg{stroke:var(--carbon)}
+.chips button:hover{transform:translateY(-2px);border-color:var(--naranja)}
+.chips button:active{transform:scale(.94);background:var(--carbon);border-color:var(--carbon);color:#fff}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);transform:scale(0);animation:onda .65s ease-out;pointer-events:none}
+@keyframes onda{to{transform:scale(3.2);opacity:0}}
+.hero .btn.oro{animation:pulso 2.6s ease-in-out infinite}
+.hero .btn.oro:hover{animation:none}
+@keyframes pulso{0%,100%{box-shadow:0 0 0 0 rgba(242,106,27,.55)}60%{box-shadow:0 0 0 14px rgba(242,106,27,0)}}
+
+/* Portada con brillo naranja */
+.home .hero{background:radial-gradient(800px 420px at 90% -10%,rgba(242,106,27,.32),transparent 60%),var(--carbon)}
+.home .hero.con-foto{background:radial-gradient(800px 420px at 90% -10%,rgba(242,106,27,.32),transparent 60%),linear-gradient(rgba(38,43,48,.86),rgba(38,43,48,.86)),url("hero.jpg") 6% 28%/cover no-repeat,var(--carbon)}
+
+/* Secciones con fondos alternados */
+.home main>section{padding:52px 0}
+.home .s-claro{background:#fff}
+.home .s-chapa{background:var(--chapa)}
+.home .s-osc{background:linear-gradient(165deg,#2C3238,#1A1D21);color:#fff}
+.home .s-osc h2{color:#fff}
+.home .s-osc .lead,.home .s-osc .nota{color:#C9CDD1}
+.home main h2::after{content:"";display:block;width:56px;height:5px;border-radius:3px;background:var(--naranja);margin-top:10px}
+.home .tarjeta,.home .tool,.home .rv{box-shadow:0 8px 24px rgba(26,29,33,.10)}
+.home .tool{transition:transform .2s,box-shadow .2s,border-color .2s}
+.home .tool:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(242,106,27,.25)}
+.home .tool:active{transform:scale(.98);background:#FFF1E8}
+.home .s-claro .tarjeta{background:var(--chapa)}
+.home .rv{background:var(--chapa)}
+.home .promesas div{background:var(--chapa);border-radius:10px;border-top:4px solid var(--naranja);padding:16px}
+.home .lg{background:#fff;box-shadow:0 4px 12px rgba(26,29,33,.08)}
+.home .zonas li{background:#fff;border:1px solid var(--linea);border-radius:999px;padding:6px 14px}
+.home footer{background:#15181B;color:#9AA0A6;padding:22px 0 110px}
+.home{padding-bottom:0}
+
+/* Lista de equipos compacta: una sola fila que se desliza */
+.mini-t{margin:6px 0 8px;font-weight:700;color:var(--gris)}
+.mini-t span{font-weight:400;font-size:14px}
+.home .servicios{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;margin:0 -20px;padding:2px 20px 8px;scrollbar-width:none}
+.home .servicios::-webkit-scrollbar{display:none}
+.home .servicios li{flex:none;border-radius:999px;background:#fff}
+.home .servicios a{padding:8px 14px;font-size:15px;white-space:nowrap}
+.home .servicios a::after{content:none}
+.home .servicios li:hover{background:var(--naranja);border-color:var(--naranja)}
+.home .servicios li:active{background:#B84A08}
+.home .servicios li:active a{color:#fff}
+.home .nota{margin:8px 0 0;font-size:15px}
+@media(min-width:900px){.home .servicios{flex-wrap:wrap;overflow:visible;margin:0;padding:2px 0}.mini-t span{display:none}}
+
+/* Aires: etiquetas en vez de lista larga */
+.home .aires{background:none;padding:0}
+.home .aires ul{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.home .aires li{background:rgba(255,255,255,.08);border:1.5px solid var(--naranja);border-radius:999px;padding:7px 14px;font-size:15px}
+.home .aires li::before{margin-right:6px}
+
+/* Aparecer al scrollear */
+.rev{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease}
+.rev.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.btn,.pick-g button,.chips button,.home .tool{transition:none}.hero .btn.oro{animation:none}.rev{opacity:1;transform:none}}
+
+/* Collage de fotos de trabajos */
+.collage{columns:2 150px;column-gap:10px;margin:0 0 26px}
+.collage img{width:100%;display:block;margin:0 0 10px;border-radius:10px;cursor:zoom-in;break-inside:avoid;box-shadow:0 6px 18px rgba(0,0,0,.35);transition:transform .2s,box-shadow .2s}
+.collage img:hover{transform:scale(1.03);box-shadow:0 12px 26px rgba(242,106,27,.35)}
+@media(min-width:900px){.collage{columns:4 200px}}
+.luz{position:fixed;inset:0;z-index:50;background:rgba(10,12,14,.92);display:grid;place-items:center;padding:16px;cursor:zoom-out}
+.luz img{max-width:100%;max-height:100%;border-radius:8px}
+
+/* Selector de equipos: una sola fila que se desliza en el celular */
+.home .chips{flex-wrap:nowrap;overflow-x:auto;margin:0 -20px 14px;padding:2px 20px 8px;scrollbar-width:none}
+.home .chips::-webkit-scrollbar{display:none}
+.home .chips button{flex:none;white-space:nowrap}
+@media(min-width:900px){.home .chips{flex-wrap:wrap;overflow:visible;margin:0 0 14px;padding:2px 0}}
