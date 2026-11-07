@@ -218,7 +218,7 @@
   <section class="s-claro">
     <div class="wrap">
       <h2>Opiniones de nuestros clientes</h2>
-      <a class="rv-nota" href="https://maps.app.goo.gl/c3rx3zzUeSsJWMx27" target="_blank" rel="noopener"><b>4.7</b> <span class="rv-s" aria-hidden="true">★★★★★</span> 24 opiniones en Google</a>
+      <a class="rv-nota" href="https://maps.app.goo.gl/c3rx3zzUeSsJWMx27" target="_blank" rel="noopener"><b>4,9</b> <span class="rv-s" aria-hidden="true">★★★★★</span> 77 opiniones en Google</a>
       <div class="marq rv-m" id="resenas-m" hidden><div class="marq-t"></div></div>
       <div class="tarjeta resenas">
         <p>Mirá lo que dicen quienes ya nos eligieron. Si te hicimos un service, tu reseña en Google nos ayuda a que más vecinos nos encuentren.</p>
@@ -359,7 +359,7 @@
       if (falla) mensaje += "\nProblema: " + falla;
 
       const url = "https://wa.me/" + TECNICOS[boton.dataset.tecnico] + "?text=" + encodeURIComponent(mensaje);
-      if (window.contarWhatsApp) contarWhatsApp();
+      if (window.contarWhatsApp) contarWhatsApp({ tecnico: boton.dataset.tecnico, origen: "formulario", equipo: equipo.value });
       window.open(url, "_blank", "noopener");
     });
   });
@@ -422,11 +422,29 @@
 
   /* ===== Reseñas de Google. Formato: ["Nombre","resenas/foto.jpg","Texto de la reseña"] ===== */
   var RESENAS = [
-    ["Santiago Marini","resenas/santiago.jpg","Muy buena atención. Mauricio muy dispuesto y capaz. Soluciona inconvenientes donde otros se rinden. Recomendable 100x100"],
-    ["Nora Bell","resenas/nora.png","Excelente servicio. Mauricio verificó varias veces , una vez hecho el trabajo , que todo estuviera ok con respecto a la cocina . Lo recomiendo"],
-    ["Sofía L","resenas/sofia.jpg","Muy buena atención de Bruno, arregló mis aires acondicionados."],
-    ["Graciela Salas","resenas/graciela.jpg","Súper confiable y de rápida respuesta al llamado. Excelente trabajo."],
-    ["Ernesto Yevara","resenas/ernesto.png","Un trabajo rápido y preciso. Trato amable y cordial. Super recomendado. Saludos"]
+    ["Claudio Singer", "", "Excelente servicio, fui atendido por Bruno en 2 oportunidades por la reparacion de 2 heladeras y la ultima vez por la reparacion de un aire acondicionado, destaco su honestidad, profesionalismo, rapides en la reparacion. Recomendable 100%."],
+    ["Santiago Marini", "resenas/santiago.jpg", "Muy buena atención. Mauricio muy dispuesto y capaz. Soluciona inconvenientes donde otros se rinden. Recomendable 100x100"],
+    ["Guillermo Thoss", "", "Llame a Bruno por problemas con mi lavarrropa Whirlpool, un ruido terrible al centrifugar. Vino, lo revisó, consiguió el repuesto y lo dejo funcionando a un precio más que razonable. Muy recomendable!"],
+    ["Nora Bell", "resenas/nora.png", "Excelente servicio. Mauricio verificó varias veces , una vez hecho el trabajo , que todo estuviera ok con respecto a la cocina . Lo recomiendo"],
+    ["Nazarena Muzzio", "", "Mi heladera había dejado de enfriar y, por recomendación de un amigo, contacté a Bruno. Coordinamos una visita para esa misma semana y la experiencia fue excelente. Trabajó de manera muy profesional, solucionó el problema y dejó la heladera impecable. ¡Súper recomendable! Muchas gracias, Bruno."],
+    ["Francisco Santiago", "", "Mauricio es muy profesional. Tiene mucha experiencia y es diligente y práctico. Labura muy bien! Muy recomendable"],
+    ["Adriana Forti", "", "Muy buen servicio. Reparacion heladera y cambio de burletes. Coordinamos fácil vinieron en horario. Lo mejor de todo fue la honestidad “esto no esta para cambiar todavia”. No lo podia creer!! Bruno, super recomendable"],
+    ["Sofía L", "resenas/sofia.jpg", "Muy buena atención de Bruno, arregló mis aires acondicionados."],
+    ["Andrés Djordjalian", "", "En la familia, desde hace años recurrimos a Bruno para todo tema técnico con un aire acondicionado o una heladera. Nos instaló en total 6 equipos de aire que andan fenómeno. Lo recomiendo sin dudar."],
+    ["Gabriela Ferreyra", "", "Muy conforme, por todo el trabajo hecho en el arreglo de la botonera del calefon. Muchas Gracias Mauri por todo!"],
+    ["Karina Chera", "", "Bruno es muy profesional , ha trabajado varias veces en mi casa , tanto en Lavarropas ,como tmb en Refrigeración . Lo recomiendo ."],
+    ["Graciela Salas", "resenas/graciela.jpg", "Súper confiable y de rápida respuesta al llamado. Excelente trabajo."],
+    ["Ricardo Roma", "", "Impecable la reparación de placa y el motor, anda perfecto todo. Gracias Bruno"],
+    ["Anabella", "", "Un genio Mauri ,super confiable ,transparente y eficiente ! Muchas gracias !"],
+    ["Claudia Ramasso", "", "El Sr. Bruno fue puntual, preciso y no tuve ningún inconveniente luego de la reparación. Para recomendar, de 10!"],
+    ["Ana Zappelli", "", "Muy conforme con el arreglo del Calefon"],
+    ["María Sol Maragliano", "", "Bruno me arregló todo: lavarropas, calefon, extractor de cocina. Super de confianza!"],
+    ["Carlos", "", "Muy buena atención de Mauri, la reparación quedo perfecta."],
+    ["Matias Ramos", "", "Bruno y su equipo, me instalaron el Aire acondicionado, trabajo de calidad y técnicos responsables. Recomiendo sus servicios."],
+    ["Ernesto Yevara", "resenas/ernesto.png", "Un trabajo rápido y preciso. Trato amable y cordial. Super recomendado. Saludos"],
+    ["Lilia Miguelez", "", "Excelente gente muy profesional, cumplidores y los precios son completamente razonables. Recomendables cien por ciento."],
+    ["Rocio Velurtas", "", "Bruno vino a solucionar un problema que teníamos con el aire acondicionado y la verdad que quedamos muy conformes. Muy buena atención y excelente predisposición. Es muy profesional y responsable, trabaja con mucha prolijidad y se nota que sabe lo que hace. Lo recomiendo sin dudas"],
+    ["Agustina Gonzalez Oliva", "", "Inmejorable experiencia! Bruno es muy profesional, responsable y de confianza. Hace muchísimos años que repara aires heladera y lavarropas en casa y siempre soluciono el problema de la mejor manera y muy rápido. Y como si fuera poco, es puntual ! Gracias x existir !"]
   ];
   var RESENAS_URL = "https://maps.app.goo.gl/c3rx3zzUeSsJWMx27";
 
