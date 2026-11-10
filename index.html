@@ -2,7 +2,7 @@
 <html lang="es-AR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' https://www.instagram.com https://www.googletagmanager.com; img-src 'self' data: https:; connect-src 'self' https://www.instagram.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-src https://www.instagram.com https://www.google.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' https://www.instagram.com https://www.googletagmanager.com; img-src 'self' data: https://servicehogarbelgrano.com.ar https://www.instagram.com https://*.cdninstagram.com https://*.fbcdn.net; connect-src 'self' https://www.instagram.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-src https://www.instagram.com https://www.google.com">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-54420PDL6K"></script>
 <script src="medir.js"></script>
 <link rel="canonical" href="https://servicehogarbelgrano.com.ar/">
@@ -12,6 +12,8 @@
 <meta property="og:title" content="Service Hogar Belgrano">
 <meta property="og:description" content="Service de aires y línea blanca en Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo. Presupuesto por WhatsApp.">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Service Hogar Belgrano">
+<meta property="og:locale" content="es_AR">
 <meta property="og:url" content="https://servicehogarbelgrano.com.ar/">
 <meta property="og:image" content="https://servicehogarbelgrano.com.ar/logo.png">
 <link rel="icon" type="image/png" sizes="192x192" href="https://servicehogarbelgrano.com.ar/favicon.png">
@@ -87,6 +89,7 @@
 <link rel="stylesheet" href="sitio.css">
 </head>
 <body class="home">
+<a class="skip" href="#main">Saltar al contenido</a>
 
 <header class="hero">
   <div class="wrap">
@@ -131,7 +134,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
   <section id="presupuesto" class="s-claro">
     <div class="wrap presu-g">
       <div>
@@ -179,7 +182,7 @@
     <div class="wrap">
       <h2>Qué reparamos</h2>
       <p class="lead">Elegí tu equipo y mirá las fallas más comunes.</p>
-      <div class="eq"><div class="chips" id="eq-chips"></div><div class="tarjeta eq-p" id="eq-p" aria-live="polite"></div></div>
+      <div class="eq"><div class="chips" id="eq-chips"></div><div class="tarjeta eq-p" id="eq-p" aria-live="polite" aria-atomic="true"></div></div>
       <p class="mini-t">Guías por equipo <span>(deslizá)</span></p>
       <ul class="servicios">
         <li><a href="servicios/aires-acondicionados-belgrano.html">Aire acondicionado</a></li>
@@ -406,7 +409,7 @@
       var h = parseInt(p.hour, 10) % 24;
       var abierto = p.weekday !== "Sat" && p.weekday !== "Sun" && h >= 10 && h < 18;
       el.classList.toggle("abierto", abierto);
-      el.lastChild.textContent = abierto ? "Abierto ahora: escribinos por WhatsApp" : "Cerrado ahora: escribinos y te respondemos al abrir (lun a vie, 10 a 18 h)";
+      el.querySelector("span").textContent = abierto ? "Abierto ahora: escribinos por WhatsApp" : "Cerrado ahora: escribinos y te respondemos al abrir (lun a vie, 10 a 18 h)";
     } catch (e) {}
   })();
 
@@ -472,8 +475,7 @@
   if (marq("resenas-m", RESENAS, function (r) {
     var c = el("article", "rv"), h = el("div", "rv-h"), a = el("div", "rv-a", r[0].charAt(0).toUpperCase()), w = el("div"), im = new Image(), l = el("a", "rv-l", "Ver en Google");
     im.alt = ""; im.width = 40; im.height = 40;
-    im.onload = function () { a.replaceChildren(im); };
-    im.src = r[1];
+    if (r[1]) { im.onload = function () { a.replaceChildren(im); }; im.src = r[1]; }
     w.appendChild(el("b", "", r[0])); w.appendChild(el("small", "", "Reseña de Google"));
     h.appendChild(a); h.appendChild(w);
     l.href = RESENAS_URL; l.target = "_blank"; l.rel = "noopener";
@@ -571,13 +573,14 @@ var EQP = [
       setTimeout(function () { t.remove(); b.appendChild(el("div", "bur nos", "¡Hola! Contanos la marca y qué le pasa, y te pasamos el presupuesto por acá.")); }, 2800);
       if (!quieto) setTimeout(paso, 6500);
     }
-    document.querySelector(".chat-f").addEventListener("click", function () { document.getElementById("equipo").value = EQ[(i - 1) % EQ.length][2]; });
+    var cf = document.querySelector(".chat-f");
+    if (cf) cf.addEventListener("click", function () { var s = document.getElementById("equipo"); if (s && !s.value) s.value = EQ[(i - 1) % EQ.length][2]; });
     paso();
   })();
 
   /* Efecto de onda al tocar botones */
   document.addEventListener("pointerdown", function (e) {
-    var b = e.target.closest(".btn, .pick-g button, .chips button, .solapa");
+    var b = e.target.closest && e.target.closest(".btn, .pick-g button, .chips button, .solapa");
     if (!b) return;
     var r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 1.2, o = document.createElement("span");
     o.className = "ripple";
@@ -598,7 +601,7 @@ var EQP = [
 
   /* Collage de fotos: subí las fotos a la carpeta trabajos/ como 1.jpg, 2.jpg, 3.jpg... y aparecen solas */
   (function () {
-    var c = document.getElementById("collage"), vistas = 0;
+    var c = document.getElementById("collage");
     if (!c) return;
     function abrir(src) {
       var f = el("div", "luz"), im = new Image();
@@ -610,7 +613,7 @@ var EQP = [
     for (var i = 1; i <= 30; i++) (function (n) {
       var im = new Image();
       im.alt = "Trabajo de Service Hogar Belgrano";
-      im.onload = function () { vistas++; c.hidden = false; };
+      im.onload = function () { c.hidden = false; };
       im.onerror = function () { im.remove(); };
       im.onclick = function () { abrir(im.src); };
       im.src = "trabajos/" + n + ".jpg";
