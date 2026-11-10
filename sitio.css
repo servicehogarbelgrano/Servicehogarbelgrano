@@ -365,10 +365,14 @@ ol.pasos{margin:0 0 14px;padding-left:22px;max-width:70ch}ol.pasos li{margin-bot
 @media(prefers-reduced-motion:reduce){.btn,.pick-g button,.chips button,.home .tool{transition:none}.hero .btn.oro{animation:none}.rev{opacity:1;transform:none}}
 
 /* Collage de fotos de trabajos */
-.collage{columns:2 150px;column-gap:10px;margin:0 0 26px}
-.collage img{width:100%;display:block;margin:0 0 10px;border-radius:10px;cursor:zoom-in;break-inside:avoid;box-shadow:0 6px 18px rgba(0,0,0,.35);transition:transform .2s,box-shadow .2s}
-.collage img:hover{transform:scale(1.03);box-shadow:0 12px 26px rgba(242,106,27,.35)}
-@media(min-width:900px){.collage{columns:4 200px}}
+/* Cinta de trabajos: pasa sola, la foto del medio es más grande y la que tocás se agranda y frena */
+.cinta{--w:150px;overflow:hidden;margin:-70px 0 -56px;padding:90px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.cinta-t{display:flex;gap:10px;width:max-content;position:relative;will-change:transform}
+.it{flex:0 0 var(--w);width:var(--w);aspect-ratio:3/4;position:relative;cursor:zoom-in;will-change:transform}
+.it img{width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.35);transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s;-webkit-user-drag:none;user-select:none}
+.it.zoom{z-index:5}
+.it.zoom img{transform:scale(1.55);box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 2px #f26a1b}
+.cinta.quieta{overflow-x:auto;-webkit-mask-image:none;mask-image:none;scrollbar-width:none}
 .luz{position:fixed;inset:0;z-index:50;background:rgba(10,12,14,.92);display:grid;place-items:center;padding:16px;cursor:zoom-out}
 .luz img{max-width:100%;max-height:100%;border-radius:8px}
 

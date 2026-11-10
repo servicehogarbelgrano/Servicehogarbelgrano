@@ -258,10 +258,12 @@ var EQP = [
     l.forEach(function (w, i) { if (i > 0) { w.classList.add("rev"); io.observe(w); } });
   })();
 
-  /* Collage de fotos: subí las fotos a la carpeta trabajos/ como 1.jpg, 2.jpg, 3.jpg... y aparecen solas */
+  /* Cinta de fotos: subí las fotos a la carpeta trabajos/ como 1.jpg, 2.jpg, 3.jpg... (hasta la 30) y aparecen solas.
+     Pasan en bucle, la del medio se ve más grande; al pasar el mouse o tocar una, frena y se agranda. */
   (function () {
-    var c = document.getElementById("collage");
-    if (!c) return;
+    var c = document.getElementById("collage"), t = c && c.querySelector(".cinta-t");
+    if (!t) return;
+    var MAX = 30, listas = 0, reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     function abrir(src) {
       var f = el("div", "luz"), im = new Image();
       im.src = src; im.alt = "Trabajo de Service Hogar Belgrano";
@@ -269,13 +271,89 @@ var EQP = [
       f.onclick = function () { f.remove(); };
       document.body.appendChild(f);
     }
-    for (var i = 1; i <= 30; i++) (function (n) {
-      var im = new Image();
-      im.alt = "Trabajo de Service Hogar Belgrano";
-      im.onload = function () { c.hidden = false; };
-      im.onerror = function () { im.remove(); };
-      im.onclick = function () { abrir(im.src); };
+    function medir() {
+      var W = c.clientWidth, n = W >= 900 ? 7 : W >= 600 ? 5 : 3.2;
+      if (W < 50) return;
+      c.style.setProperty("--w", ((W - 10 * (n - 1)) / n) + "px");
+    }
+    t.addEventListener("click", function (e) {
+      var im = e.target.closest && e.target.closest(".it img");
+      if (im) abrir(im.src);
+    });
+    function arrancar() {
+      var orig = Array.prototype.slice.call(t.children), n = orig.length;
+      if (!n) { c.hidden = true; return; }
+      if (c.clientWidth < 50) { setTimeout(arrancar, 300); return; }
+      medir();
+      if (reducido) { c.classList.add("quieta"); return; }
+      function ciclo() { return t.children[n].offsetLeft - t.children[0].offsetLeft; }
+      function clonar() {
+        orig.forEach(function (it) {
+          var d = it.cloneNode(true);
+          d.setAttribute("aria-hidden", "true"); d.querySelector("img").alt = "";
+          t.appendChild(d);
+        });
+      }
+      clonar();
+      for (var k = 0; k < 8 && t.scrollWidth < c.clientWidth + 2 * ciclo(); k++) clonar();
+      var pos = 0, antes = 0, vel = 38, w = ciclo(), parado = false, dedo = false, visible = true, seguir, soltar, activo = null;
+      window.addEventListener("resize", function () { medir(); w = ciclo(); });
+      if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(c);
+      function zoom(it) {
+        if (activo && activo !== it) activo.classList.remove("zoom");
+        activo = it;
+        if (it) it.classList.add("zoom");
+      }
+      t.addEventListener("pointerover", function (e) {
+        if (e.pointerType !== "mouse") return;
+        var it = e.target.closest(".it"); if (it) { parado = true; zoom(it); }
+      });
+      t.addEventListener("pointerout", function (e) {
+        if (e.pointerType !== "mouse") return;
+        var a = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".it");
+        if (a) return;
+        parado = false; zoom(null);
+      });
+      t.addEventListener("pointerdown", function (e) {
+        if (e.pointerType === "mouse") return;
+        var it = e.target.closest(".it"); if (!it) return;
+        clearTimeout(seguir); clearTimeout(soltar); dedo = true; zoom(it);
+      });
+      function levantar(e) {
+        if (e.pointerType === "mouse") return;
+        soltar = setTimeout(function () { zoom(null); }, 700);
+        seguir = setTimeout(function () { dedo = false; }, 1600);
+      }
+      t.addEventListener("pointerup", levantar);
+      t.addEventListener("pointercancel", levantar);
+      /* La foto del medio crece un poco; las de los costados quedan en su tamaño */
+      function enfatizar() {
+        var W = c.clientWidth, mitad = W / 2, its = t.children;
+        for (var i = 0; i < its.length; i++) {
+          var it = its[i], x = it.offsetLeft - pos + it.offsetWidth / 2;
+          if (x < -it.offsetWidth || x > W + it.offsetWidth) { if (it.style.transform) it.style.transform = ""; continue; }
+          var k = Math.max(0, 1 - Math.abs(x - mitad) / mitad * 2.6);
+          it.style.transform = k > 0.01 ? "scale(" + (1 + 0.3 * k * k).toFixed(3) + ")" : "";
+        }
+      }
+      function paso(ahora) {
+        var dt = Math.min(ahora - antes, 100) / 1000;
+        antes = ahora;
+        if (visible && !document.hidden) {
+          if (!parado && !dedo) { pos += vel * dt; if (pos >= w) pos -= w; t.style.transform = "translate3d(" + (-pos) + "px,0,0)"; }
+          enfatizar();
+        }
+        requestAnimationFrame(paso);
+      }
+      requestAnimationFrame(paso);
+    }
+    for (var i = 1; i <= MAX; i++) (function (n) {
+      var it = el("div", "it"), im = new Image();
+      im.alt = "Trabajo de Service Hogar Belgrano"; im.draggable = false;
+      im.onload = function () { if (c.hidden) { c.hidden = false; medir(); } if (++listas === MAX) arrancar(); };
+      im.onerror = function () { it.remove(); if (++listas === MAX) arrancar(); };
       im.src = "trabajos/" + n + ".jpg";
-      c.appendChild(im);
+      it.appendChild(im);
+      t.appendChild(it);
     })(i);
   })();
