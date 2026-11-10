@@ -2,7 +2,7 @@
 <html lang="es-AR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; img-src 'self' data: https://servicehogarbelgrano.com.ar https://www.google-analytics.com https://www.googletagmanager.com; connect-src https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' https://www.googletagmanager.com; img-src 'self' data: https://servicehogarbelgrano.com.ar https://www.google-analytics.com https://www.googletagmanager.com; connect-src https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-54420PDL6K"></script>
 <script src="medir.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,17 +21,17 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Cuántas frigorías necesito para una habitación de 4 x 4?","acceptedAnswer":{"@type":"Answer","text":"Una habitación de 4 x 4 tiene 16 m². Sin sol directo necesita unas 2.200 frigorías y alcanza un equipo de 2.250. Con sol de tarde sube a unas 2.550 y conviene uno de 3.000. La cuenta considera 2,6 m de altura, 2 personas, un equipo que da calor, ventanas normales y piso intermedio."}},{"@type":"Question","name":"¿Cuántas frigorías se necesitan por metro cuadrado?","acceptedAnswer":{"@type":"Answer","text":"Usamos como base unas 110 frigorías por m² para un techo de 2,6 m. Después se suma según el sol, el piso, las ventanas, las personas y los equipos que dan calor."}},{"@type":"Question","name":"¿Cuántas frigorías son 12.000 BTU?","acceptedAnswer":{"@type":"Answer","text":"12.000 BTU equivalen a unas 3.000 frigorías, porque 1 frigoría equivale a unos 4 BTU."}},{"@type":"Question","name":"¿Cuántas frigorías más necesito en un último piso?","acceptedAnswer":{"@type":"Answer","text":"En la calculadora, el último piso o el techo sin aislar suman un 20% a la cuenta del ambiente."}}]}</script>
 <link rel="stylesheet" href="sitio.css">
 </head>
-<body>
+<body><a class="skip" href="#main">Saltar al contenido</a>
 <header class="mini">
   <div class="wrap">
     <div class="marca">
-      <img class="logo" src="logo.png" alt="Logo de Service Hogar Belgrano" onerror="this.style.display='none'">
+      <img class="logo" src="logo.png" width="56" height="56" alt="Logo de Service Hogar Belgrano">
       <div><strong>Service Hogar Belgrano</strong><span>Servicio técnico de electrodomésticos</span></div>
       <a class="solapa" href="index.html">Inicio</a>
     </div>
   </div>
 </header>
-<main>
+<main id="main">
   <section id="calculadora">
     <div class="wrap">
       <h1 class="pt">Calculadora de frigorías</h1>
@@ -148,30 +148,6 @@
     <a class="btn wa" href="https://wa.me/5491165711314?text=Hola%2C%20quiero%20pedir%20un%20presupuesto.">WhatsApp Mauricio</a>
   </div>
 </nav>
-<script>
-  const TECNICOS = { bruno: "5491167489192", mauricio: "5491165711314" };
-  /* Calculadora de frigorías */
-  (function () {
-    var $ = function (x) { return document.getElementById(x); };
-    var TAM = [2250, 3000, 4500, 5500, 6000];
-    function calc() {
-      var l = parseFloat($("cl").value), a = parseFloat($("ca").value), h = parseFloat($("cal").value) || 2.6;
-      var n = Math.max(0, parseInt($("cn").value, 10) || 0), q = Math.max(0, parseInt($("ce").value, 10) || 0);
-      if (!(l > 0 && a > 0)) { $("cr-n").textContent = "—"; $("cr-t").textContent = "Completá el largo y el ancho del ambiente."; $("cr-w").hidden = true; return; }
-      var fg = l * a * (h / 2.6) * 110 * $("co").value * $("cp").value * $("cv").value + n * 100 + q * 150;
-      fg = Math.round(fg / 50) * 50;
-      var t = TAM.filter(function (x) { return x >= fg; })[0], m2 = Math.round(l * a * 10) / 10;
-      $("cr-n").textContent = fg.toLocaleString("es-AR");
-      $("cr-t").textContent = "Ambiente de " + m2 + " m². " + (t ? "Te conviene un equipo de " + t.toLocaleString("es-AR") + " frigorías." : "Es un ambiente grande: consultanos para armar la mejor opción.");
-      var msg = "Hola, usé la calculadora: ambiente de " + m2 + " m², necesito unas " + fg + " frigorías" + (t ? " (equipo de " + t + ")" : "") + ". Quiero consultar por la instalación.";
-      $("cw-b").href = "https://wa.me/" + TECNICOS.bruno + "?text=" + encodeURIComponent(msg);
-      $("cw-m").href = "https://wa.me/" + TECNICOS.mauricio + "?text=" + encodeURIComponent(msg);
-      $("cr-w").hidden = false;
-    }
-    ["cl", "ca", "cal", "cn", "ce", "co", "cp", "cv"].forEach(function (id) { $(id).addEventListener("input", calc); });
-    calc();
-  })();
-
-</script>
+<script src="calculadora.js"></script>
 </body>
 </html>
