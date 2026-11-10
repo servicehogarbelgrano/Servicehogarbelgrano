@@ -259,27 +259,53 @@ var EQP = [
   })();
 
   /* Cinta de fotos: subí las fotos a la carpeta trabajos/ como 1.jpg, 2.jpg, 3.jpg... (hasta la 30) y aparecen solas.
-     Pasan en bucle, la del medio se ve más grande; al pasar el mouse o tocar una, frena y se agranda. */
+     Pasan en bucle, la del medio se ve más grande; al pasar el mouse o tocar una, frena y se agranda.
+     Con el mouse (o el dedo) en los extremos se mueve para ese lado, y con el dedo también se desliza. */
   (function () {
-    var c = document.getElementById("collage"), t = c && c.querySelector(".cinta-t");
-    if (!t) return;
-    var MAX = 30, listas = 0, reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var c = document.getElementById("collage");
+    if (!c) return;
+    var t = c.querySelector(".cinta-t");
+    if (!t) { c.className = "cinta"; c.textContent = ""; t = el("div", "cinta-t"); c.appendChild(t); } /* por si quedó guardada la página vieja */
+    var MAX = 30, listas = 0, reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches, ultimoArrastre = 0;
+    var FLECHA = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    /* Foto grande: la flecha (o tocar la foto, la tecla Esc o el botón "atrás" del celular) la achica y volvés a donde estabas */
     function abrir(src) {
-      var f = el("div", "luz"), im = new Image();
+      var f = el("div", "luz"), im = new Image(), b = el("button", "luz-v"), cerrado = false;
       im.src = src; im.alt = "Trabajo de Service Hogar Belgrano";
-      f.appendChild(im);
-      f.onclick = function () { f.remove(); };
+      b.type = "button"; b.setAttribute("aria-label", "Volver"); b.innerHTML = FLECHA;
+      f.appendChild(im); f.appendChild(b);
+      function quitar() {
+        if (cerrado) return;
+        cerrado = true;
+        document.removeEventListener("keydown", tecla);
+        window.removeEventListener("popstate", quitar);
+        f.classList.add("sale");
+        setTimeout(function () { f.remove(); }, 200);
+      }
+      function volver() {
+        if (history.state && history.state.luz) history.back(); else quitar();
+      }
+      function tecla(e) { if (e.key === "Escape") volver(); }
+      f.onclick = volver;
+      b.onclick = function (e) { e.stopPropagation(); volver(); };
+      document.addEventListener("keydown", tecla);
+      try { history.pushState({ luz: 1 }, ""); window.addEventListener("popstate", quitar); } catch (x) {}
       document.body.appendChild(f);
+      b.focus({ preventScroll: true });
     }
+
     function medir() {
       var W = c.clientWidth, n = W >= 900 ? 7 : W >= 600 ? 5 : 3.2;
       if (W < 50) return;
       c.style.setProperty("--w", ((W - 10 * (n - 1)) / n) + "px");
     }
     t.addEventListener("click", function (e) {
+      if (Date.now() - ultimoArrastre < 400) return; /* si venías deslizando, no abrir la foto */
       var im = e.target.closest && e.target.closest(".it img");
       if (im) abrir(im.src);
     });
+
     function arrancar() {
       var orig = Array.prototype.slice.call(t.children), n = orig.length;
       if (!n) { c.hidden = true; return; }
@@ -295,17 +321,39 @@ var EQP = [
         });
       }
       clonar();
-      for (var k = 0; k < 8 && t.scrollWidth < c.clientWidth + 2 * ciclo(); k++) clonar();
-      var pos = 0, antes = 0, vel = 38, w = ciclo(), parado = false, dedo = false, visible = true, seguir, soltar, activo = null;
+      for (var k = 0; k < 6 && t.scrollWidth < c.clientWidth + ciclo(); k++) clonar();
+
+      var pos = 0, antes = 0, vel = 38, w = ciclo(), parado = false, dedo = false, visible = true;
+      var borde = 0, arrastre = null, seguir, soltar, activo = null, aplicado = null, ZONA = 0.17, MAXV = 460;
       window.addEventListener("resize", function () { medir(); w = ciclo(); });
       if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(c);
+
       function zoom(it) {
         if (activo && activo !== it) activo.classList.remove("zoom");
         activo = it;
         if (it) it.classList.add("zoom");
       }
-      t.addEventListener("pointerover", function (e) {
+      function ajustar() { while (pos < 0) pos += w; while (pos >= w) pos -= w; }
+      /* Cuánto empuja el extremo: 0 en el medio, hasta 1 pegado al borde (negativo = izquierda) */
+      function zonaBorde(e) {
+        var r = c.getBoundingClientRect(), f = (e.clientX - r.left) / r.width;
+        if (f < ZONA) return -(1 - f / ZONA);
+        if (f > 1 - ZONA) return (f - (1 - ZONA)) / ZONA;
+        return 0;
+      }
+
+      /* Mouse */
+      c.addEventListener("pointermove", function (e) {
         if (e.pointerType !== "mouse") return;
+        borde = zonaBorde(e);
+        if (borde) { parado = false; zoom(null); }
+      });
+      c.addEventListener("pointerleave", function (e) {
+        if (e.pointerType !== "mouse") return;
+        borde = 0; parado = false; zoom(null);
+      });
+      t.addEventListener("pointerover", function (e) {
+        if (e.pointerType !== "mouse" || borde) return;
         var it = e.target.closest(".it"); if (it) { parado = true; zoom(it); }
       });
       t.addEventListener("pointerout", function (e) {
@@ -314,39 +362,58 @@ var EQP = [
         if (a) return;
         parado = false; zoom(null);
       });
-      t.addEventListener("pointerdown", function (e) {
+
+      /* Dedo: tocar frena y agranda, mantener en un extremo mueve para ese lado, deslizar mueve las fotos */
+      c.addEventListener("pointerdown", function (e) {
         if (e.pointerType === "mouse") return;
-        var it = e.target.closest(".it"); if (!it) return;
-        clearTimeout(seguir); clearTimeout(soltar); dedo = true; zoom(it);
+        clearTimeout(seguir); clearTimeout(soltar);
+        dedo = true; borde = zonaBorde(e);
+        arrastre = { x: e.clientX, pos: pos, mov: false };
+        var it = e.target.closest(".it");
+        if (it && !borde) zoom(it); else zoom(null);
+      });
+      c.addEventListener("pointermove", function (e) {
+        if (e.pointerType === "mouse" || !arrastre) return;
+        var dx = e.clientX - arrastre.x;
+        if (!arrastre.mov && Math.abs(dx) > 8) { arrastre.mov = true; borde = 0; zoom(null); }
+        if (arrastre.mov) { pos = arrastre.pos - dx; ajustar(); t.style.transform = "translate3d(" + (-pos) + "px,0,0)"; ultimoArrastre = Date.now(); }
       });
       function levantar(e) {
         if (e.pointerType === "mouse") return;
+        if (arrastre && arrastre.mov) ultimoArrastre = Date.now();
+        arrastre = null; borde = 0;
         soltar = setTimeout(function () { zoom(null); }, 700);
         seguir = setTimeout(function () { dedo = false; }, 1600);
       }
-      t.addEventListener("pointerup", levantar);
-      t.addEventListener("pointercancel", levantar);
+      c.addEventListener("pointerup", levantar);
+      c.addEventListener("pointercancel", levantar);
+
       /* La foto del medio crece un poco; las de los costados quedan en su tamaño */
       function enfatizar() {
         var W = c.clientWidth, mitad = W / 2, its = t.children;
         for (var i = 0; i < its.length; i++) {
           var it = its[i], x = it.offsetLeft - pos + it.offsetWidth / 2;
           if (x < -it.offsetWidth || x > W + it.offsetWidth) { if (it.style.transform) it.style.transform = ""; continue; }
-          var k = Math.max(0, 1 - Math.abs(x - mitad) / mitad * 2.6);
-          it.style.transform = k > 0.01 ? "scale(" + (1 + 0.3 * k * k).toFixed(3) + ")" : "";
+          var q = Math.max(0, 1 - Math.abs(x - mitad) / mitad * 2.6);
+          it.style.transform = q > 0.01 ? "scale(" + (1 + 0.3 * q * q).toFixed(3) + ")" : "";
         }
       }
       function paso(ahora) {
         var dt = Math.min(ahora - antes, 100) / 1000;
         antes = ahora;
         if (visible && !document.hidden) {
-          if (!parado && !dedo) { pos += vel * dt; if (pos >= w) pos -= w; t.style.transform = "translate3d(" + (-pos) + "px,0,0)"; }
+          if (!(arrastre && arrastre.mov)) {
+            var v = borde ? borde * MAXV : (parado || dedo ? 0 : vel);
+            if (v) { pos += v * dt; ajustar(); }
+          }
+          if (pos !== aplicado) { t.style.transform = "translate3d(" + (-pos) + "px,0,0)"; aplicado = pos; }
           enfatizar();
         }
         requestAnimationFrame(paso);
       }
       requestAnimationFrame(paso);
     }
+
     for (var i = 1; i <= MAX; i++) (function (n) {
       var it = el("div", "it"), im = new Image();
       im.alt = "Trabajo de Service Hogar Belgrano"; im.draggable = false;
