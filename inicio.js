@@ -219,7 +219,7 @@ var EQP = [
 
   /* Chat de la portada: cambia de equipo solo */
   (function () {
-    var EQ = [["el aire acondicionado", "aire acondicionado", "Aire acondicionado"], ["la heladera", "heladera", "Heladera"], ["el lavarropas", "lavarropas", "Lavarropas"], ["la cocina", "cocina", "Cocina"], ["el calefón", "calefón", "Calefón"], ["el lavavajillas", "lavavajillas", "Lavavajillas"], ["el horno eléctrico", "horno eléctrico", "Horno eléctrico"]];
+    var EQ = [["un electrodoméstico", "electrodoméstico", "Otro"], ["el aire acondicionado", "aire acondicionado", "Aire acondicionado"], ["la heladera", "heladera", "Heladera"], ["el lavarropas", "lavarropas", "Lavarropas"], ["la cocina", "cocina", "Cocina"], ["el calefón", "calefón", "Calefón"], ["el lavavajillas", "lavavajillas", "Lavavajillas"], ["el horno eléctrico", "horno eléctrico", "Horno eléctrico"]];
     var b = document.getElementById("chatb"), r = document.getElementById("rot"), i = 0;
     var quieto = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     function esc(c) { var d = el("div", "bur " + c + " esc"); d.innerHTML = "<i></i><i></i><i></i>"; b.appendChild(d); return d; }
