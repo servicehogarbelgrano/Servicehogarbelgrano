@@ -1,4 +1,36 @@
+# Service Hogar Belgrano - https://servicehogarbelgrano.com.ar/
+# Se permite el rastreo de buscadores clásicos y de buscadores/asistentes de IA.
+
 User-agent: *
+Allow: /
+
+# OpenAI (búsqueda en ChatGPT, entrenamiento y navegación a pedido del usuario)
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Otros buscadores y asistentes de IA
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
 Allow: /
 
 Sitemap: https://servicehogarbelgrano.com.ar/sitemap.xml
