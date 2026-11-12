@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WhatsApp · Service Hogar Belgrano</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--bg:#fff7e6;--fg:#0a1f3d;--accent:#F39A1E}
+@media (prefers-color-scheme:dark){:root{--bg:#0a1f3d;--fg:#fff7e6}}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;padding:24px;text-align:center}
+main{max-width:360px}
+h1{font-size:22px;margin:0 0 8px}
+p{margin:0 0 20px;opacity:.85}
+a{display:block;background:#25D366;color:#06301a;font-weight:800;text-decoration:none;padding:16px;border-radius:12px;font-size:17px}
+small{display:block;margin-top:14px;opacity:.7}
+#preg a.b{display:block;box-sizing:border-box;width:100%;margin:0 0 10px;padding:15px;border:2px solid var(--accent);border-radius:12px;background:transparent;color:var(--fg);font-size:17px;font-weight:700}
+#preg a.b:active{background:var(--accent);color:#0a1f3d}
+.oculto{display:none}
+</style></head><body><main>
+<h1>Service Hogar Belgrano</h1>
+<div id="preg" class="oculto">
+<p><b>¡Hola! 👋 Decinos qué tenés que reparar</b><br>y te comunicamos rápido con el técnico disponible.</p>
+<a class="b" data-t="heladera" href="#">🧊 Heladera</a>
+<a class="b" data-t="lavarropas" href="#">👕 Lavarropas</a>
+<a class="b" data-t="cocina" href="#">🔥 Cocina u horno</a>
+<a class="b" data-t="aire" href="#">❄️ Aire acondicionado</a>
+<a class="b" data-t="otro" href="#">🔧 Otro</a>
+<small>⚡ Es un toque: elegís y se abre WhatsApp con el técnico.</small>
+</div>
+<div id="abrir" class="oculto">
+<p>⏳ Abriendo WhatsApp con el técnico…</p>
+<a id="go" href="#" class="oculto">Si no se abre, tocá acá</a>
+</div>
+<small id="who"></small>
+</main>
+<script>
+(function(){
+  var tecnicos=[{n:'Mauricio',t:'5491165711314'},{n:'Bruno',t:'5491167489192'}];
+  var msg='Hola, necesito un técnico para: ';
+  // Tipo de reparación por link: /wa/?t=heladera  (heladera va siempre a Bruno; el resto se reparte)
+  var tm=location.search.match(/[?&]t=([^&#]*)/);
+  var tipo=tm?decodeURIComponent(tm[1].replace(/\+/g,' ')).toLowerCase().replace(/[^a-záéíóúñ0-9 ]/g,'').trim().slice(0,30):'';
+  var NOMBRES={heladera:'heladera',lavarropas:'lavarropas',cocina:'cocina u horno',aire:'aire acondicionado',otro:''};
+  if(!NOMBRES.hasOwnProperty(tipo))tipo='';
+  var FIJOS={heladera:'Bruno'};
+  var NS='servicehogarbelgrano-wa', KEY='turno';
+  var test=/[?&]test\b/.test(location.search);
+  var done=false;
+
+  // Contador compartido y atómico: cada visita suma 1 y el número decide a quién le toca (par/impar).
+  var servicios=[
+    {url:function(){return 'https://api.counterapi.dev/v1/'+NS+'/'+KEY+(test?'':'/up')},n:function(j){return j.count}},
+    {url:function(){return 'https://abacus.jasoncameron.dev/'+(test?'get':'hit')+'/'+NS+'/'+KEY},n:function(j){return j.value}}
+  ];
+
+  function ir(elegido,aviso){
+    if(done)return;done=true;
+    var url='https://wa.me/'+elegido.t+'?text='+encodeURIComponent(msg);
+    document.getElementById('go').href=url;
+    if(test){document.getElementById('who').textContent='Prueba: te tocaría '+elegido.n+(aviso||'');return}
+    location.replace(url);
+  }
+  function porNumero(n){return tecnicos[n%tecnicos.length]}
+  function porHorario(){ // último recurso si los dos servicios fallan
+    var h=Math.floor((Date.now()-3*3600000)/3600000);
+    return tecnicos[Math.floor(h/3)%tecnicos.length];
+  }
+  function probar(i){
+    if(i>=servicios.length){ir(porHorario(),' (sin contador, por horario)');return}
+    var ctl=window.AbortController?new AbortController():null;
+    var to=setTimeout(function(){if(ctl)ctl.abort()},2500);
+    fetch(servicios[i].url(),{signal:ctl?ctl.signal:undefined})
+      .then(function(r){if(!r.ok)throw 0;return r.json()})
+      .then(function(j){clearTimeout(to);var n=Number(servicios[i].n(j));if(isNaN(n))throw 0;ir(porNumero(test?n+1:n))})
+      .catch(function(){clearTimeout(to);probar(i+1)});
+  }
+  document.getElementById('go').addEventListener('click',function(e){
+    if(this.getAttribute('href')==='#')e.preventDefault();
+  });
+  function arrancar(t){
+    tipo=t;
+    msg+=(NOMBRES[t]||'otro equipo')+'.';
+    document.getElementById('preg').className='oculto';
+    document.getElementById('abrir').className='';
+    // botón de respaldo solo si a los 3 segundos no se abrió WhatsApp
+    setTimeout(function(){document.getElementById('go').className=''},3000);
+    var fijo=FIJOS[t];
+    if(fijo){
+      for(var k=0;k<tecnicos.length;k++){if(tecnicos[k].n===fijo){ir(tecnicos[k],' ('+t+': siempre '+fijo+')');return}}
+    }
+    if(previo){ // ya sabíamos a quién le toca: abrimos al instante y sumamos el turno en segundo plano
+      if(!test){try{fetch(servicios[previo.i].url(),{keepalive:true,mode:'cors'})}catch(e){}}
+      ir(previo.tec,' (calculado al abrir la página)');
+      return;
+    }
+    probar(0);
+  }
+  // Apenas entra, mira el turno SIN sumarlo (por si se va sin tocar nada)
+  var previo=null;
+  var leer=[
+    {url:'https://api.counterapi.dev/v1/'+NS+'/'+KEY,n:function(j){return j.count}},
+    {url:'https://abacus.jasoncameron.dev/get/'+NS+'/'+KEY,n:function(j){return j.value}}
+  ];
+  function urlPara(tec,t){return 'https://wa.me/'+tec.t+'?text='+encodeURIComponent('Hola, necesito un técnico para: '+(NOMBRES[t]||'otro equipo')+'.')}
+  // Deja cada botón como link directo a WhatsApp: al tocarlo, el celular abre la app sin pasar por una página web
+  function armarLinks(){
+    var bs=document.querySelectorAll('#preg a.b');
+    for(var b=0;b<bs.length;b++){
+      var t=bs[b].getAttribute('data-t'),tec=null;
+      if(FIJOS[t]){for(var k=0;k<tecnicos.length;k++)if(tecnicos[k].n===FIJOS[t])tec=tecnicos[k]}
+      else if(previo)tec=previo.tec;
+      if(tec&&!test)bs[b].href=urlPara(tec,t);
+    }
+  }
+  function adelantar(i){
+    if(i>=leer.length||done)return;
+    fetch(leer[i].url).then(function(r){if(!r.ok)throw 0;return r.json()})
+      .then(function(j){var n=Number(leer[i].n(j));if(isNaN(n))throw 0;previo={i:i,tec:porNumero(n+1)};armarLinks()})
+      .catch(function(){adelantar(i+1)});
+  }
+  if(tipo){arrancar(tipo);return}
+  adelantar(0);
+  // Sin tipo en el link: primero preguntamos qué hay que reparar
+  document.getElementById('preg').className='';
+  armarLinks(); // la heladera ya queda lista al instante; los demás cuando llega el turno
+  var bs=document.querySelectorAll('#preg a.b');
+  for(var b=0;b<bs.length;b++)bs[b].addEventListener('click',function(e){
+    var t=this.getAttribute('data-t');
+    if(this.getAttribute('href')!=='#'){
+      // link directo: no lo frenamos; solo sumamos el turno de fondo si no es heladera
+      if(!FIJOS[t]&&previo){try{fetch(servicios[previo.i].url(),{keepalive:true,mode:'cors'})}catch(x){}}
+      return;
+    }
+    e.preventDefault();
+    arrancar(t);
+  });
+})();
+</script></body></html>
