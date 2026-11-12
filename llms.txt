@@ -7,7 +7,7 @@
 - Local: O'Higgins 2183, Local 11, Belgrano, C1428, Ciudad Autónoma de Buenos Aires
 - Horario: lunes a viernes de 10 a 18 h
 - WhatsApp: +54 9 11 6748-9192 (Bruno) y +54 9 11 6571-1314 (Mauricio)
-- Zonas de atención: Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo
+- Zonas de atención: Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales, Palermo y Coghlan
 - Instagram y TikTok: @servicehogarbelgrano
 - Opiniones en Google: 4,9 sobre 5 (96 reseñas, al 12/11/2026)
 
@@ -23,7 +23,8 @@
 - [Inicio](https://servicehogarbelgrano.com.ar/)
 - [Aires acondicionados en Belgrano](https://servicehogarbelgrano.com.ar/servicios/aires-acondicionados-belgrano.html)
 - [Lavarropas en Belgrano](https://servicehogarbelgrano.com.ar/servicios/lavarropas-belgrano.html)
-- [Lavavajillas y secarropas](https://servicehogarbelgrano.com.ar/servicios/lavarropas-secarropas-lavavajillas-belgrano.html)
+- [Lavavajillas](https://servicehogarbelgrano.com.ar/servicios/lavavajillas-belgrano.html)
+- [Secarropas y secadoras](https://servicehogarbelgrano.com.ar/servicios/secarropas-belgrano.html)
 - [Heladeras en Belgrano](https://servicehogarbelgrano.com.ar/servicios/heladeras-belgrano.html)
 - [Cocinas, hornos y calefones](https://servicehogarbelgrano.com.ar/servicios/cocinas-hornos-calefones-belgrano.html)
 - [Calefones en Belgrano](https://servicehogarbelgrano.com.ar/servicios/calefones-belgrano.html)
@@ -44,5 +45,6 @@
 - [Villa Urquiza](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-villa-urquiza.html)
 - [Colegiales](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-colegiales.html)
 - [Palermo](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-palermo.html)
+- [Coghlan](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-coghlan.html)
 
-Cada barrio tiene además páginas de lavarropas, heladeras, cocinas y hornos, calefones y aires acondicionados, enlazadas desde su página de servicio técnico.
+Cada página de barrio enlaza a las páginas de servicio por electrodoméstico.

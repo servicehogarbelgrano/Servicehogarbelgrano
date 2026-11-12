@@ -26,11 +26,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/lavarropas-secarropas-lavavajillas-belgrano.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://servicehogarbelgrano.com.ar/servicios/heladeras-belgrano.html</loc>
     <lastmod>2026-11-12</lastmod>
     <priority>0.8</priority>
@@ -71,106 +66,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/lavarropas-nunez.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/lavarropas-saavedra.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/lavarropas-villa-urquiza.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/lavarropas-colegiales.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/lavarropas-palermo.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/heladeras-nunez.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/heladeras-saavedra.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/heladeras-villa-urquiza.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/heladeras-colegiales.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/heladeras-palermo.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/cocinas-hornos-calefones-nunez.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/cocinas-hornos-calefones-saavedra.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/cocinas-hornos-calefones-villa-urquiza.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/cocinas-hornos-calefones-colegiales.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/cocinas-hornos-calefones-palermo.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/calefones-nunez.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/calefones-saavedra.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/calefones-villa-urquiza.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/calefones-colegiales.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://servicehogarbelgrano.com.ar/servicios/calefones-palermo.html</loc>
-    <lastmod>2026-11-12</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-belgrano.html</loc>
     <lastmod>2026-11-12</lastmod>
     <priority>0.8</priority>
@@ -197,6 +92,21 @@
   </url>
   <url>
     <loc>https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-palermo.html</loc>
+    <lastmod>2026-11-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://servicehogarbelgrano.com.ar/servicios/lavavajillas-belgrano.html</loc>
+    <lastmod>2026-11-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://servicehogarbelgrano.com.ar/servicios/secarropas-belgrano.html</loc>
+    <lastmod>2026-11-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-coghlan.html</loc>
     <lastmod>2026-11-12</lastmod>
     <priority>0.8</priority>
   </url>

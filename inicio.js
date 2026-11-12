@@ -180,9 +180,9 @@
 var EQP = [
     ["Aire acondicionado","aires-acondicionados-belgrano.html",["No enfría","Pierde agua","Hace ruido","No prende","Se congela","Carga de gas","Placa electrónica"]],
     ["Lavarropas","lavarropas-belgrano.html",["No centrifuga","No desagota","Pierde agua","No prende","Hace ruido","No calienta"]],
-    ["Lavavajillas","lavarropas-secarropas-lavavajillas-belgrano.html",["No desagota","No lava bien","Pierde agua","No seca","No prende"]],
-    ["Secarropas","lavarropas-secarropas-lavavajillas-belgrano.html",["No gira","Hace ruido","No frena","No prende"]],
-    ["Secadora","lavarropas-secarropas-lavavajillas-belgrano.html",["No seca","No gira","Hace ruido","No prende"]],
+    ["Lavavajillas","lavavajillas-belgrano.html",["No desagota","No lava bien","Pierde agua","No seca","No prende"]],
+    ["Secarropas","secarropas-belgrano.html",["No gira","Hace ruido","No frena","No prende"]],
+    ["Secadora","secarropas-belgrano.html",["No seca","No gira","Hace ruido","No prende"]],
     ["Heladera","heladeras-belgrano.html",["No enfría","Hace hielo","Pierde agua","Hace ruido","Burletes a medida"]],
     ["Heladera no frost","heladeras-belgrano.html",["No enfría","Hace hielo","Pierde agua","Hace ruido","Burletes a medida"]],
     ["Heladera vinera","heladeras-belgrano.html",["No enfría","Hace ruido","Burlete gastado","No prende"]],
