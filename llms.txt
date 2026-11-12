@@ -9,7 +9,7 @@
 - WhatsApp: +54 9 11 6748-9192 (Bruno) y +54 9 11 6571-1314 (Mauricio)
 - Zonas de atención: Belgrano, Núñez, Saavedra, Villa Urquiza, Colegiales y Palermo
 - Instagram y TikTok: @servicehogarbelgrano
-- Opiniones en Google: 4,9 sobre 5 (94 reseñas de 5 estrellas y 2 de 1 estrella, al 12/11/2026)
+- Opiniones en Google: 4,9 sobre 5 (96 reseñas, al 12/11/2026)
 
 ## Qué reparamos
 - Aires acondicionados: instalación, mantenimiento y limpieza, detección de fugas, carga de gas R410, R22 y R32, reparación de placas
@@ -36,3 +36,13 @@
 - [Villa Urquiza](https://servicehogarbelgrano.com.ar/servicios/aires-acondicionados-villa-urquiza.html)
 - [Colegiales](https://servicehogarbelgrano.com.ar/servicios/aires-acondicionados-colegiales.html)
 - [Palermo](https://servicehogarbelgrano.com.ar/servicios/aires-acondicionados-palermo.html)
+
+## Service de electrodomésticos por barrio
+- [Belgrano](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-belgrano.html)
+- [Núñez](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-nunez.html)
+- [Saavedra](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-saavedra.html)
+- [Villa Urquiza](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-villa-urquiza.html)
+- [Colegiales](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-colegiales.html)
+- [Palermo](https://servicehogarbelgrano.com.ar/servicios/servicio-tecnico-electrodomesticos-palermo.html)
+
+Cada barrio tiene además páginas de lavarropas, heladeras, cocinas y hornos, calefones y aires acondicionados, enlazadas desde su página de servicio técnico.
