@@ -31,6 +31,9 @@ small{display:block;margin-top:14px;opacity:.7}
 <a id="go" href="#" class="oculto">Si no se abre, tocá acá</a>
 </div>
 <small id="who"></small>
+<noscript><p><b>¡Hola! Escribinos por WhatsApp:</b></p>
+<a class="b" href="https://wa.me/5491165711314?text=Hola%2C%20necesito%20un%20t%C3%A9cnico.">WhatsApp Mauricio · 11 6571-1314</a>
+<a class="b" href="https://wa.me/5491167489192?text=Hola%2C%20necesito%20un%20t%C3%A9cnico.">WhatsApp Bruno · 11 6748-9192</a></noscript>
 </main>
 <script>
 (function(){
@@ -38,7 +41,8 @@ small{display:block;margin-top:14px;opacity:.7}
   var msg='Hola, necesito un técnico para: ';
   // Tipo de reparación por link: /wa/?t=heladera  (heladera va siempre a Bruno; el resto se reparte)
   var tm=location.search.match(/[?&]t=([^&#]*)/);
-  var tipo=tm?decodeURIComponent(tm[1].replace(/\+/g,' ')).toLowerCase().replace(/[^a-záéíóúñ0-9 ]/g,'').trim().slice(0,30):'';
+  var raw='';try{raw=tm?decodeURIComponent(tm[1].replace(/\+/g,' ')):''}catch(e){raw=''}
+  var tipo=raw.toLowerCase().replace(/[^a-záéíóúñ0-9 ]/g,'').trim().slice(0,30);
   var NOMBRES={heladera:'heladera',lavarropas:'lavarropas',cocina:'cocina u horno',aire:'aire acondicionado',otro:''};
   if(!NOMBRES.hasOwnProperty(tipo))tipo='';
   var FIJOS={heladera:'Bruno'};
@@ -67,11 +71,13 @@ small{display:block;margin-top:14px;opacity:.7}
   function probar(i){
     if(i>=servicios.length){ir(porHorario(),' (sin contador, por horario)');return}
     var ctl=window.AbortController?new AbortController():null;
-    var to=setTimeout(function(){if(ctl)ctl.abort()},2500);
+    var to=setTimeout(function(){if(ctl)ctl.abort()},1500);
+    try{
     fetch(servicios[i].url(),{signal:ctl?ctl.signal:undefined})
       .then(function(r){if(!r.ok)throw 0;return r.json()})
       .then(function(j){clearTimeout(to);var n=Number(servicios[i].n(j));if(isNaN(n))throw 0;ir(porNumero(test?n+1:n))})
       .catch(function(){clearTimeout(to);probar(i+1)});
+    }catch(e){clearTimeout(to);probar(i+1)}
   }
   document.getElementById('go').addEventListener('click',function(e){
     if(this.getAttribute('href')==='#')e.preventDefault();
@@ -88,7 +94,7 @@ small{display:block;margin-top:14px;opacity:.7}
       for(var k=0;k<tecnicos.length;k++){if(tecnicos[k].n===fijo){ir(tecnicos[k],' ('+t+': siempre '+fijo+')');return}}
     }
     if(previo){ // ya sabíamos a quién le toca: abrimos al instante y sumamos el turno en segundo plano
-      if(!test){try{fetch(servicios[previo.i].url(),{keepalive:true,mode:'cors'})}catch(e){}}
+      if(!test&&previo.i!==null){try{fetch(servicios[previo.i].url(),{keepalive:true,mode:'cors'})}catch(e){}}
       ir(previo.tec,' (calculado al abrir la página)');
       return;
     }
@@ -112,10 +118,16 @@ small{display:block;margin-top:14px;opacity:.7}
     }
   }
   function adelantar(i){
-    if(i>=leer.length||done)return;
+    if(done)return;
+    if(i>=leer.length){ // ningún contador respondió: dejamos los links listos por horario
+      if(!previo){previo={i:null,tec:porHorario()};armarLinks()}
+      return;
+    }
+    try{
     fetch(leer[i].url).then(function(r){if(!r.ok)throw 0;return r.json()})
       .then(function(j){var n=Number(leer[i].n(j));if(isNaN(n))throw 0;previo={i:i,tec:porNumero(n+1)};armarLinks()})
       .catch(function(){adelantar(i+1)});
+    }catch(e){adelantar(i+1)}
   }
   if(tipo){arrancar(tipo);return}
   adelantar(0);
@@ -127,7 +139,7 @@ small{display:block;margin-top:14px;opacity:.7}
     var t=this.getAttribute('data-t');
     if(this.getAttribute('href')!=='#'){
       // link directo: no lo frenamos; solo sumamos el turno de fondo si no es heladera
-      if(!FIJOS[t]&&previo){try{fetch(servicios[previo.i].url(),{keepalive:true,mode:'cors'})}catch(x){}}
+      if(!FIJOS[t]&&previo&&previo.i!==null){try{fetch(servicios[previo.i].url(),{keepalive:true,mode:'cors'})}catch(x){}}
       return;
     }
     e.preventDefault();
