@@ -15,7 +15,10 @@ small{display:block;margin-top:14px;opacity:.7}
 #preg a.b{display:block;box-sizing:border-box;width:100%;margin:0 0 10px;padding:15px;border:2px solid var(--accent);border-radius:12px;background:transparent;color:var(--fg);font-size:17px;font-weight:700}
 #preg a.b:active{background:var(--accent);color:#0a1f3d}
 .oculto{display:none}
-</style></head><body><main>
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-54420PDL6K"></script>
+<script src="/medir.js"></script>
+</head><body><main>
 <h1>Service Hogar Belgrano</h1>
 <div id="preg" class="oculto">
 <p><b>¡Hola! 👋 Decinos qué tenés que reparar</b><br>y te comunicamos rápido con el técnico disponible.</p>
@@ -61,6 +64,8 @@ small{display:block;margin-top:14px;opacity:.7}
     var url='https://wa.me/'+elegido.t+'?text='+encodeURIComponent(msg);
     document.getElementById('go').href=url;
     if(test){document.getElementById('who').textContent='Prueba: te tocaría '+elegido.n+(aviso||'');return}
+    // Conteo en Analytics: técnico + electrodoméstico (los links directos los cuenta medir.js al tocarlos)
+    try{if(window.contarWhatsApp)contarWhatsApp({tecnico:elegido.n.toLowerCase(),origen:'contacto',equipo:tipo||'otro'})}catch(e){}
     location.replace(url);
   }
   function porNumero(n){return tecnicos[n%tecnicos.length]}

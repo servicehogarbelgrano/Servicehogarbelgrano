@@ -35,7 +35,8 @@ document.addEventListener("click", function (e) {
   var href = a.getAttribute("href") || "";
   var texto = (a.textContent || "").trim().slice(0, 40);
   if (href.indexOf("wa.me/") !== -1) {
-    contarWhatsApp({ tecnico: quienEs(href), origen: a.id || a.className || texto || "boton" });
+    /* data-t = electrodoméstico elegido en /contacto (heladera, lavarropas, cocina, aire, otro) */
+    contarWhatsApp({ tecnico: quienEs(href), origen: a.id || a.className || texto || "boton", equipo: a.getAttribute("data-t") || "" });
   } else if (href.indexOf("tel:") === 0) {
     gtag("event", "contacto_telefono", { tecnico: quienEs(href), pagina: location.pathname, transport_type: "beacon" });
   } else if (/instagram\.com|tiktok\.com|facebook\.com/.test(href)) {
