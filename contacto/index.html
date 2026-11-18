@@ -55,8 +55,8 @@ small{display:block;margin-top:14px;opacity:.7}
 
   // Contador compartido y atómico: cada visita suma 1 y el número decide a quién le toca (par/impar).
   var servicios=[
-    {url:function(){return 'https://api.counterapi.dev/v1/'+NS+'/'+KEY+(test?'':'/up')},n:function(j){return j.count}},
-    {url:function(){return 'https://abacus.jasoncameron.dev/'+(test?'get':'hit')+'/'+NS+'/'+KEY},n:function(j){return j.value}}
+    {url:function(){return 'https://abacus.jasoncameron.dev/'+(test?'get':'hit')+'/'+NS+'/'+KEY},n:function(j){return j.value}},
+    {url:function(){return 'https://countapi.mileshilliard.com/api/v1/'+(test?'get':'hit')+'/'+NS+'-'+KEY},n:function(j){return j.value}}
   ];
 
   function ir(elegido,aviso){
@@ -108,8 +108,8 @@ small{display:block;margin-top:14px;opacity:.7}
   // Apenas entra, mira el turno SIN sumarlo (por si se va sin tocar nada)
   var previo=null;
   var leer=[
-    {url:'https://api.counterapi.dev/v1/'+NS+'/'+KEY,n:function(j){return j.count}},
-    {url:'https://abacus.jasoncameron.dev/get/'+NS+'/'+KEY,n:function(j){return j.value}}
+    {url:'https://abacus.jasoncameron.dev/get/'+NS+'/'+KEY,n:function(j){return j.value}},
+    {url:'https://countapi.mileshilliard.com/api/v1/get/'+NS+'-'+KEY,n:function(j){return j.value}}
   ];
   function urlPara(tec,t){return 'https://wa.me/'+tec.t+'?text='+encodeURIComponent('Hola, necesito un técnico para: '+(NOMBRES[t]||'otro equipo')+'.')}
   // Deja cada botón como link directo a WhatsApp: al tocarlo, el celular abre la app sin pasar por una página web
