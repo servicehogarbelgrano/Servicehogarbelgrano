@@ -95,7 +95,7 @@
       let r;try{r=await fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})})}
       catch(e){throw new Error('No se pudo conectar. Revisá tu internet y probá de nuevo.')}
       const j=await r.json();if(!j.ok)throw new Error(j.error);return j.data;
-    }finally{pend--;if(!pend)$('ld').style.display='none'}
+    }finally{pend--;if(!pend){$('ld').style.display='none';$('ld').textContent='Cargando…'}}
   };
   
   fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:'ping',args:[]})}).catch(()=>{});
@@ -111,7 +111,7 @@
   
   const bg=(fn,...a)=>{Q=Q.then(()=>run(fn,...a)).catch(async e=>{alert('No se pudo guardar ('+(e.message||e)+'). Se vuelven a cargar los datos.');try{await cargar()}catch(_){}})};
   
-  const entrar=p=>guard(async()=>{PASS=p;DB=await run('admin_todo',PASS);$('pw').value='';verPw(false);lista();show('adm');bioUI()});
+  const entrar=p=>guard(async()=>{$('ld').textContent='Entrando… puede tardar unos segundos';PASS=p;DB=await run('admin_todo',PASS);$('pw').value='';verPw(false);lista();show('adm');bioUI()});
   $('ba').onclick=()=>entrar($('pw').value);
   $('flog').onsubmit=e=>e.preventDefault();
 
@@ -174,8 +174,8 @@
   
   function lista(){
     const q=$('q').value.toLowerCase();
-    const r=DB.equipos.filter(e=>!q||[e.clave,e.cliente,e.telefono,e.direccion,e.equipo,e.marca,e.modelo].join(' ').toLowerCase().includes(q)).slice().reverse().slice(0,50);
-    $('lst').innerHTML=r.length?r.map(e=>'<div class="it" data-k="'+esc(e.clave)+'"><b>'+esc(e.clave)+'</b> · '+esc(e.equipo)+' '+esc(e.marca)+'<br><small>'+esc(e.cliente)+(e.direccion?' · '+esc(e.direccion):'')+'</small></div>').join(''):'<small>Sin resultados.</small>';
+    const r=DB.equipos.filter(e=>!q||[e.clave,e.cliente,e.telefono,e.direccion,e.equipo,e.marca,e.modelo].join(' ').toLowerCase().includes(q)).slice().reverse().slice(0,q?50:5);
+    $('lst').innerHTML=(r.length?r.map(e=>'<div class="it" data-k="'+esc(e.clave)+'"><b>'+esc(e.clave)+'</b> · '+esc(e.equipo)+' '+esc(e.marca)+'<br><small>'+esc(e.cliente)+(e.direccion?' · '+esc(e.direccion):'')+'</small></div>').join(''):'<small>Sin resultados.</small>')+(!q&&DB.equipos.length>5?'<small>Mostrando los últimos 5. Para ver los demás, usá el buscador.</small>':'');
     $('lst').querySelectorAll('.it').forEach(el=>el.onclick=()=>abrir(el.dataset.k));
   }
   $('q').oninput=lista;
