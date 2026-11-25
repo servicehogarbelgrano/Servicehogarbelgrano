@@ -115,9 +115,9 @@
   // ---- Próximo service + recordatorio en el calendario del cliente ----
   const TECS={bruno:{n:'Bruno',tel:'5491167489192',vis:'15 6748 9192'},mauricio:{n:'Mauricio',tel:'5491165711314',vis:'15 6571 1314'}};
   const LOCAL="O'Higgins 2183 Local 11, Belgrano, CABA";
-  const mesesDe=eq=>/aire/i.test(eq||'')?6:12; // aires cada 6 meses, el resto cada 12
+  const mesesDe=(eq,u)=>{const x=u&&u.proximo;if(x!==undefined&&x!==null&&String(x)!=='')return +x;return /aire/i.test(eq||'')?6:12}; // el que elige el técnico; si no, aires 6 y resto 12
   function proximo(L,e){
-    const u=L[0],m=mesesDe(e.equipo);
+    const u=L[0],m=mesesDe(e.equipo,u);
     const d=new Date(u.fecha+'T12:00:00');d.setMonth(d.getMonth()+m);
     const hoy=new Date();hoy.setHours(12,0,0,0);
     const vencido=d<=hoy;
@@ -157,6 +157,7 @@
   function cardProximo(L,e){
     if(!L.length)return '';
     const p=proximo(L,e);
+    if(!p.meses)return ''; // el técnico eligió "sin recordatorio"
     return '<div class="card"><h2>Próximo service</h2>'+
       '<div class="kv"><span>Te recomendamos</span><span>'+(p.vencido?'Ya toca':esc(p.fecha.toLocaleDateString('es-AR')))+'</span></div>'+
       '<small>Cada '+p.meses+' meses para que tu equipo siga andando bien.</small>'+

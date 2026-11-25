@@ -198,6 +198,7 @@
     '<div class="card" id="sf"><h2 id="sft">Agregar service</h2><div class="row"><div><label>Fecha</label><input id="s_fecha" type="date" value="'+hoy+'"></div><div><label>Garantía (días)</label><input id="s_gar" type="number" value="90"></div></div>'+
     '<label>Tipo</label><select id="s_tipo">'+TIPOS.map(t=>'<option>'+t+'</option>').join('')+'</select>'+
     '<label>Detalle del trabajo</label><textarea id="s_det" rows="3"></textarea><label>Repuestos</label><input id="s_rep"><label>Técnico</label><input id="s_tec" list="tecs" placeholder="Elegí o escribí"><datalist id="tecs"><option value="Bruno"><option value="Mauricio"></datalist>'+
+    '<label>Próximo service en</label><select id="s_prox"><option value="">Automático (aires 6 meses, resto 12)</option><option value="3">3 meses</option><option value="6">6 meses</option><option value="8">8 meses</option><option value="9">9 meses</option><option value="12">12 meses</option><option value="18">18 meses</option><option value="24">24 meses</option><option value="0">Sin recordatorio</option></select>'+
     '<button id="ss">Agregar service</button><button class="s" id="sc" style="display:none">Cancelar edición</button></div>':'');
     show('eq');
     $('vl').onclick=()=>guard(async()=>{await lista();show('adm')});
@@ -217,7 +218,7 @@
     
     if(!has)return;
     $('ss').onclick=()=>guard(async()=>{
-      const s={fecha:$('s_fecha').value,tipo:$('s_tipo').value,detalle:$('s_det').value.trim(),repuestos:$('s_rep').value.trim(),garantia:$('s_gar').value,tecnico:$('s_tec').value.trim()};
+      const s={fecha:$('s_fecha').value,tipo:$('s_tipo').value,detalle:$('s_det').value.trim(),repuestos:$('s_rep').value.trim(),garantia:$('s_gar').value,tecnico:$('s_tec').value.trim(),proximo:$('s_prox').value};
       if(!s.fecha){alert('Indicá la fecha');return}
       if(EDS){Object.assign(DB.services.find(x=>x.id===EDS),s);bg('admin_editService',PASS,EDS,s)}
       else{s.id=Math.random().toString(36).slice(2,10);DB.services.push(Object.assign({},s,{clave:e.clave}));bg('admin_addService',PASS,e.clave,s)}
@@ -236,7 +237,7 @@
       const t=ev.target.closest('[data-ed],[data-del]');if(!t||t.disabled)return;
       if(t.dataset.ed){
         const s=CUR.services.find(x=>x.id===t.dataset.ed);EDS=s.id;
-        $('s_fecha').value=s.fecha;$('s_gar').value=s.garantia;$('s_tipo').value=s.tipo;$('s_det').value=s.detalle;$('s_rep').value=s.repuestos;$('s_tec').value=s.tecnico;
+        $('s_fecha').value=s.fecha;$('s_gar').value=s.garantia;$('s_tipo').value=s.tipo;$('s_det').value=s.detalle;$('s_rep').value=s.repuestos;$('s_tec').value=s.tecnico;$('s_prox').value=(s.proximo===undefined||s.proximo===null)?'':String(s.proximo);
         $('sft').textContent='Editando service';$('ss').textContent='Guardar cambios';$('sc').style.display='';$('sf').scrollIntoView();return
       }
       if(t.dataset.del){
