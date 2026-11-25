@@ -112,6 +112,58 @@
     (s.tecnico?'<br><small>Técnico: '+esc(s.tecnico)+'</small>':'')+
     '<br><small class="'+(vigente(s)?'ok':'bad')+'">Garantía: '+garS(s)+'</small></div>';
     
+  // ---- Próximo service + recordatorio en el calendario del cliente ----
+  const TECS={bruno:{n:'Bruno',tel:'5491167489192',vis:'15 6748 9192'},mauricio:{n:'Mauricio',tel:'5491165711314',vis:'15 6571 1314'}};
+  const LOCAL="O'Higgins 2183 Local 11, Belgrano, CABA";
+  const mesesDe=eq=>/aire/i.test(eq||'')?6:12; // aires cada 6 meses, el resto cada 12
+  function proximo(L,e){
+    const u=L[0],m=mesesDe(e.equipo);
+    const d=new Date(u.fecha+'T12:00:00');d.setMonth(d.getMonth()+m);
+    const hoy=new Date();hoy.setHours(12,0,0,0);
+    const vencido=d<=hoy;
+    if(vencido){d.setTime(hoy.getTime());d.setDate(d.getDate()+1)}
+    const k=Object.keys(TECS).find(x=>String(u.tecnico||'').toLowerCase().includes(x));
+    return {fecha:d,vencido,meses:m,tec:k?[TECS[k]]:[TECS.bruno,TECS.mauricio]};
+  }
+  const ymd=d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  const nombreEq=e=>[e.equipo,e.marca,e.modelo].filter(Boolean).join(' ');
+  function textoRec(e,p){
+    return 'Ya toca el service de tu '+nombreEq(e)+'.\n'+
+      p.tec.map(t=>'Escribile a '+t.n+' por WhatsApp: https://wa.me/'+t.tel+' (tel. '+t.vis+')').join('\n')+
+      '\nService Hogar Belgrano - '+LOCAL;
+  }
+  const icsEsc=s=>String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+  const fold=l=>{const o=[];while(l.length>73){o.push(l.slice(0,73));l=' '+l.slice(73)}o.push(l);return o.join('\r\n')};
+  function bajarIcs(e,p){
+    const f=p.fecha,sig=new Date(f.getTime());sig.setDate(sig.getDate()+1);
+    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Service Hogar Belgrano//Ficha//ES','CALSCALE:GREGORIAN','BEGIN:VEVENT',
+      'UID:'+Date.now()+'-'+Math.random().toString(36).slice(2)+'@servicehogarbelgrano.com.ar',
+      'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,''),
+      'DTSTART;VALUE=DATE:'+ymd(f),'DTEND;VALUE=DATE:'+ymd(sig),
+      'SUMMARY:'+icsEsc('Service '+nombreEq(e)+' - Service Hogar Belgrano'),
+      'DESCRIPTION:'+icsEsc(textoRec(e,p)),'LOCATION:'+icsEsc(LOCAL),
+      'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc('Se viene el service de tu '+nombreEq(e)),'TRIGGER:-P6DT15H','END:VALARM',
+      'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc('Hoy toca el service de tu '+nombreEq(e)),'TRIGGER:PT9H','END:VALARM',
+      'END:VEVENT','END:VCALENDAR'];
+    const blob=new Blob([L.map(fold).join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='proximo-service.ics';
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  }
+  function urlGcal(e,p){
+    const f=p.fecha,sig=new Date(f.getTime());sig.setDate(sig.getDate()+1);
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Service '+nombreEq(e)+' - Service Hogar Belgrano')+
+      '&dates='+ymd(f)+'/'+ymd(sig)+'&details='+encodeURIComponent(textoRec(e,p))+'&location='+encodeURIComponent(LOCAL);
+  }
+  function cardProximo(L,e){
+    if(!L.length)return '';
+    const p=proximo(L,e);
+    return '<div class="card"><h2>Próximo service</h2>'+
+      '<div class="kv"><span>Te recomendamos</span><span>'+(p.vencido?'Ya toca':esc(p.fecha.toLocaleDateString('es-AR')))+'</span></div>'+
+      '<small>Cada '+p.meses+' meses para que tu equipo siga andando bien.</small>'+
+      '<button type="button" class="s vall" data-acc="ics">🔔 Recordame el próximo service</button>'+
+      '<a class="s vall" style="display:block;text-align:center;margin-top:8px" target="_blank" rel="noopener" href="'+esc(urlGcal(e,p))+'">Agregar a Google Calendar</a></div>';
+  }
+
   function pintarFicha(){
     const f=FF,e=f.equipo;
     const L=f.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
@@ -122,6 +174,7 @@
       (e.serie?'<small>N° de serie: '+esc(e.serie)+'</small><br>':'')+
       (L.length?'<span class="b '+(any?'ok':'bad')+'">'+(any?'✔ Garantía vigente':'Garantía vencida')+'</span>':'<small>Sin services registrados.</small>')+'</div>';
     
+    h+=cardProximo(L,e);
     if(FMODE==='res'||L.length<=ULT){
       h+=L.slice(0,ULT).map(cardSvc).join('');
       if(L.length>ULT)h+='<button type="button" class="s vall" data-acc="all">Ver lista completa ('+L.length+' services)</button>';
@@ -139,6 +192,7 @@
   $('fv').onclick=ev=>{
     const b=ev.target.closest('[data-acc]');if(!b||b.disabled)return;
     const a=b.dataset.acc;
+    if(a==='ics'){const L=FF.services.slice().sort((x,y)=>String(y.fecha).localeCompare(String(x.fecha)));bajarIcs(FF.equipo,proximo(L,FF.equipo));return}
     if(a==='all'){FMODE='lista';FPAG=0}else if(a==='res'){FMODE='res'}else if(a==='prev'){FPAG--}else if(a==='next'){FPAG++}
     pintarFicha();window.scrollTo({top:0,behavior:'smooth'})
   };
