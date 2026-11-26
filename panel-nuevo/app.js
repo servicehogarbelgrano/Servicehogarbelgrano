@@ -299,7 +299,8 @@ const ACC = {
   svcMeses: el => { guardarForm(); S.p.form.meses = +el.dataset.v; pintar(); },
   svcResena: el => { guardarForm(); S.p.form.resena = el.dataset.v === '1'; pintar(); },
   svcTec: el => { guardarForm(); S.p.form.tecnico = el.dataset.v; pintar(); },
-  guardarService: () => {
+  guardarService: async () => {
+    try {
     guardarForm(); const f = S.p.form, e = S.equipos.find(x => x.id === S.p.id), c = clienteDe(e);
     if (!f.fecha) return $('err').textContent = 'Indicá la fecha.';
     if (!f.equipo) return $('err').textContent = 'Elegí el equipo.';
@@ -314,9 +315,11 @@ const ACC = {
     if (f.mant !== 'ninguno') { const fm = f.mant === 'seguimiento' ? addDias(f.fecha, 30) : addMeses(f.fecha, f.meses); upd.mantenimiento = { tipo: f.mant, fecha: fm }; b.set(doc(db, 'avisos', 'm_' + e.id), { ...base, tipo: f.mant === 'seguimiento' ? 'seg' : 'mant', fecha: fm }); }
     else upd.mantenimiento = { tipo: 'ninguno' };
     b.set(doc(db, 'equipos', e.id), upd, { merge: true });
-    b.commit().catch(er => { S.msg = 'No se pudo guardar: ' + er.code; pintar(); });
+    const r = await Promise.race([b.commit().then(() => 'ok'), new Promise(res => setTimeout(() => res('lento'), 5000))]);
     Object.assign(e, upd);
-    ir('clave', { id: e.id, listo: 'Service guardado' });
+    ir('equipo', { id: e.id }); cargarSvcs(e.id);
+    S.msg = r === 'ok' ? 'Service guardado.' : 'Sin conexión: el service quedó guardado en el celu y se sube solo.'; pintar();
+    } catch (er) { const x = $('err'); if (x) x.textContent = 'No se pudo guardar: ' + (er.code || er.message); console.error(er); }
   },
   excel: () => {
     const q = S.q.toLowerCase(); const filas = [['Clave', 'Cliente', 'Teléfono', 'Dirección', 'Equipo', 'Marca', 'Modelo', 'Último service', 'Técnico']];
