@@ -61,11 +61,11 @@ export const DEFAULT_CFG = {
   garantia: 90,
   fondo: 'auto', color: '#0b57d0', letra: 'normal',
   textos: {
-    ficha: 'Hola {nombre}, soy {tecnico} de Service Hogar Belgrano. 🔧\nTe dejo la ficha de {equipo}: ahí ves lo que hicimos, la garantía y podés pedir un service cuando lo necesites.\n{link}\nGuardá este mensaje; también podés escanear el QR del sticker y escribir la clave {clave}.{contacto}',
-    d5: 'Hola {nombre}, ¿cómo te fue con {equipo} después de la reparación? 🙌 Nos importa saber si todo anda bien y cómo te atendimos. Contestanos por acá, lo leemos nosotros. Y te recuerdo que también arreglamos aires, heladeras, hornos, cocinas, calefones y secarropas. Si alguien cerca necesita, pasale mi contacto.',
-    resena: 'Hola {nombre}, gracias por confiar en Service Hogar Belgrano. 🔧\n¿Cómo te fue con {equipo}? Si quedaste conforme, ¿nos dejás una reseña en Google? ⭐\nContanos qué equipo te reparamos (ej: lavarropas, aire, heladera) y en qué zona o barrio vivís. Con las estrellas y un comentario alcanza:\n' + LINK_RESENA + '\n\nY seguinos en Instagram para ver nuestros trabajos:\n' + INSTAGRAM,
-    mant: 'Hola {nombre}, soy {tecnico} de Service Hogar Belgrano. Ya pasó el tiempo desde el service de {equipo} y toca el mantenimiento 🔧 ¿Coordinamos una visita? Cualquier duda escribime por acá.',
-    seguimiento: 'Hola {nombre}, soy {tecnico} de Service Hogar Belgrano. ¿Cómo anda {equipo} después de la reparación? Si notás algo raro, escribime y lo vemos. 🙌'
+    ficha: 'Hola {nombre}, soy {tecnico} de Service Hogar Belgrano.\nTe dejo la ficha {deEquipo}: ahí ves lo que hicimos, la garantía y podés pedir un service cuando lo necesites.\n{link}\nGuardá este mensaje; también podés escanear el QR del sticker y escribir la clave {clave}.{contacto}',
+    d5: 'Hola {nombre}, ¿cómo te fue con {equipo} después de la reparación? Nos importa saber si todo anda bien y cómo te atendimos. Contestanos por acá, lo leemos nosotros. Y te recuerdo que también arreglamos aires, heladeras, hornos, cocinas, calefones y secarropas. Si alguien cerca necesita, pasale mi contacto.',
+    resena: 'Hola {nombre}, gracias por confiar en Service Hogar Belgrano.\n¿Cómo te fue con {equipo}? Si quedaste conforme, ¿nos dejás una reseña en Google?\nContanos qué equipo te reparamos (ej: lavarropas, aire, heladera) y en qué zona o barrio vivís. Con las estrellas y un comentario alcanza:\n' + LINK_RESENA + '\n\nY seguinos en Instagram para ver nuestros trabajos:\n' + INSTAGRAM,
+    mant: 'Hola {nombre}, soy {tecnico} de Service Hogar Belgrano. Ya pasó el tiempo desde el service {deEquipo} y toca el mantenimiento ¿Coordinamos una visita? Cualquier duda escribime por acá.',
+    seguimiento: 'Hola {nombre}, soy {tecnico} de Service Hogar Belgrano. ¿Cómo anda {equipo} después de la reparación? Si notás algo raro, escribime y lo vemos.'
   }
 };
 

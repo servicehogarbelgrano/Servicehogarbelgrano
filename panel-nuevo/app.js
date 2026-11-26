@@ -78,7 +78,7 @@ const tecDe = nombre => POR_NOMBRE[nombre] || S.tec;
 function vars(a, extra = {}) {
   const t = tecDe(a.tecnico);
   const eq = EQ[a.equipo] || EQ.otro;
-  return { nombre: primerNombre(a.cliente), equipo: eq.art, tecnico: t.nombre, clave: fmtClave(a.clave), link: FICHA_URL + '#' + normClave(a.clave), contacto: S.cfg.contactoLink ? '\nGuardá mi contacto: ' + t.vcf : '', ...extra };
+  return { nombre: primerNombre(a.cliente), equipo: eq.art, deEquipo: eq.art.startsWith('el ') ? 'del ' + eq.art.slice(3) : 'de ' + eq.art, tecnico: t.nombre, clave: fmtClave(a.clave), link: FICHA_URL + '#' + normClave(a.clave), contacto: S.cfg.contactoLink ? '\nGuardá mi contacto: ' + t.vcf : '', ...extra };
 }
 const textoAviso = a => relleno(S.cfg.textos[({ d5: 'd5', resena: 'resena', mant: 'mant', seg: 'seguimiento' })[a.tipo]], vars(a));
 const ETIQ = { d5: 'Seguimiento', resena: 'Pedir reseña', mant: 'Mantenimiento', seg: 'Seguimiento' };
