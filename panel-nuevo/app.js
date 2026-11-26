@@ -343,7 +343,7 @@ const ACC = {
 function guardarForm() { const f = S.p.form; if (!f) return; const d = $('detalle'); if (d && d.value !== f.detalle) { f.detalle = d.value; f.detalleEditado = true; } f.motivo = lee('motivo'); const g = $('gar'); if (g) f.garantia = g.value; const fe = $('fecha'); if (fe) f.fecha = fe.value; }
 
 document.addEventListener('click', ev => {
-  const nav = ev.target.closest('#nav [data-nav]'); if (nav) { S.q = ''; const v = nav.dataset.nav; if (v === 'nuevo') { pickEq = ''; ir('nuevoCliente'); } else ir(v); return; }
+  const nav = ev.target.closest('[data-nav]'); if (nav && S.tec) { S.q = ''; const v = nav.dataset.nav; if (v === 'nuevo') { pickEq = ''; ir('nuevoCliente'); } else ir(v); return; }
   const el = ev.target.closest('[data-acc]'); if (!el || el.closest('details')) return;
   const f = ACC[el.dataset.acc]; if (f) f(el);
 });
