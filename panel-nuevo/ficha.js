@@ -77,4 +77,4 @@ document.addEventListener('click', ev => {
 });
 
 const h = normClave(location.hash);
-if (h.length === 6) abrir(h, true); else { const l = guardadas(); if (l.length === 1) abrir(l[0], false); else vLogin(); }
+if (h.length === 6) abrir(h, true); else vLogin();
