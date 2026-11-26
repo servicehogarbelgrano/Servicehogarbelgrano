@@ -11,7 +11,7 @@ const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabMana
 const $ = id => document.getElementById(id);
 const S = {
   user: null, tec: null, cfg: JSON.parse(JSON.stringify(DEFAULT_CFG)), items: ITEMS,
-  clientes: [], equipos: [], avisos: [], movs: [],
+  clientes: [], equipos: [], avisos: [], hechos: [], movs: [],
   vista: 'inicio', p: {}, filtro: 'mine', q: '', svcs: [], msg: ''
 };
 let unsubs = [];
@@ -49,6 +49,7 @@ function iniciar() {
   escuchar(collection(db, 'clientes'), s => S.clientes = s.docs.map(d => ({ id: d.id, ...d.data() })));
   escuchar(collection(db, 'equipos'), s => S.equipos = s.docs.map(d => ({ id: d.id, ...d.data() })));
   escuchar(query(collection(db, 'avisos'), where('estado', '==', 'pendiente')), s => S.avisos = s.docs.map(d => ({ id: d.id, ...d.data() })));
+  escuchar(query(collection(db, 'avisos'), where('estado', 'in', ['enviado', 'descartado'])), s => S.hechos = s.docs.map(d => ({ id: d.id, ...d.data() })));
   const mes = hoyISO().slice(0, 7) + '-01';
   escuchar(query(collection(db, 'movimientos'), where('fecha', '>=', mes)), s => S.movs = s.docs.map(d => ({ id: d.id, ...d.data() })));
   escuchar(doc(db, 'config', 't_' + S.tec.nombre), s => { S.cfg = fusion(DEFAULT_CFG, s.exists() ? s.data() : {}); aplicarApariencia(); });
@@ -89,12 +90,13 @@ function dibujar() {
   if (!S.tec) return;
   document.querySelectorAll('#nav [data-nav]').forEach(b => b.classList.toggle('on', b.dataset.nav === (['cliente', 'nuevoCliente', 'clientes'].includes(S.vista) ? 'clientes' : ['equipo', 'equipos', 'nuevoService', 'clave'].includes(S.vista) ? (S.vista === 'equipos' ? 'equipos' : 'clientes') : S.vista)));
   $('off').hidden = navigator.onLine;
-  const V = { inicio: vInicio, clientes: vClientes, cliente: vCliente, nuevoCliente: vNuevoCliente, equipo: vEquipo, nuevoService: vNuevoService, clave: vClave, mant: vMant, equipos: vEquipos, config: vConfig, info: vInfo };
+  const V = { inicio: vInicio, clientes: vClientes, cliente: vCliente, nuevoCliente: vNuevoCliente, equipo: vEquipo, nuevoService: vNuevoService, clave: vClave, mant: vMant, enviados: vEnviados, equipos: vEquipos, config: vConfig, info: vInfo };
   $('app').innerHTML = (S.msg ? '<div class="aviso">' + esc(S.msg) + '</div>' : '') + (V[S.vista] || vInicio)();
   if (S.vista === 'nuevoService') actualizarDetalle();
 }
 window.addEventListener('online', pintar); window.addEventListener('offline', pintar);
 
+const _f = 0;
 const filtroHTML = () => '<div class="filtro"><button data-acc="filtro" data-v="mine" class="' + (S.filtro === 'mine' ? 'sel' : '') + '">' + S.tec.nombre + '</button><button data-acc="filtro" data-v="todos" class="' + (S.filtro === 'todos' ? 'sel' : '') + '">Todos</button></div>';
 
 function vInicio() {
@@ -108,7 +110,14 @@ function vInicio() {
     '<div class="tarjetas"><div class="tj"><b>' + movs.length + '</b><span>Services del mes</span></div><div class="tj"><b>' + vencen.length + '</b><span>Para hoy</span></div><div class="tj"><b>' + S.clientes.length + '</b><span>Clientes</span></div><div class="tj"><b>' + S.equipos.length + '</b><span>Equipos</span></div></div>' +
     (sig ? '<div class="card tanda"><small>Siguiente aviso (quedan ' + vencen.length + ')</small><h2>' + esc(sig.cliente) + ' · ' + esc((EQ[sig.equipo] || EQ.otro).nombre) + '</h2><p>' + ETIQ[sig.tipo] + '</p><button class="prim grande" data-acc="enviarAviso" data-id="' + sig.id + '">Enviar por WhatsApp</button><button class="sec" data-acc="noMandar" data-id="' + sig.id + '">No mandar</button></div>' : '') +
     '<div class="card"><h2>Para hoy</h2>' + (vencen.length ? vencen.map(fila).join('') : '<p class="vacio">Nada para hoy.</p>') + '</div>' +
-    (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + '</div>' : '');
+    (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + '</div>' : '') + '<button class="sec grande" data-acc="irEnviados">Ver mensajes enviados</button>';
+}
+
+function vEnviados() {
+  const l = S.hechos.filter(a => S.filtro === 'todos' || a.tecnico === S.tec.nombre).sort((a, b) => (b.enviadoTs || 0) - (a.enviadoTs || 0) || (b.enviado || '').localeCompare(a.enviado || '')).slice(0, 60);
+  const hora = a => a.enviadoTs ? new Date(a.enviadoTs).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
+  return '<div class="top"><h1>Mensajes</h1>' + filtroHTML() + '</div><small>"Enviado" quiere decir que tocaste Enviar y se abrió WhatsApp. Si no llegaste a mandarlo, tocá "Volver a pendiente".</small><div class="card">' +
+    (l.length ? l.map(a => '<div class="fila"><div><b>' + esc(a.cliente) + '</b> · ' + esc((EQ[a.equipo] || EQ.otro).nombre) + '<br><small>' + ETIQ[a.tipo] + ' · ' + (a.estado === 'enviado' ? '✓ Enviado' : 'No mandado') + ' el ' + fechaCorta(a.enviado) + ' ' + hora(a) + (S.filtro === 'todos' ? ' · ' + esc(a.tecnico) : '') + '</small></div><div class="bts"><button class="sec" data-acc="volverPend" data-id="' + a.id + '">Volver a pendiente</button></div></div>').join('') : '<p class="vacio">Todavía no enviaste ningún mensaje.</p>') + '</div>';
 }
 
 function vClientes() {
@@ -229,13 +238,15 @@ function vInfo() {
 
 // ---------- acciones ----------
 function abrirWA(tel, texto) { window.open(waLink(tel, texto), '_blank'); }
-function marcarAviso(id, estado) { setDoc(doc(db, 'avisos', id), { estado, enviado: hoyISO() }, { merge: true }); }
+function marcarAviso(id, estado) { setDoc(doc(db, 'avisos', id), { estado, enviado: hoyISO(), enviadoTs: Date.now() }, { merge: true }); }
 const lee = id => { const el = $(id); return el ? el.value.trim() : ''; };
 let pickEq = '';
 
 const ACC = {
   filtro: el => { S.filtro = el.dataset.v; pintar(); },
   enviarAviso: el => { const a = S.avisos.find(x => x.id === el.dataset.id); if (!a) return; abrirWA(a.telefono, textoAviso(a)); marcarAviso(a.id, 'enviado'); },
+  volverPend: el => setDoc(doc(db, 'avisos', el.dataset.id), { estado: 'pendiente' }, { merge: true }),
+  irEnviados: () => ir('enviados'),
   noMandar: el => marcarAviso(el.dataset.id, 'descartado'),
   irNuevoCliente: () => { pickEq = ''; ir('nuevoCliente'); },
   abrirCliente: el => ir('cliente', { id: el.dataset.id }),
