@@ -103,3 +103,4 @@ body.vcomp #comp{display:block;background:#fff;color:#000;padding:14px;max-width
   #comp .qrb{display:flex;gap:12px;align-items:center;margin-top:14px}#comp .qrb svg{width:90px;height:90px;flex-shrink:0}
   #comp .cg{white-space:pre-line;font-size:9.5pt}#comp .pie{margin-top:16px;font-size:9pt}
 }
+button.chico.gris{color:var(--color);border-color:var(--color)}
