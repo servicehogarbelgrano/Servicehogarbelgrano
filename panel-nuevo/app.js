@@ -1,4 +1,4 @@
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611261140';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611261215';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -240,7 +240,7 @@ function vConfig() {
     (S.items[eqSel] || []).map((i, n) => '<div class="fila"><div>' + esc(i) + '</div><div class="bts"><button class="sec" data-acc="itemUp" data-n="' + n + '">↑</button><button class="sec" data-acc="itemDel" data-n="' + n + '">Quitar</button></div></div>').join('') + '<div class="dos"><input id="nuevoItem" placeholder="Nuevo ítem"><button class="prim" data-acc="itemAdd">Agregar</button></div></div>' +
     '<div class="card"><h2>Apariencia</h2>' + op('fondo', 'Fondo', 'Claro, oscuro o automático según el celular.', [['claro', 'Claro'], ['oscuro', 'Oscuro'], ['auto', 'Automático']]) + op('letra', 'Tamaño de letra', 'Cambia el tamaño de todo el panel.', [['chica', 'Chica'], ['normal', 'Normal'], ['grande', 'Grande'], ['extra', 'Extra grande']]) +
     '<label>Color de los botones</label><div class="botones">' + [['#0b57d0', 'Azul'], ['#0f766e', 'Verde azulado'], ['#b45309', 'Naranja'], ['#9d174d', 'Fucsia'], ['#4338ca', 'Violeta']].map(([v, n]) => '<button data-acc="opt" data-k="color" data-v="' + v + '" class="' + (c.color === v ? 'sel' : '') + '">' + n + '</button>').join('') + '</div><button class="sec" data-acc="apOrig">Volver al original</button></div>' +
-    '<div class="card"><h2>Ayuda</h2><button class="sec" data-acc="irInfo">Info: cómo funciona cada cosa</button><div class="fila"><div>Stickers (hoja A3)<br><small>16 stickers por hoja, listos para imprimir.</small></div><a class="btn" href="stickers-hoja-A3.pdf" target="_blank" rel="noopener">Abrir PDF</a></div></div>' +
+    '<div class="card"><h2>Ayuda</h2><button class="sec" data-acc="irInfo">Info: cómo funciona cada cosa</button><div class="fila"><div>Stickers (hoja A3)<br><small>16 stickers por hoja, listos para imprimir.</small></div><button class="sec" data-acc="stickersPdf">Compartir / imprimir</button></div></div>' +
     (S.user.email.toLowerCase() === 'mauricio.d.bustos@gmail.com' ? '<div class="card"><h2>Técnicos habilitados (solo dueño)</h2><small>Bruno y Mauricio ya están. Para sumar a alguien más hay que agregar su mail acá y sumarlo en la app.</small><div class="dos"><input id="nuevoTec" type="email" placeholder="mail@gmail.com"><button class="sec" data-acc="addTec">Habilitar</button></div></div>' : '') +
     '<button class="sec" data-acc="salir">Cerrar sesión</button>';
 }
@@ -383,6 +383,13 @@ const ACC = {
   itemUp: el => { const k = S.p.cfgEq || 'lavarropas', n = +el.dataset.n; if (!n) return; const a = S.items[k].slice(); [a[n - 1], a[n]] = [a[n], a[n - 1]]; S.items = { ...S.items, [k]: a }; setDoc(doc(db, 'config', 'items'), { [k]: a }, { merge: true }); pintar(); },
   apOrig: () => { guardarCfg({ fondo: 'auto', color: '#0b57d0', letra: 'normal' }); pintar(); },
   irInfo: () => ir('info'),
+  stickersPdf: async () => {
+    try {
+      const r = await fetch('stickers-hoja-A3.pdf'), b = await r.blob(), f = new File([b], 'stickers-hoja-A3.pdf', { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: 'Stickers' }); return; }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'stickers-hoja-A3.pdf'; a.click();
+    } catch (e) { if (e && e.name !== 'AbortError') { S.msg = 'No se pudo abrir el PDF.'; pintar(); } }
+  },
   addTec: () => { const m = lee('nuevoTec').toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(m)) return; setDoc(doc(db, 'tecnicos', m), { alta: hoyISO() }); S.msg = 'Mail habilitado en la base: ' + m; pintar(); },
   salir: () => signOut(auth)
 };
