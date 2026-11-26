@@ -145,7 +145,7 @@ function vCliente() {
   const c = S.clientes.find(x => x.id === S.p.id); if (!c) return '<p class="vacio">Cliente no encontrado.</p>';
   const eqs = equiposDe(c.id);
   return '<div class="top"><h1>' + esc(c.nombre) + '</h1></div><div class="card"><label>Nombre</label><input id="c_nombre" value="' + esc(c.nombre) + '"><label>Teléfono</label><input id="c_tel" type="tel" value="' + esc(verTel(c.telefono)) + '"><label>Dirección</label><input id="c_dir" value="' + esc(c.direccion) + '"><p class="err" id="err"></p><button class="prim" data-acc="guardarCliente" data-id="' + c.id + '">Guardar datos</button></div>' +
-    '<div class="card"><h2>Equipos</h2>' + (eqs.length ? eqs.map(e => '<div class="fila clic" data-acc="abrirEquipo" data-id="' + e.id + '"><div><b>' + esc((EQ[e.tipo] || EQ.otro).nombre) + ' ' + esc(e.marca) + '</b>' + (e.baja ? ' <span class="chip">Dado de baja</span>' : '') + '<br><small>Clave ' + fmtClave(e.id) + (e.ultimaFecha ? ' · último service ' + fechaCorta(e.ultimaFecha) + ' (' + esc(e.ultimoTecnico) + ')' : '') + '</small></div><span>›</span></div>').join('') : '<p class="vacio">Sin equipos.</p>') + '<button class="sec" data-acc="irAgregarEquipo" data-id="' + c.id + '">+ Agregar otro equipo</button></div>';
+    '<div class="card"><h2>Equipos</h2>' + (eqs.length ? eqs.map(e => '<div class="fila clic" data-acc="abrirEquipo" data-id="' + e.id + '"><div><b>' + esc((EQ[e.tipo] || EQ.otro).nombre) + ' ' + esc(e.marca) + '</b>' + (e.baja ? ' <span class="chip">Dado de baja</span>' : '') + '<br><small>Clave ' + fmtClave(e.id) + (e.ultimaFecha ? ' · último service ' + fechaCorta(e.ultimaFecha) + ' (' + esc(e.ultimoTecnico) + ')' : '') + '</small></div><span>›</span></div>').join('') : '<p class="vacio">Sin equipos.</p>') + '<button class="sec" data-acc="irAgregarEquipo" data-id="' + c.id + '">+ Agregar otro equipo</button></div><button class="sec chico" data-acc="borrarCliente" data-id="' + c.id + '">Borrar cliente</button>';
 }
 
 async function cargarSvcs(clave) {
@@ -165,7 +165,7 @@ function vEquipo() {
     '<div class="card"><button class="sec" data-acc="enviarFicha" data-id="' + e.id + '">Enviar clave / ficha por WhatsApp</button></div>' +
     '<div class="card"><h2>Mantenimiento</h2><div class="botones">' + ['ninguno', 'seguimiento', 'mantenimiento'].map(t => '<button data-acc="setMant" data-id="' + e.id + '" data-v="' + t + '" class="' + (m.tipo === t ? 'sel' : '') + '">' + t[0].toUpperCase() + t.slice(1) + '</button>').join('') + '</div>' + (m.fecha ? '<small>Próximo aviso: ' + fechaCorta(m.fecha) + '</small>' : '') + '</div>' +
     '<div class="card"><h2>Historial</h2>' + (S.svcs.length ? S.svcs.map(s => '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<small>Ítems: ' + esc(s.items.join(', ')) + '</small><br>' : '') + esc(s.detalle || '') + (s.motivo ? '<br><small>Motivo: ' + esc(s.motivo) + '</small>' : '') + '<br><small>Garantía ' + s.garantiaDias + ' días (vence ' + fechaCorta(addDias(s.fecha, +s.garantiaDias || 0)) + ')</small></div>').join('') : '<p class="vacio">Todavía no hay services.</p>') + '</div>' +
-    (!e.baja ? '<button class="sec chico" data-acc="baja" data-id="' + e.id + '">Dar de baja el equipo</button>' : '');
+    (!e.baja ? '<button class="sec chico" data-acc="baja" data-id="' + e.id + '">Dar de baja el equipo</button> ' : '') + '<button class="sec chico" data-acc="borrarEquipo" data-id="' + e.id + '">Borrar equipo</button>';
 }
 
 function vNuevoService() {
@@ -249,6 +249,17 @@ const ACC = {
   enviarAviso: el => { const a = S.avisos.find(x => x.id === el.dataset.id); if (!a) return; abrirWA(a.telefono, textoAviso(a)); marcarAviso(a.id, 'enviado'); },
   volverPend: el => setDoc(doc(db, 'avisos', el.dataset.id), { estado: 'pendiente' }, { merge: true }),
   irEnviados: () => ir('enviados'),
+  borrarEquipo: async el => {
+    const e = S.equipos.find(x => x.id === el.dataset.id); if (!e) return;
+    if (!confirm('¿Borrar el equipo ' + fmtClave(e.id) + ' con todo su historial? No se puede deshacer.')) return;
+    try { await borrarEquipoDatos(e.id); S.equipos = S.equipos.filter(x => x.id !== e.id); ir('clientes'); S.msg = 'Equipo borrado.'; pintar(); } catch (er) { S.msg = 'No se pudo borrar: ' + (er.code || er.message); pintar(); }
+  },
+  borrarCliente: async el => {
+    const c = S.clientes.find(x => x.id === el.dataset.id); if (!c) return;
+    const eqs = equiposDe(c.id);
+    if (!confirm('¿Borrar a ' + c.nombre + ' con ' + eqs.length + ' equipo(s) y todo su historial? No se puede deshacer.')) return;
+    try { for (const e of eqs) await borrarEquipoDatos(e.id); const b = writeBatch(db); b.delete(doc(db, 'clientes', c.id)); await b.commit(); S.clientes = S.clientes.filter(x => x.id !== c.id); S.equipos = S.equipos.filter(x => x.clienteId !== c.id); ir('clientes'); S.msg = 'Cliente borrado.'; pintar(); } catch (er) { S.msg = 'No se pudo borrar: ' + (er.code || er.message); pintar(); }
+  },
   noMandar: el => marcarAviso(el.dataset.id, 'descartado'),
   irNuevoCliente: () => { pickEq = ''; ir('nuevoCliente'); },
   abrirCliente: el => ir('cliente', { id: el.dataset.id }),
@@ -353,6 +364,12 @@ const ACC = {
   addTec: () => { const m = lee('nuevoTec').toLowerCase(); if (!/^\S+@\S+\.\S+$/.test(m)) return; setDoc(doc(db, 'tecnicos', m), { alta: hoyISO() }); S.msg = 'Mail habilitado en la base: ' + m; pintar(); },
   salir: () => signOut(auth)
 };
+async function borrarEquipoDatos(clave) {
+  const sv = await getDocs(collection(db, 'equipos', clave, 'services'));
+  const av = await getDocs(query(collection(db, 'avisos'), where('clave', '==', clave)));
+  const refs = [...sv.docs.map(d => d.ref), ...av.docs.map(d => d.ref), ...sv.docs.map(d => doc(db, 'movimientos', d.id)), doc(db, 'avisos', 'm_' + clave), doc(db, 'equipos', clave)];
+  for (let i = 0; i < refs.length; i += 400) { const b = writeBatch(db); refs.slice(i, i + 400).forEach(r => b.delete(r)); await b.commit(); }
+}
 function guardarForm() { const f = S.p.form; if (!f) return; const d = $('detalle'); if (d && d.value !== f.detalle) { f.detalle = d.value; f.detalleEditado = true; } f.motivo = lee('motivo'); const g = $('gar'); if (g) f.garantia = g.value; const fe = $('fecha'); if (fe) f.fecha = fe.value; }
 
 document.addEventListener('click', ev => {
