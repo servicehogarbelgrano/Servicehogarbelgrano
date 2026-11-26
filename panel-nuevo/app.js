@@ -2,7 +2,7 @@ import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, E
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
-const { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, getDocs, onSnapshot, query, where, writeBatch, setDoc } = await import(SDK + 'firebase-firestore.js');
+const { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, getDocs, onSnapshot, query, where, writeBatch, setDoc, deleteDoc } = await import(SDK + 'firebase-firestore.js');
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -11,7 +11,7 @@ const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabMana
 const $ = id => document.getElementById(id);
 const S = {
   user: null, tec: null, cfg: JSON.parse(JSON.stringify(DEFAULT_CFG)), items: ITEMS,
-  clientes: [], equipos: [], avisos: [], hechos: [], movs: [],
+  clientes: [], equipos: [], avisos: [], hechos: [], cobros: [], cobrosEq: {}, movs: [],
   vista: 'inicio', p: {}, filtro: 'mine', q: '', svcs: [], msg: ''
 };
 let unsubs = [];
@@ -50,6 +50,7 @@ function iniciar() {
   escuchar(collection(db, 'equipos'), s => S.equipos = s.docs.map(d => ({ id: d.id, ...d.data() })));
   escuchar(query(collection(db, 'avisos'), where('estado', '==', 'pendiente')), s => S.avisos = s.docs.map(d => ({ id: d.id, ...d.data() })));
   escuchar(query(collection(db, 'avisos'), where('estado', 'in', ['enviado', 'descartado'])), s => S.hechos = s.docs.map(d => ({ id: d.id, ...d.data() })));
+  unsubs.push(onSnapshot(query(collection(db, 'cobros'), where('fecha', '>=', hoyISO().slice(0, 7) + '-01')), s => { S.cobros = s.docs.map(d => ({ id: d.id, ...d.data() })); pintar(); }, () => {}));
   const mes = hoyISO().slice(0, 7) + '-01';
   escuchar(query(collection(db, 'movimientos'), where('fecha', '>=', mes)), s => S.movs = s.docs.map(d => ({ id: d.id, ...d.data() })));
   escuchar(doc(db, 'config', 't_' + S.tec.nombre), s => { S.cfg = fusion(DEFAULT_CFG, s.exists() ? s.data() : {}); aplicarApariencia(); });
@@ -92,7 +93,7 @@ function dibujar() {
   if (!S.tec) return;
   document.querySelectorAll('#nav [data-nav]').forEach(b => b.classList.toggle('on', b.dataset.nav === (['cliente', 'nuevoCliente', 'clientes'].includes(S.vista) ? 'clientes' : ['equipo', 'equipos', 'nuevoService', 'clave'].includes(S.vista) ? (S.vista === 'equipos' ? 'equipos' : 'clientes') : S.vista)));
   $('off').hidden = navigator.onLine;
-  const V = { inicio: vInicio, clientes: vClientes, cliente: vCliente, nuevoCliente: vNuevoCliente, equipo: vEquipo, nuevoService: vNuevoService, clave: vClave, mant: vMant, enviados: vEnviados, equipos: vEquipos, config: vConfig, info: vInfo };
+  const V = { inicio: vInicio, clientes: vClientes, cliente: vCliente, nuevoCliente: vNuevoCliente, equipo: vEquipo, nuevoService: vNuevoService, clave: vClave, mant: vMant, cobros: vCobros, enviados: vEnviados, equipos: vEquipos, config: vConfig, info: vInfo };
   $('app').innerHTML = (S.msg ? '<div class="aviso">' + esc(S.msg) + '</div>' : '') + (V[S.vista] || vInicio)();
   if (S.vista === 'nuevoService') actualizarDetalle();
 }
@@ -112,7 +113,14 @@ function vInicio() {
     '<div class="tarjetas"><div class="tj"><b>' + movs.length + '</b><span>Services del mes</span></div><div class="tj"><b>' + vencen.length + '</b><span>Para hoy</span></div><div class="tj"><b>' + S.clientes.length + '</b><span>Clientes</span></div><div class="tj"><b>' + S.equipos.length + '</b><span>Equipos</span></div></div>' +
     (sig ? '<div class="card tanda"><small>Siguiente aviso (quedan ' + vencen.length + ')</small><h2>' + esc(sig.cliente) + ' · ' + esc((EQ[sig.equipo] || EQ.otro).nombre) + '</h2><p>' + ETIQ[sig.tipo] + '</p><button class="prim grande" data-acc="enviarAviso" data-id="' + sig.id + '">Enviar por WhatsApp</button><button class="sec" data-acc="noMandar" data-id="' + sig.id + '">No mandar</button></div>' : '') +
     '<div class="card"><h2>Para hoy</h2>' + (vencen.length ? vencen.map(fila).join('') : '<p class="vacio">Nada para hoy.</p>') + '</div>' +
-    (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + '</div>' : '') + '<button class="sec grande" data-acc="irEnviados">Ver mensajes enviados</button>';
+    (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + '</div>' : '') + '<button class="sec grande" data-acc="irEnviados">Ver mensajes enviados</button><button class="sec grande" data-acc="irCobros">Ver cobros del mes</button>';
+}
+
+function vCobros() {
+  const l = S.cobros.filter(x => S.filtro === 'todos' || x.tecnico === S.tec.nombre).sort((a, b) => b.fecha.localeCompare(a.fecha));
+  const tot = l.reduce((t, x) => t + (+x.monto || 0), 0), $$ = n => '$' + Math.round(n).toLocaleString('es-AR');
+  return '<div class="top"><h1>Cobros del mes</h1>' + filtroHTML() + '</div><div class="card"><small>Total anotado este mes</small><div class="key" style="font-size:1.8rem;letter-spacing:0">' + $$(tot) + '</div><small>Es solo un recordatorio tuyo: el cliente no lo ve.</small></div><div class="card">' +
+    (l.length ? l.map(x => '<div class="fila"><div><b>' + esc(x.cliente) + '</b> · ' + esc((EQ[x.equipo] || EQ.otro).nombre) + '<br><small>' + fechaCorta(x.fecha) + ' · ' + esc(x.tecnico) + (x.nota ? ' · ' + esc(x.nota) : '') + '</small></div><div class="bts"><b>' + $$(x.monto) + '</b><button class="sec chico" data-acc="borrarCobro" data-id="' + x.id + '">Borrar</button></div></div>').join('') : '<p class="vacio">Todavía no anotaste cobros este mes.</p>') + '</div>';
 }
 
 function vEnviados() {
@@ -151,6 +159,8 @@ function vCliente() {
 async function cargarSvcs(clave) {
   S.svcs = [];
   try { const s = await getDocs(collection(db, 'equipos', clave, 'services')); S.svcs = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.fecha.localeCompare(a.fecha)); } catch (e) { S.msg = 'No se pudo leer el historial: ' + e.code; }
+  S.cobrosEq = {};
+  try { const c = await getDocs(query(collection(db, 'cobros'), where('clave', '==', clave))); c.docs.forEach(d => S.cobrosEq[d.id] = d.data()); } catch (_) {}
   pintar();
 }
 function vEquipo() {
@@ -164,7 +174,7 @@ function vEquipo() {
     '<button class="prim grande" data-acc="nuevoService" data-id="' + e.id + '">+ Nuevo service</button>' +
     '<div class="card"><button class="sec" data-acc="enviarFicha" data-id="' + e.id + '">Enviar clave / ficha por WhatsApp</button></div>' +
     '<div class="card"><h2>Mantenimiento</h2><div class="botones">' + ['ninguno', 'seguimiento', 'mantenimiento'].map(t => '<button data-acc="setMant" data-id="' + e.id + '" data-v="' + t + '" class="' + (m.tipo === t ? 'sel' : '') + '">' + t[0].toUpperCase() + t.slice(1) + '</button>').join('') + '</div>' + (m.fecha ? '<small>Próximo aviso: ' + fechaCorta(m.fecha) + '</small>' : '') + '</div>' +
-    '<div class="card"><h2>Historial</h2>' + (S.svcs.length ? S.svcs.map(s => '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<small>Ítems: ' + esc(s.items.join(', ')) + '</small><br>' : '') + esc(s.detalle || '') + (s.motivo ? '<br><small>Motivo: ' + esc(s.motivo) + '</small>' : '') + '<br><small>Garantía ' + s.garantiaDias + ' días (vence ' + fechaCorta(addDias(s.fecha, +s.garantiaDias || 0)) + ')</small></div>').join('') : '<p class="vacio">Todavía no hay services.</p>') + '</div>' +
+    '<div class="card"><h2>Historial</h2>' + (S.svcs.length ? S.svcs.map(s => '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<small>Ítems: ' + esc(s.items.join(', ')) + '</small><br>' : '') + esc(s.detalle || '') + (s.motivo ? '<br><small>Motivo: ' + esc(s.motivo) + '</small>' : '') + (S.cobrosEq[s.id] ? '<br><small class="priv">Cobrado $' + S.cobrosEq[s.id].monto + (S.cobrosEq[s.id].nota ? ' · ' + esc(S.cobrosEq[s.id].nota) : '') + ' (solo técnicos)</small>' : '<br><button class="sec chico" data-acc="anotarCobro" data-id="' + s.id + '" data-clave="' + e.id + '">Anotar cobro</button>') + '<br><small>Garantía ' + s.garantiaDias + ' días (vence ' + fechaCorta(addDias(s.fecha, +s.garantiaDias || 0)) + ')</small></div>').join('') : '<p class="vacio">Todavía no hay services.</p>') + '</div>' +
     (!e.baja ? '<button class="sec chico" data-acc="baja" data-id="' + e.id + '">Dar de baja el equipo</button> ' : '') + '<button class="sec chico" data-acc="borrarEquipo" data-id="' + e.id + '">Borrar equipo</button>';
 }
 
@@ -177,6 +187,7 @@ function vNuevoService() {
     '<label>Detalle</label><textarea id="detalle" rows="3">' + esc(f.detalle) + '</textarea>' +
     '<label>Motivo / falla</label><input id="motivo" value="' + esc(f.motivo) + '" placeholder="Ej: el horno no prendía">' +
     '<div class="dos"><div><label>Garantía (días)</label><input id="gar" type="number" value="' + f.garantia + '"></div><div><label>Fecha</label><input id="fecha" type="date" value="' + f.fecha + '"></div></div>' +
+    '<label>Cobrado (solo para vos, el cliente no lo ve) ' + ayuda('Anotá lo que cobraste como recordatorio. No aparece en la ficha del cliente. Después lo ves todo junto en Mantenimiento > Cobros, desde Inicio.') + '</label><div class="dos"><input id="cobro" type="number" inputmode="decimal" placeholder="$ monto" value="' + esc(f.cobro) + '"><input id="cobroNota" placeholder="Nota (ej: efectivo, debe)" value="' + esc(f.cobroNota) + '"></div>' +
     '<label>Mantenimiento ' + ayuda('Ninguno: no se avisa. Seguimiento: un aviso corto para preguntar cómo anda. Mantenimiento: aviso para volver a hacer el service (aires, lavarropas con abono, etc.).') + '</label><div class="botones">' + ['ninguno', 'seguimiento', 'mantenimiento'].map(t => '<button type="button" data-acc="svcMant" data-v="' + t + '" class="' + (f.mant === t ? 'sel' : '') + '">' + t[0].toUpperCase() + t.slice(1) + '</button>').join('') + '</div>' +
     (f.mant === 'mantenimiento' ? '<label>Avisar dentro de</label><div class="botones">' + [3, 6, 12].map(m => '<button type="button" data-acc="svcMeses" data-v="' + m + '" class="' + (f.meses === m ? 'sel' : '') + '">' + m + ' meses</button>').join('') + '</div>' : '') +
     '<label>Reseña ' + ayuda('Sí: a los ' + c.resenaDias + ' días te aparece el aviso para pedir la reseña de Google. No: no se crea ningún aviso.') + '</label><div class="botones"><button type="button" data-acc="svcResena" data-v="1" class="' + (f.resena ? 'sel' : '') + '">Sí</button><button type="button" data-acc="svcResena" data-v="0" class="' + (!f.resena ? 'sel' : '') + '">No</button></div>' +
@@ -249,6 +260,15 @@ const ACC = {
   enviarAviso: el => { const a = S.avisos.find(x => x.id === el.dataset.id); if (!a) return; abrirWA(a.telefono, textoAviso(a)); marcarAviso(a.id, 'enviado'); },
   volverPend: el => setDoc(doc(db, 'avisos', el.dataset.id), { estado: 'pendiente' }, { merge: true }),
   irEnviados: () => ir('enviados'),
+  irCobros: () => ir('cobros'),
+  anotarCobro: el => {
+    const v = prompt('¿Cuánto se cobró? (solo vos lo ves)'); if (v == null) return; const m = +String(v).replace(/[^\d.,]/g, '').replace(',', '.'); if (!(m > 0)) return;
+    const e = S.equipos.find(x => x.id === el.dataset.clave), c = e && clienteDe(e), sv = S.svcs.find(x => x.id === el.dataset.id); if (!sv) return;
+    const d = { fecha: sv.fecha, tecnico: sv.tecnico, clave: el.dataset.clave, cliente: c ? c.nombre : '', equipo: sv.tipo, monto: m, nota: '' };
+    S.cobrosEq[el.dataset.id] = d; pintar();
+    setDoc(doc(db, 'cobros', el.dataset.id), d).catch(() => { delete S.cobrosEq[el.dataset.id]; S.msg = 'No se pudo anotar el cobro.'; pintar(); });
+  },
+  borrarCobro: el => { if (confirm('¿Borrar este cobro?')) deleteDoc(doc(db, 'cobros', el.dataset.id)); },
   borrarEquipo: async el => {
     const e = S.equipos.find(x => x.id === el.dataset.id); if (!e) return;
     if (!confirm('¿Borrar el equipo ' + fmtClave(e.id) + ' con todo su historial? No se puede deshacer.')) return;
@@ -315,7 +335,7 @@ const ACC = {
   reactivar: el => { const e = S.equipos.find(x => x.id === el.dataset.id); e.baja = false; setDoc(doc(db, 'equipos', e.id), { baja: false }, { merge: true }); pintar(); },
   nuevoService: el => {
     const e = S.equipos.find(x => x.id === el.dataset.id);
-    ir('nuevoService', { id: e.id, form: { equipo: e.tipo, items: [], detalle: '', detalleEditado: false, motivo: '', garantia: S.cfg.garantia, fecha: hoyISO(), mant: S.cfg.mantDefault, meses: 6, resena: S.cfg.resena, tecnico: S.tec.nombre } });
+    ir('nuevoService', { id: e.id, form: { equipo: e.tipo, items: [], detalle: '', detalleEditado: false, motivo: '', garantia: S.cfg.garantia, fecha: hoyISO(), mant: S.cfg.mantDefault, meses: 6, resena: S.cfg.resena, tecnico: S.tec.nombre, cobro: '', cobroNota: '' } });
   },
   svcEq: el => { guardarForm(); S.p.form.equipo = el.dataset.v; S.p.form.items = []; S.p.form.detalleEditado = false; pintar(); },
   svcItem: el => { guardarForm(); const f = S.p.form, i = el.dataset.v; f.items = f.items.includes(i) ? f.items.filter(x => x !== i) : f.items.concat(i); pintar(); },
@@ -339,6 +359,7 @@ const ACC = {
     if (f.mant !== 'ninguno') { const fm = f.mant === 'seguimiento' ? addDias(f.fecha, 30) : addMeses(f.fecha, f.meses); upd.mantenimiento = { tipo: f.mant, fecha: fm }; b.set(doc(db, 'avisos', 'm_' + e.id), { ...base, tipo: f.mant === 'seguimiento' ? 'seg' : 'mant', fecha: fm }); }
     else upd.mantenimiento = { tipo: 'ninguno' };
     b.set(doc(db, 'equipos', e.id), upd, { merge: true });
+    if (+f.cobro > 0) setDoc(doc(db, 'cobros', id), { fecha: f.fecha, tecnico: tec, clave: e.id, cliente: c ? c.nombre : '', equipo: f.equipo, monto: +f.cobro, nota: f.cobroNota || '' }).catch(() => { S.msg = 'El service se guardó, pero el cobro no (falta habilitar los cobros en Firebase).'; pintar(); });
     const r = await Promise.race([b.commit().then(() => 'ok'), new Promise(res => setTimeout(() => res('lento'), 5000))]);
     Object.assign(e, upd);
     ir('equipo', { id: e.id }); cargarSvcs(e.id);
@@ -370,7 +391,7 @@ async function borrarEquipoDatos(clave) {
   const refs = [...sv.docs.map(d => d.ref), ...av.docs.map(d => d.ref), ...sv.docs.map(d => doc(db, 'movimientos', d.id)), doc(db, 'avisos', 'm_' + clave), doc(db, 'equipos', clave)];
   for (let i = 0; i < refs.length; i += 400) { const b = writeBatch(db); refs.slice(i, i + 400).forEach(r => b.delete(r)); await b.commit(); }
 }
-function guardarForm() { const f = S.p.form; if (!f) return; const d = $('detalle'); if (d && d.value !== f.detalle) { f.detalle = d.value; f.detalleEditado = true; } f.motivo = lee('motivo'); const g = $('gar'); if (g) f.garantia = g.value; const fe = $('fecha'); if (fe) f.fecha = fe.value; }
+function guardarForm() { const f = S.p.form; if (!f) return; const d = $('detalle'); if (d && d.value !== f.detalle) { f.detalle = d.value; f.detalleEditado = true; } f.motivo = lee('motivo'); const g = $('gar'); if (g) f.garantia = g.value; const fe = $('fecha'); if (fe) f.fecha = fe.value; const co = $('cobro'); if (co) f.cobro = co.value; const cn = $('cobroNota'); if (cn) f.cobroNota = cn.value.trim(); }
 
 document.addEventListener('click', ev => {
   const nav = ev.target.closest('[data-nav]'); if (nav && S.tec) { S.q = ''; const v = nav.dataset.nav; if (v === 'nuevo') { pickEq = ''; ir('nuevoCliente'); } else ir(v); return; }
