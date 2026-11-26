@@ -1,4 +1,4 @@
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611261030';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611261100';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -197,7 +197,7 @@ function vNuevoService() {
 function actualizarDetalle() {
   const f = S.p.form; if (!f || f.detalleEditado) return;
   const e = S.equipos.find(x => x.id === S.p.id), eq = EQ[(e && e.tipo) || f.equipo] || EQ.otro;
-  const d = f.items.filter(i => i !== 'Otro').map(i => FRASES[i.toLowerCase()] || 'el servicio de ' + i.toLowerCase());
+  const d = f.items.filter(i => i !== 'Otro').map(i => FRASES[((e && e.tipo) || f.equipo) + ':' + i.toLowerCase()] || FRASES[i.toLowerCase()] || 'el servicio de ' + i.toLowerCase());
   const t = d.length ? 'En ' + demostrativo(eq.art) + ' se realizó ' + lista(d) + '.' : '';
   f.detalle = t; const el = $('detalle'); if (el) el.value = t;
 }
