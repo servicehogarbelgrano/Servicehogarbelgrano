@@ -142,3 +142,5 @@ export const FRASES = {
   'estufa:piloto': 'la reparación del piloto de la estufa, con limpieza y ajuste, y se verificó que quede encendido y que la estufa funcione correctamente'
 };
 export const demostrativo = art => art.startsWith('el ') ? 'este ' + art.slice(3) : art.startsWith('la ') ? 'esta ' + art.slice(3) : 'este equipo';
+
+export const NEGOCIO = { nombre: 'Service Hogar Belgrano', direccion: "O'Higgins 2183 Local 11, Belgrano, CABA", web: 'servicehogarbelgrano.com.ar', instagram: '@servicehogarbelgrano', logo: 'https://servicehogarbelgrano.com.ar/logo.png' };

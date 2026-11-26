@@ -1,4 +1,4 @@
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, EQ, GARANTIA_TEXTO, esc, normClave, fmtClave, addDias, fechaCorta, waLink, BASE } from './config.js';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, EQ, GARANTIA_TEXTO, NEGOCIO, esc, normClave, fmtClave, addDias, fechaCorta, waLink, BASE } from './config.js';
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getFirestore, doc, getDoc, getDocs, collection } = await import(SDK + 'firebase-firestore.js');
 const db = getFirestore(initializeApp(firebaseConfig));
@@ -45,7 +45,7 @@ function vFicha() {
   const any = svcs.some(vigente);
   const tec = e.tipo === 'heladera' ? POR_NOMBRE.Bruno : tecPorNombre(ult ? ult.tecnico : e.tecnicoAlta);
   const lst = todos ? svcs : svcs.slice(0, 5);
-  const svcHTML = s => { const v = addDias(s.fecha, +s.garantiaDias || 0), ok = vigente(s); return '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · Service realizado por ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<div class="cubre">Cubre: ' + esc(s.items.join(', ')) + '</div>' : '') + (s.detalle ? '<div>' + esc(s.detalle) + '</div>' : '') + (s.motivo ? '<small>Motivo: ' + esc(s.motivo) + '</small><br>' : '') + '<span class="' + (ok ? 'ok' : 'mal') + '">Garantía ' + (ok ? 'vigente' : 'vencida') + ' · ' + s.garantiaDias + ' días · vence ' + fechaCorta(v) + '</span><details><summary>Ver condiciones de la garantía</summary><p>' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p></details></div>'; };
+  const svcHTML = s => { const v = addDias(s.fecha, +s.garantiaDias || 0), ok = vigente(s); return '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · Service realizado por ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<div class="cubre">Cubre: ' + esc(s.items.join(', ')) + '</div>' : '') + (s.detalle ? '<div>' + esc(s.detalle) + '</div>' : '') + (s.motivo ? '<small>Motivo: ' + esc(s.motivo) + '</small><br>' : '') + '<span class="' + (ok ? 'ok' : 'mal') + '">Garantía ' + (ok ? 'vigente' : 'vencida') + ' · ' + s.garantiaDias + ' días · vence ' + fechaCorta(v) + '</span><button class="sec chico" data-comp="' + s.id + '">Comprobante (imprimir o guardar PDF)</button><details><summary>Ver condiciones de la garantía</summary><p>' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p></details></div>'; };
   const cal = e.mantenimiento && e.mantenimiento.fecha;
   const otros = guardadas().filter(k => k !== clave);
   $('app').innerHTML =
@@ -78,3 +78,17 @@ document.addEventListener('click', ev => {
 
 const h = normClave(location.hash);
 if (h.length === 6) abrir(h, true); else vLogin();
+
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-comp]'); if (!b || !actual) return;
+  const s = actual.svcs.find(x => x.id === b.dataset.comp); if (!s) return;
+  const e = actual.e, eq = EQ[e.tipo] || EQ.otro, t = tecPorNombre(s.tecnico), v = addDias(s.fecha, +s.garantiaDias || 0);
+  let d = document.getElementById('comp'); if (d) d.remove();
+  d = document.createElement('div'); d.id = 'comp';
+  const fila = (k, x) => x ? '<tr><th>' + k + '</th><td>' + esc(x) + '</td></tr>' : '';
+  d.innerHTML = '<div class="ch"><img src="' + NEGOCIO.logo + '" alt="" onerror="this.remove()"><div><h1>' + NEGOCIO.nombre + '</h1><p>' + esc(NEGOCIO.direccion) + '<br>WhatsApp: Mauricio ' + '11 6571-1314' + ' · Bruno ' + '11 6748-9192' + '<br>' + NEGOCIO.web + ' · ' + NEGOCIO.instagram + '</p></div></div>' +
+    '<h2>Comprobante de service</h2><table>' + fila('Fecha', fechaCorta(s.fecha)) + fila('Cliente', e.clienteNombre) + fila('Equipo', (eq.nombre + ' ' + (e.marca || '') + ' ' + (e.modelo || '')).trim()) + fila('Clave del equipo', fmtClave(actual.clave)) + fila('Técnico', s.tecnico) + fila('Trabajo realizado', (s.items && s.items.length ? s.items.join(', ') + '. ' : '') + (s.detalle || '')) + fila('Motivo / falla', s.motivo) + fila('Garantía', s.garantiaDias + ' días, vence el ' + fechaCorta(v)) + '</table>' +
+    '<h3>Condiciones de la garantía</h3><p class="cg">' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p><p class="pie">Este comprobante acredita el servicio realizado y no es una factura. Ficha online: ' + NEGOCIO.web + '/ficha.html (clave ' + fmtClave(actual.clave) + ').</p>';
+  document.body.appendChild(d);
+  setTimeout(() => window.print(), 150);
+});
