@@ -1,4 +1,5 @@
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611261330';
+import qrcode from './qrcode.mjs';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611261350';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -174,7 +175,7 @@ function vEquipo() {
     '<button class="prim grande" data-acc="nuevoService" data-id="' + e.id + '">+ Nuevo service</button>' +
     '<div class="card"><button class="sec" data-acc="enviarFicha" data-id="' + e.id + '">Enviar clave / ficha por WhatsApp</button></div>' +
     '<div class="card"><h2>Mantenimiento</h2><div class="botones">' + ['ninguno', 'seguimiento', 'mantenimiento'].map(t => '<button data-acc="setMant" data-id="' + e.id + '" data-v="' + t + '" class="' + (m.tipo === t ? 'sel' : '') + '">' + t[0].toUpperCase() + t.slice(1) + '</button>').join('') + '</div>' + (m.fecha ? '<small>Próximo aviso: ' + fechaCorta(m.fecha) + '</small>' : '') + '</div>' +
-    '<div class="card"><h2>Historial</h2>' + (S.svcs.length ? S.svcs.map(s => '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<small>Ítems: ' + esc(s.items.join(', ')) + '</small><br>' : '') + esc(s.detalle || '') + (s.motivo ? '<br><small>Motivo: ' + esc(s.motivo) + '</small>' : '') + (S.cobrosEq[s.id] ? '<br><small class="priv">Cobrado $' + S.cobrosEq[s.id].monto + (S.cobrosEq[s.id].nota ? ' · ' + esc(S.cobrosEq[s.id].nota) : '') + ' (solo técnicos)</small>' : '<br><button class="sec chico" data-acc="anotarCobro" data-id="' + s.id + '" data-clave="' + e.id + '">Anotar cobro</button>') + '<br><small>Garantía ' + s.garantiaDias + ' días (vence ' + fechaCorta(addDias(s.fecha, +s.garantiaDias || 0)) + ')</small></div>').join('') : '<p class="vacio">Todavía no hay services.</p>') + '</div>' +
+    '<div class="card"><h2>Historial</h2>' + (S.svcs.length ? S.svcs.map(s => '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<small>Ítems: ' + esc(s.items.join(', ')) + '</small><br>' : '') + esc(s.detalle || '') + (s.motivo ? '<br><small>Motivo: ' + esc(s.motivo) + '</small>' : '') + (S.cobrosEq[s.id] ? '<br><small class="priv">Cobrado $' + S.cobrosEq[s.id].monto + (S.cobrosEq[s.id].nota ? ' · ' + esc(S.cobrosEq[s.id].nota) : '') + ' (solo técnicos)</small>' : '<br><button class="sec chico" data-acc="anotarCobro" data-id="' + s.id + '" data-clave="' + e.id + '">Anotar cobro</button>') + '<br><button class="sec chico gris" data-acc="comprobante" data-id="' + s.id + '" data-precio="0">Comprobante</button> <button class="sec chico gris" data-acc="comprobante" data-id="' + s.id + '" data-precio="1">Comprobante con precio</button><br><small>Garantía ' + s.garantiaDias + ' días (vence ' + fechaCorta(addDias(s.fecha, +s.garantiaDias || 0)) + ')</small></div>').join('') : '<p class="vacio">Todavía no hay services.</p>') + '</div>' +
     (!e.baja ? '<button class="sec chico" data-acc="baja" data-id="' + e.id + '">Dar de baja el equipo</button> ' : '') + '<button class="sec chico" data-acc="borrarEquipo" data-id="' + e.id + '">Borrar equipo</button>';
 }
 
@@ -280,6 +281,16 @@ const ACC = {
   volverPend: el => setDoc(doc(db, 'avisos', el.dataset.id), { estado: 'pendiente' }, { merge: true }),
   irEnviados: () => ir('enviados'),
   irCobros: () => ir('cobros'),
+  comprobante: el => {
+    const e = S.equipos.find(x => x.id === S.p.id), s = S.svcs.find(x => x.id === el.dataset.id); if (!e || !s) return;
+    let monto = null;
+    if (el.dataset.precio === '1') {
+      const cb = S.cobrosEq[s.id];
+      if (cb) monto = cb.monto;
+      else { const v = prompt('¿Cuánto cobraste por este service? (se imprime en el comprobante)'); if (v == null) return; monto = +String(v).replace(/[^\d.,]/g, '').replace(',', '.'); if (!(monto > 0)) return; }
+    }
+    mostrarComprobante(e, s, monto);
+  },
   anotarCobro: el => {
     const v = prompt('¿Cuánto se cobró? (solo vos lo ves)'); if (v == null) return; const m = +String(v).replace(/[^\d.,]/g, '').replace(',', '.'); if (!(m > 0)) return;
     const e = S.equipos.find(x => x.id === el.dataset.clave), c = e && clienteDe(e), sv = S.svcs.find(x => x.id === el.dataset.id); if (!sv) return;
@@ -429,3 +440,19 @@ document.addEventListener('input', ev => {
 });
 document.addEventListener('change', ev => { const k = ev.target.dataset && ev.target.dataset.cfg; if (k) guardarCfg({ [k]: +ev.target.value || 0 }); });
 if ('serviceWorker' in navigator) { /* sin service worker por ahora: Firestore ya guarda los datos en el celu */ }
+
+function mostrarComprobante(e, s, monto) {
+  const eq = EQ[e.tipo] || EQ.otro, v = addDias(s.fecha, +s.garantiaDias || 0);
+  const fila = (k, x) => x ? '<tr><th>' + k + '</th><td>' + esc(x) + '</td></tr>' : '';
+  let qr = ''; try { const q = qrcode(0, 'M'); q.addData(FICHA_URL + '#' + normClave(e.id)); q.make(); qr = q.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); } catch (_) {}
+  const old = document.getElementById('comp'); if (old) old.remove();
+  const d = document.createElement('div'); d.id = 'comp';
+  d.innerHTML = '<div class="barra"><button id="cimp">Imprimir o guardar PDF</button><button class="sec" id="ccer">Cerrar</button></div>' +
+    '<div class="ch"><img src="' + NEGOCIO.logo + '" alt="" onerror="this.remove()"><div><h1>' + NEGOCIO.nombre + '</h1><p>' + esc(NEGOCIO.direccion) + '<br>WhatsApp: Mauricio 11 6571-1314 · Bruno 11 6748-9192<br>' + NEGOCIO.web + ' · ' + NEGOCIO.instagram + '</p></div></div>' +
+    '<h2>Comprobante de service</h2><table>' + fila('Fecha', fechaCorta(s.fecha)) + fila('Cliente', e.clienteNombre) + fila('Equipo', (eq.nombre + ' ' + (e.marca || '') + ' ' + (e.modelo || '')).trim()) + fila('Clave del equipo', fmtClave(e.id)) + fila('Técnico', s.tecnico) + fila('Trabajo realizado', (s.items && s.items.length ? s.items.join(', ') + '. ' : '') + (s.detalle || '')) + fila('Motivo / falla', s.motivo) + (monto ? fila('Importe', '$ ' + Math.round(monto).toLocaleString('es-AR')) : '') + fila('Garantía', s.garantiaDias + ' días, vence el ' + fechaCorta(v)) + '</table>' +
+    '<div class="qrb">' + qr + '<p>Escaneá este código para ver el historial y la garantía de tu equipo online.</p></div>' +
+    '<h3>Condiciones de la garantía</h3><p class="cg">' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p><p class="pie">Este comprobante acredita el servicio realizado y no es una factura. Ficha online: ' + NEGOCIO.web + ' (clave ' + fmtClave(e.id) + ').</p>';
+  document.body.appendChild(d); document.body.classList.add('vcomp'); window.scrollTo(0, 0);
+  document.getElementById('ccer').onclick = () => { d.remove(); document.body.classList.remove('vcomp'); };
+  document.getElementById('cimp').onclick = () => window.print();
+}
