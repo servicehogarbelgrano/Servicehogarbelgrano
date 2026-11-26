@@ -90,8 +90,10 @@ document.addEventListener('click', ev => {
   d.innerHTML = '<div class="ch"><img src="' + NEGOCIO.logo + '" alt="" onerror="this.remove()"><div><h1>' + NEGOCIO.nombre + '</h1><p>' + esc(NEGOCIO.direccion) + '<br>WhatsApp: Mauricio ' + '11 6571-1314' + ' · Bruno ' + '11 6748-9192' + '<br>' + NEGOCIO.web + ' · ' + NEGOCIO.instagram + '</p></div></div>' +
     '<h2>Comprobante de service</h2><table>' + fila('Fecha', fechaCorta(s.fecha)) + fila('Cliente', e.clienteNombre) + fila('Equipo', (eq.nombre + ' ' + (e.marca || '') + ' ' + (e.modelo || '')).trim()) + fila('Clave del equipo', fmtClave(actual.clave)) + fila('Técnico', s.tecnico) + fila('Trabajo realizado', (s.items && s.items.length ? s.items.join(', ') + '. ' : '') + (s.detalle || '')) + fila('Motivo / falla', s.motivo) + fila('Garantía', s.garantiaDias + ' días, vence el ' + fechaCorta(v)) + '</table>' +
     '<div class="qrb">' + qrSvg(FICHA_URL + '#' + normClave(actual.clave)) + '<p>Escaneá este código para ver el historial y la garantía de tu equipo online.</p></div>' + '<h3>Condiciones de la garantía</h3><p class="cg">' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p><p class="pie">Este comprobante acredita el servicio realizado y no es una factura. Ficha online: ' + NEGOCIO.web + '/ficha.html (clave ' + fmtClave(actual.clave) + ').</p>';
-  document.body.appendChild(d);
-  setTimeout(() => window.print(), 150);
+  d.insertAdjacentHTML('afterbegin', '<div class="barra"><button id="cimp">Imprimir o guardar PDF</button><button class="sec" id="ccer">Cerrar</button></div>');
+  document.body.appendChild(d); document.body.classList.add('vcomp'); window.scrollTo(0, 0);
+  document.getElementById('ccer').onclick = () => { d.remove(); document.body.classList.remove('vcomp'); };
+  document.getElementById('cimp').onclick = () => window.print();
 });
 
 function qrSvg(txt) { try { const q = qrcode(0, 'M'); q.addData(txt); q.make(); return q.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); } catch (_) { return ''; } }
