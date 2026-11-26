@@ -1,4 +1,4 @@
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611261215';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611261330';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -223,26 +223,44 @@ function vEquipos() {
 
 function vConfig() {
   const c = S.cfg, t = c.textos;
-  const sw = (k, tit, ay) => '<div class="fila"><div>' + tit + ' ' + ayuda(ay) + '</div><div class="botones"><button data-acc="sw" data-k="' + k + '" data-v="1" class="' + (c[k] ? 'sel' : '') + '">Sí</button><button data-acc="sw" data-k="' + k + '" data-v="0" class="' + (!c[k] ? 'sel' : '') + '">No</button></div></div>';
-  const num = (k, tit, ay) => '<label>' + tit + ' ' + ayuda(ay) + '</label><input type="number" data-cfg="' + k + '" value="' + c[k] + '">';
-  const op = (k, tit, ay, vals) => '<label>' + tit + ' ' + ayuda(ay) + '</label><div class="botones">' + vals.map(([v, n]) => '<button data-acc="opt" data-k="' + k + '" data-v="' + v + '" class="' + (c[k] === v ? 'sel' : '') + '">' + n + '</button>').join('') + '</div>';
+  const fi = (tit, sub, ctrl) => '<div class="fi"><div class="ft"><b>' + tit + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</div><div class="fc">' + ctrl + '</div></div>';
+  const sw = (k, tit, sub) => fi(tit, sub, '<button class="sw' + (c[k] ? ' on' : '') + '" role="switch" aria-checked="' + !!c[k] + '" aria-label="' + esc(tit) + '" data-acc="sw" data-k="' + k + '" data-v="' + (c[k] ? '0' : '1') + '"><i></i></button>');
+  const num = (k, tit, sub, suf) => fi(tit, sub, '<span class="nm"><input type="number" inputmode="numeric" data-cfg="' + k + '" value="' + c[k] + '"><em>' + (suf || '') + '</em></span>');
+  const seg = (k, tit, sub, vals) => fi(tit, sub, '<div class="seg">' + vals.map(([v, n]) => '<button data-acc="opt" data-k="' + k + '" data-v="' + v + '" class="' + (c[k] === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div>');
+  const grupo = (tit, cuerpo) => '<div class="gt">' + tit + '</div><div class="grupo">' + cuerpo + '</div>';
   const eqSel = S.p.cfgEq || 'lavarropas';
-  return '<div class="top"><h1>Configuración</h1><small>' + S.tec.nombre + ' (cada técnico tiene la suya)</small></div>' +
-    '<div class="card"><h2>Avisos</h2>' +
-    sw('fichaMsg', 'Mensaje con la ficha (día 0)', 'Después de cargar un service te muestra el botón para mandar la ficha y la clave por WhatsApp.') +
-    sw('seguimiento5', 'Seguimiento a los ' + c.d5Dias + ' días', 'Mensaje para preguntar cómo le fue con la reparación y recordarle los otros equipos que arreglamos.') + num('d5Dias', 'Días para el seguimiento', 'Cuántos días después del service aparece el aviso.') +
-    sw('resena', 'Reseña de Google', 'Pedido de reseña por WhatsApp. En cada service podés poner No.') + num('resenaDias', 'Días para la reseña', 'Cuántos días después del service aparece el aviso.') +
-    sw('mantAvisos', 'Avisos de mantenimiento', 'Si lo apagás, no te aparecen los avisos de mantenimiento ni de seguimiento largo.') +
-    sw('contactoLink', 'Link para guardar mi contacto', 'Agrega al mensaje de la ficha un link para que el cliente te agende.') + '</div>' +
-    '<div class="card"><h2>Valores por defecto</h2>' + num('garantia', 'Garantía (días)', 'Se completa sola en cada service; se puede cambiar en cada uno.') + op('mantDefault', 'Mantenimiento', 'Qué viene marcado al cargar un service.', [['ninguno', 'Ninguno'], ['seguimiento', 'Seguimiento'], ['mantenimiento', 'Mantenimiento']]) + '</div>' +
-    '<div class="card"><h2>Textos de los mensajes</h2><small>Podés usar {nombre} {equipo} {tecnico} {clave} {link}</small>' + [['ficha', 'Ficha (día 0)'], ['d5', 'Seguimiento'], ['resena', 'Reseña'], ['mant', 'Mantenimiento'], ['seguimiento', 'Seguimiento largo']].map(([k, n]) => '<label>' + n + '</label><textarea rows="4" data-txt="' + k + '">' + esc(t[k]) + '</textarea>').join('') + '<button class="prim" data-acc="guardarTextos">Guardar textos</button> <button class="sec" data-acc="textosOrig">Volver a los originales</button></div>' +
-    '<div class="card"><h2>Ítems de cada equipo (comunes para los dos)</h2><div class="botones">' + EQUIPOS.filter(x => x.id !== 'otro').map(x => '<button data-acc="cfgEq" data-v="' + x.id + '" class="eqb ' + (eqSel === x.id ? 'sel' : '') + '">' + x.nombre + '</button>').join('') + '</div>' +
-    (S.items[eqSel] || []).map((i, n) => '<div class="fila"><div>' + esc(i) + '</div><div class="bts"><button class="sec" data-acc="itemUp" data-n="' + n + '">↑</button><button class="sec" data-acc="itemDel" data-n="' + n + '">Quitar</button></div></div>').join('') + '<div class="dos"><input id="nuevoItem" placeholder="Nuevo ítem"><button class="prim" data-acc="itemAdd">Agregar</button></div></div>' +
-    '<div class="card"><h2>Apariencia</h2>' + op('fondo', 'Fondo', 'Claro, oscuro o automático según el celular.', [['claro', 'Claro'], ['oscuro', 'Oscuro'], ['auto', 'Automático']]) + op('letra', 'Tamaño de letra', 'Cambia el tamaño de todo el panel.', [['chica', 'Chica'], ['normal', 'Normal'], ['grande', 'Grande'], ['extra', 'Extra grande']]) +
-    '<label>Color de los botones</label><div class="botones">' + [['#0b57d0', 'Azul'], ['#0f766e', 'Verde azulado'], ['#b45309', 'Naranja'], ['#9d174d', 'Fucsia'], ['#4338ca', 'Violeta']].map(([v, n]) => '<button data-acc="opt" data-k="color" data-v="' + v + '" class="' + (c.color === v ? 'sel' : '') + '">' + n + '</button>').join('') + '</div><button class="sec" data-acc="apOrig">Volver al original</button></div>' +
-    '<div class="card"><h2>Ayuda</h2><button class="sec" data-acc="irInfo">Info: cómo funciona cada cosa</button><div class="fila"><div>Stickers (hoja A3)<br><small>16 stickers por hoja, listos para imprimir.</small></div><button class="sec" data-acc="stickersPdf">Compartir / imprimir</button></div></div>' +
-    (S.user.email.toLowerCase() === 'mauricio.d.bustos@gmail.com' ? '<div class="card"><h2>Técnicos habilitados (solo dueño)</h2><small>Bruno y Mauricio ya están. Para sumar a alguien más hay que agregar su mail acá y sumarlo en la app.</small><div class="dos"><input id="nuevoTec" type="email" placeholder="mail@gmail.com"><button class="sec" data-acc="addTec">Habilitar</button></div></div>' : '') +
-    '<button class="sec" data-acc="salir">Cerrar sesión</button>';
+  const colores = [['#0b57d0', 'Azul'], ['#0f766e', 'Verde azulado'], ['#b45309', 'Naranja'], ['#9d174d', 'Fucsia'], ['#4338ca', 'Violeta']];
+  const textos = [['ficha', 'Ficha (día 0)'], ['d5', 'Seguimiento'], ['resena', 'Reseña'], ['mant', 'Mantenimiento'], ['seguimiento', 'Seguimiento largo']];
+  return '<div class="top"><h1>Configuración</h1></div><small class="sub">Cuenta de ' + esc(S.tec.nombre) + ' · cada técnico tiene la suya</small>' +
+    grupo('Avisos',
+      sw('fichaMsg', 'Mensaje con la ficha', 'Al cargar un service, ofrece mandar la ficha y la clave por WhatsApp.') +
+      sw('seguimiento5', 'Seguimiento', 'Pregunta cómo le fue con la reparación.') +
+      (c.seguimiento5 ? num('d5Dias', 'Días para el seguimiento', 'Después del service.', 'días') : '') +
+      sw('resena', 'Pedir reseña de Google', 'En cada service podés elegir si se pide o no.') +
+      (c.resena ? num('resenaDias', 'Días para la reseña', 'Después del service.', 'días') : '') +
+      sw('mantAvisos', 'Avisos de mantenimiento', 'Si lo apagás, no aparecen los avisos de mantenimiento.') +
+      sw('contactoLink', 'Link para guardar mi contacto', 'Se suma al mensaje de la ficha para que el cliente te agende.')) +
+    grupo('Al cargar un service',
+      num('garantia', 'Garantía', 'Se completa sola; la podés cambiar en cada service.', 'días') +
+      seg('mantDefault', 'Mantenimiento', 'Lo que viene marcado por defecto.', [['ninguno', 'Ninguno'], ['seguimiento', 'Seguim.'], ['mantenimiento', 'Mant.']])) +
+    grupo('Apariencia',
+      seg('fondo', 'Fondo', '', [['claro', 'Claro'], ['oscuro', 'Oscuro'], ['auto', 'Auto']]) +
+      seg('letra', 'Tamaño de letra', '', [['chica', 'S'], ['normal', 'M'], ['grande', 'L'], ['extra', 'XL']]) +
+      fi('Color', '', '<div class="dots">' + colores.map(([v, n]) => '<button class="dot' + (c.color === v ? ' on' : '') + '" style="background:' + v + '" aria-label="' + n + '" data-acc="opt" data-k="color" data-v="' + v + '"></button>').join('') + '</div>') +
+      fi('Valores originales', '', '<button class="lnk" data-acc="apOrig">Restaurar</button>')) +
+    grupo('Textos de los mensajes',
+      '<div class="fi"><small>Podés usar {nombre} {equipo} {tecnico} {clave} {link}</small></div>' +
+      textos.map(([k, n]) => '<details class="det"><summary>' + n + '</summary><textarea rows="4" data-txt="' + k + '">' + esc(t[k]) + '</textarea></details>').join('') +
+      '<div class="fi"><button class="lnk" data-acc="guardarTextos">Guardar textos</button><button class="lnk gris" data-acc="textosOrig">Volver a los originales</button></div>') +
+    grupo('Ítems de cada equipo (comunes para los dos)',
+      '<div class="chips">' + EQUIPOS.filter(x => x.id !== 'otro').map(x => '<button data-acc="cfgEq" data-v="' + x.id + '" class="chip2' + (eqSel === x.id ? ' on' : '') + '">' + x.nombre + '</button>').join('') + '</div>' +
+      '<div class="items">' + (S.items[eqSel] || []).map((i, n) => '<span class="it">' + esc(i) + '<button aria-label="Subir" data-acc="itemUp" data-n="' + n + '">↑</button><button aria-label="Quitar" data-acc="itemDel" data-n="' + n + '">×</button></span>').join('') + '</div>' +
+      '<div class="fi"><input id="nuevoItem" class="mini" placeholder="Nuevo ítem"><button class="lnk" data-acc="itemAdd">Agregar</button></div>') +
+    grupo('Ayuda',
+      fi('Cómo funciona cada cosa', '', '<button class="lnk" data-acc="irInfo">Ver info</button>') +
+      fi('Stickers hoja A3', '16 por hoja, listos para imprimir.', '<button class="lnk" data-acc="stickersPdf">Imprimir</button>')) +
+    (S.user.email.toLowerCase() === 'mauricio.d.bustos@gmail.com' ? grupo('Técnicos habilitados (solo dueño)', '<div class="fi"><input id="nuevoTec" class="mini" type="email" placeholder="mail@gmail.com"><button class="lnk" data-acc="addTec">Habilitar</button></div>') : '') +
+    '<button class="lnk salir" data-acc="salir">Cerrar sesión</button>';
 }
 
 function vInfo() {
