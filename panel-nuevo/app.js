@@ -59,7 +59,9 @@ function fusion(base, extra) { const o = JSON.parse(JSON.stringify(base)); for (
 const guardarCfg = patch => { Object.assign(S.cfg, patch); if (patch.textos) S.cfg.textos = { ...S.cfg.textos, ...patch.textos }; setDoc(doc(db, 'config', 't_' + S.tec.nombre), patch, { merge: true }); aplicarApariencia(); };
 
 // ---------- ayudas ----------
-const ir = (vista, p = {}) => { S.vista = vista; S.p = p; S.msg = ''; pintar(); window.scrollTo(0, 0); };
+const ir = (vista, p = {}, sinHist) => { S.vista = vista; S.p = p; S.msg = ''; if (!sinHist) { try { history.pushState({ vista, p: JSON.parse(JSON.stringify(p)) }, ''); } catch (_) {} } pintar(); window.scrollTo(0, 0); };
+try { history.replaceState({ vista: 'inicio', p: {} }, ''); } catch (_) {}
+window.addEventListener('popstate', ev => { const st = ev.state || { vista: 'inicio', p: {} }; ir(st.vista, st.p || {}, true); if (st.vista === 'equipo' && st.p && st.p.id) cargarSvcs(st.p.id); });
 const clienteDe = e => S.clientes.find(c => c.id === e.clienteId);
 const equiposDe = cid => S.equipos.filter(e => e.clienteId === cid);
 const ayuda = t => '<details class="ayuda"><summary aria-label="Explicación">?</summary><p>' + esc(t) + '</p></details>';
@@ -251,7 +253,7 @@ const ACC = {
   irNuevoCliente: () => { pickEq = ''; ir('nuevoCliente'); },
   abrirCliente: el => ir('cliente', { id: el.dataset.id }),
   irAgregarEquipo: el => { pickEq = ''; ir('nuevoCliente', { cliente: S.clientes.find(c => c.id === el.dataset.id) }); },
-  atras: () => ir(S.p.vuelta || (S.vista === 'info' ? 'config' : 'clientes'), S.p.vuelta ? S.p.vp : {}),
+  atras: () => history.back(),
   pickEq: el => { pickEq = el.dataset.v; document.querySelectorAll('#app .eqb').forEach(b => b.classList.toggle('sel', b.dataset.v === pickEq)); },
   crearCliente: () => {
     const c0 = S.p.cliente; let nombre, telefono, dir;
