@@ -101,3 +101,36 @@ export function verTel(t) {
 export const waLink = (tel, texto) => 'https://wa.me/' + tel + '?text=' + encodeURIComponent(texto);
 export const lista = arr => arr.length > 1 ? arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1] : (arr[0] || '');
 export const relleno = (txt, v) => String(txt).replace(/\{(\w+)\}/g, (_, k) => (v[k] == null ? '' : v[k]));
+
+// Frases para el detalle automático del service (clave: ítem en minúsculas)
+export const FRASES = {
+  'bomba de desagote': 'el cambio de la bomba de desagote',
+  'bomba': 'el cambio de la bomba',
+  'soportes con rodamiento': 'el cambio de los soportes con rodamientos',
+  'cambio de fuelle': 'el cambio del fuelle',
+  'carga de agua': 'la reparación del sistema de carga de agua',
+  'mantenimiento': 'el mantenimiento general',
+  'cambio de resistencia': 'el cambio de la resistencia',
+  'carga de gas': 'la reparación de la pérdida y la carga de gas',
+  'burlete': 'el cambio del burlete',
+  'bisagra': 'el cambio de la bisagra',
+  'termocupla': 'el cambio de la termocupla',
+  'chispero': 'el cambio del chispero',
+  'quemador': 'la reparación del quemador',
+  'válvula': 'el cambio de la válvula',
+  'perillas': 'el cambio de las perillas',
+  'resistencia': 'el cambio de la resistencia',
+  'mantenimiento de calefón': 'el mantenimiento completo del calefón',
+  'cambio de termocupla': 'el cambio de la termocupla',
+  'piloto': 'la reparación del piloto',
+  'camisa': 'el cambio de la camisa',
+  'serpentina': 'la reparación de la serpentina',
+  'instalación con caño': 'la instalación con caño',
+  'limpieza unidad interior': 'la limpieza de la unidad interior',
+  'limpieza unidad exterior': 'la limpieza de la unidad exterior',
+  'correa': 'el cambio de la correa',
+  'rodamientos': 'el cambio de los rodamientos',
+  'plaqueta': 'la reparación de la plaqueta',
+  'instalación': 'la instalación'
+};
+export const demostrativo = art => art.startsWith('el ') ? 'este ' + art.slice(3) : art.startsWith('la ') ? 'esta ' + art.slice(3) : 'este equipo';
