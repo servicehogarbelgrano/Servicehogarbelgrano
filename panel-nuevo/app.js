@@ -182,7 +182,7 @@ function vNuevoService() {
   const e = S.equipos.find(x => x.id === S.p.id); if (!e) return '';
   const f = S.p.form, c = S.cfg;
   return '<div class="top"><h1>Nuevo service</h1><small>Clave ' + fmtClave(e.id) + '</small></div><div class="card">' +
-    '<label>Equipo</label><div class="botones">' + EQUIPOS.map(x => '<button type="button" data-acc="svcEq" data-v="' + x.id + '" class="eqb ' + (f.equipo === x.id ? 'sel' : '') + '">' + x.nombre + '</button>').join('') + '</div>' +
+    '<div class="fila"><div><b>' + esc((EQ[e.tipo] || EQ.otro).nombre) + ' ' + esc(e.marca) + ' ' + esc(e.modelo) + '</b><br><small>Este service se carga en este equipo. Si es otro equipo, creá uno nuevo desde el cliente.</small></div></div>' +
     '<label>Qué se hizo</label><div class="botones">' + (S.items[f.equipo] || []).concat(['Otro']).map(i => '<button type="button" data-acc="svcItem" data-v="' + esc(i) + '" class="itb ' + (f.items.includes(i) ? 'sel' : '') + '">' + (f.items.includes(i) ? '✓ ' : '') + esc(i) + '</button>').join('') + '</div>' +
     '<label>Detalle</label><textarea id="detalle" rows="3">' + esc(f.detalle) + '</textarea>' +
     '<label>Motivo / falla</label><input id="motivo" value="' + esc(f.motivo) + '" placeholder="Ej: el horno no prendía">' +
