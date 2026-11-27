@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271103';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271847';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -132,7 +132,7 @@ function vEnviados() {
   const l = S.hechos.filter(a => S.filtro === 'todos' || a.tecnico === S.tec.nombre).sort((a, b) => (b.enviadoTs || 0) - (a.enviadoTs || 0) || (b.enviado || '').localeCompare(a.enviado || '')).slice(0, 60);
   const hora = a => a.enviadoTs ? new Date(a.enviadoTs).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
   return '<div class="top"><h1>Mensajes</h1>' + filtroHTML() + '</div><small>"Enviado" quiere decir que tocaste Enviar y se abrió WhatsApp. Si no llegaste a mandarlo, tocá "Volver a pendiente".</small><div class="card">' +
-    (l.length ? l.map(a => '<div class="fila"><div><b>' + esc(a.cliente) + '</b> · ' + esc((EQ[a.equipo] || EQ.otro).nombre) + '<br><small>' + ETIQ[a.tipo] + ' · ' + (a.estado === 'enviado' ? '✓ Enviado' : 'No mandado') + ' el ' + fechaCorta(a.enviado) + ' ' + hora(a) + (S.filtro === 'todos' ? ' · ' + esc(a.tecnico) : '') + '</small></div><div class="bts"><button class="sec" data-acc="volverPend" data-id="' + a.id + '">Volver a pendiente</button></div></div>').join('') : '<p class="vacio">Todavía no enviaste ningún mensaje.</p>') + '</div>';
+    (l.length ? l.map(a => '<div class="fila"><div><b>' + esc(a.cliente) + '</b> · ' + esc((EQ[a.equipo] || EQ.otro).nombre) + '<br><small>' + ETIQ[a.tipo] + ' · ' + (a.estado === 'enviado' ? '✓ Enviado' : 'No mandado') + ' el ' + fechaCorta(a.enviado) + ' ' + hora(a) + (S.filtro === 'todos' ? ' · ' + esc(a.tecnico) : '') + '</small></div><div class="bts"><button class="sec" data-acc="volverPend" data-id="' + a.id + '">Volver a pendiente</button><button class="x" aria-label="Eliminar" data-acc="borrarAviso" data-id="' + a.id + '">×</button></div></div>').join('') : '<p class="vacio">Todavía no enviaste ningún mensaje.</p>') + '</div>';
 }
 
 function vClientes() {
@@ -192,7 +192,7 @@ function vNuevoService() {
     '<label>Detalle</label><textarea id="detalle" rows="3">' + esc(f.detalle) + '</textarea>' +
     '<label>Motivo / falla</label><input id="motivo" value="' + esc(f.motivo) + '" placeholder="Ej: el horno no prendía">' +
     '<div class="dos"><div><label>Garantía (días)</label><input id="gar" type="number" value="' + f.garantia + '"></div><div><label>Fecha</label><input id="fecha" type="date" value="' + f.fecha + '"></div></div>' +
-    '<label>Cobrado (solo para vos, el cliente no lo ve) ' + ayuda('Anotá lo que cobraste como recordatorio. No aparece en la ficha del cliente. Después lo ves todo junto en Mantenimiento > Cobros, desde Inicio.') + '</label><div class="dos"><input id="cobro" type="number" inputmode="decimal" placeholder="$ monto" value="' + esc(f.cobro) + '"><input id="cobroNota" placeholder="Nota (ej: efectivo, debe)" value="' + esc(f.cobroNota) + '"></div>' +
+    '<label>Cobrado (solo para vos, el cliente no lo ve) ' + ayuda('Anotá lo que cobraste como recordatorio. No aparece en la ficha del cliente. Después lo ves todo junto en Mantenimiento > Cobros, desde Inicio.') + '</label><div class="dos"><span class="nm"><input id="cobro" type="number" inputmode="decimal" placeholder="$ monto" value="' + esc(f.cobro) + '"><b id="cfmt" class="pfmt">' + (+f.cobro ? $$(f.cobro) : '') + '</b></span><input id="cobroNota" placeholder="Nota (ej: efectivo, debe)" value="' + esc(f.cobroNota) + '"></div>' +
     '<label>Mantenimiento ' + ayuda('Ninguno: no se avisa. Seguimiento: un aviso corto para preguntar cómo anda. Mantenimiento: aviso para volver a hacer el service (aires, lavarropas con abono, etc.).') + '</label><div class="botones">' + ['ninguno', 'seguimiento', 'mantenimiento'].map(t => '<button type="button" data-acc="svcMant" data-v="' + t + '" class="' + (f.mant === t ? 'sel' : '') + '">' + t[0].toUpperCase() + t.slice(1) + '</button>').join('') + '</div>' +
     (f.mant === 'mantenimiento' ? '<label>Avisar dentro de</label><div class="botones">' + [3, 6, 12].map(m => '<button type="button" data-acc="svcMeses" data-v="' + m + '" class="' + (f.meses === m ? 'sel' : '') + '">' + m + ' meses</button>').join('') + '</div>' : '') +
     '<label>Reseña ' + ayuda('Sí: a los ' + c.resenaDias + ' días te aparece el aviso para pedir la reseña de Google. No: no se crea ningún aviso.') + '</label><div class="botones"><button type="button" data-acc="svcResena" data-v="1" class="' + (f.resena ? 'sel' : '') + '">Sí</button><button type="button" data-acc="svcResena" data-v="0" class="' + (!f.resena ? 'sel' : '') + '">No</button></div>' +
@@ -315,6 +315,7 @@ const ACC = {
     S.cobrosEq[el.dataset.id] = d; pintar();
     setDoc(doc(db, 'cobros', el.dataset.id), d).catch(() => { delete S.cobrosEq[el.dataset.id]; S.msg = 'No se pudo anotar el cobro.'; pintar(); });
   },
+  borrarAviso: el => { if (!confirm('¿Eliminar este mensaje de la lista? Ya no se va a mandar.')) return; const id = el.dataset.id; S.hechos = S.hechos.filter(x => x.id !== id); S.avisos = S.avisos.filter(x => x.id !== id); pintar(); deleteDoc(doc(db, 'avisos', id)).catch(() => { S.msg = 'No se pudo eliminar.'; pintar(); }); },
   borrarCobro: el => { if (confirm('¿Borrar este cobro?')) deleteDoc(doc(db, 'cobros', el.dataset.id)); },
   borrarEquipo: async el => {
     const e = S.equipos.find(x => x.id === el.dataset.id); if (!e) return;
@@ -532,6 +533,7 @@ function vPresupuesto() {
     (S.p.nuevo ? '' : '<button class="lnk salir" data-acc="presBorrar" data-id="' + p.id + '">Borrar presupuesto</button>');
 }
 document.addEventListener('input', ev => {
+  if (ev.target.id === 'cobro') { const c = $('cfmt'); if (c) c.textContent = +ev.target.value ? $$(ev.target.value) : ''; return; }
   const el = ev.target, p = S.p && S.p.pres; if (!p || p.enviado || S.vista !== 'presupuesto') return;
   if (el.dataset.pf) { p.items[+el.dataset.i].desc = el.value; presRedactar(p); }
   else if (el.dataset.pt) { const k = el.dataset.pt; if (['nombre', 'tel', 'dir'].includes(k)) p.cliente[k] = el.value; else { p[k] = el.value; if (k === 'texto') p.textoEditado = true; if (k === 'precio') { const f = $('pfmt'); if (f) f.textContent = +el.value ? $$(el.value) : ''; } } }
