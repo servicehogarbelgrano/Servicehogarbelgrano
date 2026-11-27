@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271053';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271103';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -148,9 +148,9 @@ function equipoForm(pref = '', e = {}) {
     '<div class="dos"><div><label>Marca</label><input id="marca" value="' + esc(e.marca) + '"></div><div><label>Modelo</label><input id="modelo" value="' + esc(e.modelo) + '"></div></div><label>N° de serie</label><input id="serie" value="' + esc(e.serie) + '">';
 }
 function vNuevoCliente() {
-  const c = S.p.cliente;
+  const c = S.p.cliente, pre = S.p.pre || {};
   return '<div class="top"><h1>' + (c ? 'Agregar equipo' : 'Nuevo cliente') + '</h1></div><div class="card">' +
-    (c ? '<p><b>' + esc(c.nombre) + '</b></p>' : '<label>Nombre *</label><input id="nombre" autocomplete="off"><label>Teléfono *</label><input id="tel" type="tel" placeholder="Pegá el número como lo tengas" autocomplete="off"><label>Dirección</label><input id="dir" autocomplete="off">') +
+    (c ? '<p><b>' + esc(c.nombre) + '</b></p>' : '<label>Nombre *</label><input id="nombre" autocomplete="off" value="' + esc(pre.nombre || '') + '"><label>Teléfono *</label><input id="tel" type="tel" placeholder="Pegá el número como lo tengas" autocomplete="off" value="' + esc(pre.tel || '') + '"><label>Dirección</label><input id="dir" autocomplete="off" value="' + esc(pre.dir || '') + '">') +
     equipoForm() + '<p class="err" id="err"></p><button class="prim grande" data-acc="crearCliente">' + (c ? 'Crear equipo y clave' : 'Crear cliente y clave') + '</button><button class="sec" data-acc="atras">Cancelar</button></div>';
 }
 
@@ -291,6 +291,7 @@ const ACC = {
   presAdd: el => { const p = S.p.pres; p.items.push({ sec: el.dataset.sec, desc: el.dataset.n || '' }); presRedactar(p); pintar(); setTimeout(() => { const l = document.querySelectorAll('[data-pf=desc]'); const u = l[l.length - 1]; if (u && !el.dataset.n) u.focus(); }, 60); },
   presDel: el => { const p = S.p.pres; p.items.splice(+el.dataset.i, 1); presRedactar(p); pintar(); },
   presRegen: () => { const p = S.p.pres; p.textoEditado = false; presRedactar(p); pintar(); },
+  presACliente: () => { const p = S.p.pres, tel = limpiarTel(p.cliente.tel), ex = tel && S.clientes.find(c => c.telefono === tel); pickEq = ''; if (ex) ir('nuevoCliente', { cliente: ex }); else ir('nuevoCliente', { pre: { nombre: p.cliente.nombre, tel: p.cliente.tel, dir: p.cliente.dir } }); },
   presGuardar: () => { presGuardar(); history.back(); },
   presVer: () => { presGuardar(); mostrarPresupuesto(S.p.pres); },
   presWA: () => { const p = S.p.pres; if (!p.enviado) p.enviado = Date.now(); presGuardar(); mostrarPresupuesto(p, true); pintar(); },
@@ -527,7 +528,7 @@ function vPresupuesto() {
     '<div class="gt">Texto del presupuesto</div><div class="grupo"><div class="fi col"><textarea id="ptexto" data-pt="texto" rows="4" placeholder="Se arma solo con los ítems que agregues"' + D + '>' + esc(p.texto) + '</textarea>' + (L ? '' : '<small>Se redacta solo con los ítems. Si lo cambiás a mano, se respeta tu texto.</small><button class="lnk" data-acc="presRegen">Volver a redactar automático</button>') + '</div></div>' +
     '<div class="gt">Precio</div><div class="grupo"><div class="fi tot"><div class="ft"><b>Precio total</b><small>Un solo precio por todo lo detallado.</small></div><span class="nm"><input data-pt="precio" type="number" inputmode="decimal" placeholder="0" value="' + esc(p.precio) + '"' + D + '><b id="pfmt" class="pfmt">' + (+p.precio ? $$(p.precio) : '') + '</b></span></div></div>' +
     '<div class="gt">Condiciones</div><div class="grupo"><div class="fi"><div class="ft"><b>Válido por</b></div><span class="nm"><input data-pt="validez" type="number" inputmode="numeric" value="' + esc(p.validez) + '"' + D + '><em>días</em></span></div><div class="fi col"><textarea data-pt="notas" rows="4" placeholder="Condiciones o aclaraciones"' + D + '>' + esc(p.notas) + '</textarea></div><div class="fi"><div class="ft"><b>Estado</b></div><div class="seg">' + [['pendiente', 'Pendiente'], ['aceptado', 'Aceptado'], ['rechazado', 'Rechazado']].map(([v, n]) => '<button data-acc="presEstado" data-v="' + v + '" class="' + (p.estado === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div></div></div>' +
-    '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">' + (L ? 'Reenviar PDF por WhatsApp' : 'Enviar PDF por WhatsApp') + '</button>' + '<button class="sec grande" data-acc="presGuardar">Guardar</button>' +
+    '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">' + (L ? 'Reenviar PDF por WhatsApp' : 'Enviar PDF por WhatsApp') + '</button>' + '<button class="sec grande" data-acc="presACliente">Pasar a cliente y crear clave</button><button class="sec grande" data-acc="presGuardar">Guardar</button>' +
     (S.p.nuevo ? '' : '<button class="lnk salir" data-acc="presBorrar" data-id="' + p.id + '">Borrar presupuesto</button>');
 }
 document.addEventListener('input', ev => {
