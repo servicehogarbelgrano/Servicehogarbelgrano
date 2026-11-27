@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271010';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271017';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -289,10 +289,9 @@ const ACC = {
   presAdd: el => { const p = S.p.pres; p.items.push({ sec: el.dataset.sec, desc: el.dataset.n || '' }); presRedactar(p); pintar(); setTimeout(() => { const l = document.querySelectorAll('[data-pf=desc]'); const u = l[l.length - 1]; if (u && !el.dataset.n) u.focus(); }, 60); },
   presDel: el => { const p = S.p.pres; p.items.splice(+el.dataset.i, 1); presRedactar(p); pintar(); },
   presRegen: () => { const p = S.p.pres; p.textoEditado = false; presRedactar(p); pintar(); },
-  presWAotro: () => { const p = S.p.pres; const n = limpiarTel(prompt('Número de WhatsApp (con código de área):') || ''); if (!n) return; abrirWA(n, 'Hola, te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.\n' + (p.texto || '') + (p.items.some(i => i.sec === 'mat' && i.desc) ? '\nMateriales: ' + p.items.filter(i => i.sec === 'mat').map(i => i.desc).join(', ') + '.' : '') + '\nPrecio total: ' + $$(p.precio) + '\nVálido hasta el ' + fechaCorta(addDias(p.fecha, +p.validez || 0)) + '.'); },
   presGuardar: () => { presGuardar(); history.back(); },
   presVer: () => { presGuardar(); mostrarPresupuesto(S.p.pres); },
-  presWA: () => { const p = S.p.pres; const tel = limpiarTel(p.cliente.tel); if (tel && !p.enviado) p.enviado = Date.now(); presGuardar(); const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.\n' + (p.texto || '') + (p.items.some(i => i.sec === 'mat' && i.desc) ? '\nMateriales: ' + p.items.filter(i => i.sec === 'mat').map(i => i.desc).join(', ') + '.' : '') + '\nPrecio total: ' + $$(p.precio) + '\nVálido hasta el ' + fechaCorta(addDias(p.fecha, +p.validez || 0)) + '.'; if (tel) { abrirWA(tel, txt); setTimeout(pintar, 300); } else { S.msg = 'Falta el teléfono del cliente para mandarlo por WhatsApp.'; pintar(); } },
+  presWA: () => { const p = S.p.pres; if (!p.enviado) p.enviado = Date.now(); presGuardar(); mostrarPresupuesto(p, true); pintar(); },
   presEstado: el => { const p = S.p.pres; p.estado = el.dataset.v; pintar(); },
   presBorrar: el => { const id = el.dataset.id; if (!confirm('¿Borrar este presupuesto? No se puede deshacer.')) return; deleteDoc(doc(db, 'config', 'pres_' + id)); S.presup = S.presup.filter(x => x.id !== id); if (S.vista === 'presupuesto') history.back(); else pintar(); },
   presDup: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (!p) return; const id = Math.random().toString(36).slice(2, 10); const n = presNuevo(id); n.cliente = { nombre: '', tel: '', dir: '' }; n.items = JSON.parse(JSON.stringify(p.items)); n.notas = p.notas; ir('presupuesto', { pres: n, nuevo: true }); },
@@ -526,7 +525,7 @@ function vPresupuesto() {
     '<div class="gt">Texto del presupuesto</div><div class="grupo"><div class="fi col"><textarea id="ptexto" data-pt="texto" rows="4" placeholder="Se arma solo con los ítems que agregues"' + D + '>' + esc(p.texto) + '</textarea>' + (L ? '' : '<small>Se redacta solo con los ítems. Si lo cambiás a mano, se respeta tu texto.</small><button class="lnk" data-acc="presRegen">Volver a redactar automático</button>') + '</div></div>' +
     '<div class="gt">Precio</div><div class="grupo"><div class="fi tot"><div class="ft"><b>Precio total</b><small>Un solo precio por todo lo detallado.</small></div><span class="nm"><input data-pt="precio" type="number" inputmode="decimal" placeholder="0" value="' + esc(p.precio) + '"' + D + '><b id="pfmt" class="pfmt">' + (+p.precio ? $$(p.precio) : '') + '</b></span></div></div>' +
     '<div class="gt">Condiciones</div><div class="grupo"><div class="fi"><div class="ft"><b>Válido por</b></div><span class="nm"><input data-pt="validez" type="number" inputmode="numeric" value="' + esc(p.validez) + '"' + D + '><em>días</em></span></div><div class="fi col"><textarea data-pt="notas" rows="4" placeholder="Condiciones o aclaraciones"' + D + '>' + esc(p.notas) + '</textarea></div><div class="fi"><div class="ft"><b>Estado</b></div><div class="seg">' + [['pendiente', 'Pendiente'], ['aceptado', 'Aceptado'], ['rechazado', 'Rechazado']].map(([v, n]) => '<button data-acc="presEstado" data-v="' + v + '" class="' + (p.estado === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div></div></div>' +
-    '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">' + (L ? 'Reenviar por WhatsApp' : 'Enviar por WhatsApp') + '</button>' + (L ? '<button class="sec grande" data-acc="presWAotro">Mandar a otro número</button>' : '') + '<button class="sec grande" data-acc="presGuardar">Guardar</button>' +
+    '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">' + (L ? 'Reenviar PDF por WhatsApp' : 'Enviar PDF por WhatsApp') + '</button>' + '<button class="sec grande" data-acc="presGuardar">Guardar</button>' +
     (S.p.nuevo ? '' : '<button class="lnk salir" data-acc="presBorrar" data-id="' + p.id + '">Borrar presupuesto</button>');
 }
 document.addEventListener('input', ev => {
@@ -534,12 +533,12 @@ document.addEventListener('input', ev => {
   if (el.dataset.pf) { p.items[+el.dataset.i].desc = el.value; presRedactar(p); }
   else if (el.dataset.pt) { const k = el.dataset.pt; if (['nombre', 'tel', 'dir'].includes(k)) p.cliente[k] = el.value; else { p[k] = el.value; if (k === 'texto') p.textoEditado = true; if (k === 'precio') { const f = $('pfmt'); if (f) f.textContent = +el.value ? $$(el.value) : ''; } } }
 });
-function mostrarPresupuesto(p) {
+function mostrarPresupuesto(p, conPdf) {
   const hasta = addDias(p.fecha, +p.validez || 0);
   const lis = s => { const l = p.items.filter(i => i.sec === s && i.desc.trim()); return l.length ? l.map(i => '<li>' + esc(i.desc) + '</li>').join('') : ''; };
   const old = document.getElementById('comp'); if (old) old.remove();
   const d = document.createElement('div'); d.id = 'comp'; d.className = 'pres';
-  d.innerHTML = '<div class="barra"><button id="cimp">Imprimir o guardar PDF</button><button class="sec" id="ccer">Cerrar</button></div>' +
+  d.innerHTML = '<div class="barra">' + (conPdf ? '<button id="cwa" disabled>Preparando PDF…</button>' : '<button id="cimp">Imprimir o guardar PDF</button>') + '<button class="sec" id="ccer">Cerrar</button></div>' +
     '<div class="pb"><div class="pbh"><img src="' + NEGOCIO.logo + '" alt="" onerror="this.remove()"><div><b>' + NEGOCIO.nombre + '</b><span>Servicio técnico de electrodomésticos y aires acondicionados</span></div></div><div class="pbt"><h1>PRESUPUESTO</h1><span>N° ' + esc(p.numero) + '</span></div></div>' +
     '<div class="pdatos"><div><small>Cliente</small><b>' + esc(p.cliente.nombre || '—') + '</b>' + (p.cliente.tel ? '<span>' + esc(verTel(limpiarTel(p.cliente.tel) || p.cliente.tel)) + '</span>' : '') + (p.cliente.dir ? '<span>' + esc(p.cliente.dir) + '</span>' : '') + '</div><div class="der"><small>Fecha</small><b>' + fechaCorta(p.fecha) + '</b><small>Válido hasta</small><b>' + fechaCorta(hasta) + '</b></div></div>' +
     '<div class="pdet"><h3>Detalle</h3>' + (p.texto ? p.texto.split('\n').filter(x => x.trim()).map(x => '<p>' + esc(x) + '</p>').join('') : '') + (lis('mat') ? '<h4>Materiales incluidos</h4><ul>' + lis('mat') + '</ul>' : '') + '</div>' +
@@ -548,5 +547,25 @@ function mostrarPresupuesto(p) {
     '<div class="pie2"><span>' + esc(NEGOCIO.direccion) + '</span><span>WhatsApp: Mauricio 11 6571-1314 · Bruno 11 6748-9192</span><span>' + NEGOCIO.web + ' · ' + NEGOCIO.instagram + '</span><em>Este documento es un presupuesto y no es una factura.</em></div>';
   document.body.appendChild(d); document.body.classList.add('vcomp'); window.scrollTo(0, 0);
   document.getElementById('ccer').onclick = () => { d.remove(); document.body.classList.remove('vcomp'); };
-  document.getElementById('cimp').onclick = () => window.print();
+  if (conPdf) presPdfListo(p);
+  else document.getElementById('cimp').onclick = () => window.print();
+}
+function cargarJs(src) { return new Promise((ok, ko) => { if (document.querySelector('script[data-lib="' + src + '"]')) return ok(); const t = document.createElement('script'); t.src = src; t.dataset.lib = src; t.onload = ok; t.onerror = () => ko(new Error('lib')); document.head.appendChild(t); }); }
+async function presPdfListo(p) {
+  const b = document.getElementById('cwa');
+  try {
+    await cargarJs('vendor/html2canvas.min.js?v=1'); await cargarJs('vendor/jspdf.umd.min.js?v=1');
+    await new Promise(r => setTimeout(r, 400));
+    const el = document.getElementById('comp');
+    const cv = await window.html2canvas(el, { scale: 2, backgroundColor: '#ffffff', useCORS: true, windowWidth: 760, onclone: doc => { doc.body.classList.add('vcomp'); const c = doc.getElementById('comp'); c.style.cssText += ';position:static;overflow:visible;height:auto;max-height:none;width:760px;max-width:760px;margin:0;'; const br = c.querySelector('.barra'); if (br) br.remove(); } });
+    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' }); const W = 210, H = 297; let w = W, h = cv.height * W / cv.width; if (h > H) { w = W * H / h; h = H; }
+    pdf.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', (W - w) / 2, 0, w, h);
+    const f = new File([pdf.output('blob')], 'Presupuesto-' + p.numero + '.pdf', { type: 'application/pdf' });
+    b.disabled = false; b.textContent = 'Compartir PDF por WhatsApp';
+    b.onclick = () => {
+      const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.';
+      if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], title: 'Presupuesto ' + p.numero, text: txt }).catch(() => {});
+      else { const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); const tel = limpiarTel(p.cliente.tel); if (tel) abrirWA(tel, txt + ' (te adjunto el PDF)'); }
+    };
+  } catch (e) { b.textContent = 'No se pudo armar el PDF — Cerrar y reintentar'; }
 }
