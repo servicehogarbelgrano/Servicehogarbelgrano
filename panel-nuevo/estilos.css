@@ -134,3 +134,4 @@ button.x{border:0;background:transparent;margin:0;padding:2px 8px;font-size:1.2r
 .pg .pl{display:flex;align-items:center;gap:6px;border-top:1px solid var(--linea)}.pg .pl:first-child{border-top:0}.pg .pd{margin:0}
 
 b.pfmt{min-width:84px;text-align:left;font-size:1.05rem;margin-left:4px}.nm input[data-pt=precio]{width:110px;text-align:right}
+.bloq{margin:6px 0 2px;padding:8px 10px;border-radius:10px;background:#fff3e0;color:#8a4b00;font-size:13px}
