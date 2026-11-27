@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271855';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271903';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -286,7 +286,7 @@ let pickEq = '';
 const ACC = {
   filtro: el => { S.filtro = el.dataset.v; pintar(); },
   enviarAviso: el => { const a = S.avisos.find(x => x.id === el.dataset.id); if (!a) return; abrirWA(a.telefono, textoAviso(a)); marcarAviso(a.id, 'enviado'); },
-  volverPend: el => setDoc(doc(db, 'avisos', el.dataset.id), { estado: 'pendiente' }, { merge: true }),
+  volverPend: el => { const a = S.avisos.find(x => x.id === el.dataset.id) || S.hechos.find(x => x.id === el.dataset.id), hoy = hoyISO(); setDoc(doc(db, 'avisos', el.dataset.id), { estado: 'pendiente', fecha: a && a.fecha > hoy ? hoy : (a && a.fecha) || hoy }, { merge: true }); },
   irEnviados: () => ir('enviados'),
   irCobros: () => ir('cobros'),
   irPres: () => ir('presupuestos'),
