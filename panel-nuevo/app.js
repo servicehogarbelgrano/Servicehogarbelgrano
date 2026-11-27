@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271903';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271910';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -136,7 +136,7 @@ function vEnviados() {
   const l = S.hechos.filter(a => S.filtro === 'todos' || a.tecnico === S.tec.nombre).sort((a, b) => (b.enviadoTs || 0) - (a.enviadoTs || 0) || (b.enviado || '').localeCompare(a.enviado || '')).slice(0, 60);
   const hora = a => a.enviadoTs ? new Date(a.enviadoTs).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) : '';
   return '<div class="top"><h1>Mensajes</h1>' + filtroHTML() + '</div><small>"Enviado" quiere decir que tocaste Enviar y se abrió WhatsApp. Si no llegaste a mandarlo, tocá "Volver a pendiente".</small><div class="card">' +
-    (l.length ? l.map(a => '<div class="fila"><div><b>' + esc(a.cliente) + '</b> · ' + esc((EQ[a.equipo] || EQ.otro).nombre) + '<br><small>' + ETIQ[a.tipo] + ' · ' + (a.estado === 'enviado' ? '✓ Enviado' : 'No mandado') + ' el ' + fechaCorta(a.enviado) + ' ' + hora(a) + (S.filtro === 'todos' ? ' · ' + esc(a.tecnico) : '') + '</small></div><div class="bts"><button class="sec" data-acc="volverPend" data-id="' + a.id + '">Volver a pendiente</button><button class="x" aria-label="Eliminar" data-acc="borrarAviso" data-id="' + a.id + '">×</button></div></div>').join('') : '<p class="vacio">Todavía no enviaste ningún mensaje.</p>') + '</div>';
+    (l.length ? l.map(a => '<div class="fila"><div><b>' + esc(a.cliente) + '</b> · ' + esc((EQ[a.equipo] || EQ.otro).nombre) + '<br><small>' + ETIQ[a.tipo] + ' · era para el ' + fechaCorta(a.fecha) + '<br>' + (a.estado === 'enviado' ? '✓ Enviado' : 'No mandado') + ' el ' + fechaCorta(a.enviado) + ' ' + hora(a) + (S.filtro === 'todos' ? ' · ' + esc(a.tecnico) : '') + '</small></div><div class="bts"><button class="sec" data-acc="volverPend" data-id="' + a.id + '">Volver a pendiente</button><button class="x" aria-label="Eliminar" data-acc="borrarAviso" data-id="' + a.id + '">×</button></div></div>').join('') : '<p class="vacio">Todavía no enviaste ningún mensaje.</p>') + '</div>';
 }
 
 function vClientes() {
@@ -286,7 +286,7 @@ let pickEq = '';
 const ACC = {
   filtro: el => { S.filtro = el.dataset.v; pintar(); },
   enviarAviso: el => { const a = S.avisos.find(x => x.id === el.dataset.id); if (!a) return; abrirWA(a.telefono, textoAviso(a)); marcarAviso(a.id, 'enviado'); },
-  volverPend: el => { const a = S.avisos.find(x => x.id === el.dataset.id) || S.hechos.find(x => x.id === el.dataset.id), hoy = hoyISO(); setDoc(doc(db, 'avisos', el.dataset.id), { estado: 'pendiente', fecha: a && a.fecha > hoy ? hoy : (a && a.fecha) || hoy }, { merge: true }); },
+  volverPend: el => setDoc(doc(db, 'avisos', el.dataset.id), { estado: 'pendiente' }, { merge: true }),
   irEnviados: () => ir('enviados'),
   irCobros: () => ir('cobros'),
   irPres: () => ir('presupuestos'),
