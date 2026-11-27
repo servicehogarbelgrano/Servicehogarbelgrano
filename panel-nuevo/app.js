@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271847';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271851';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -96,7 +96,7 @@ function dibujar() {
   if (!S.tec) return;
   document.querySelectorAll('#nav [data-nav]').forEach(b => b.classList.toggle('on', b.dataset.nav === (['cliente', 'nuevoCliente', 'clientes'].includes(S.vista) ? 'clientes' : ['equipo', 'equipos', 'nuevoService', 'clave'].includes(S.vista) ? (S.vista === 'equipos' ? 'equipos' : 'clientes') : S.vista)));
   $('off').hidden = navigator.onLine;
-  const V = { inicio: vInicio, clientes: vClientes, cliente: vCliente, nuevoCliente: vNuevoCliente, equipo: vEquipo, nuevoService: vNuevoService, clave: vClave, mant: vMant, cobros: vCobros, presupuestos: vPresupuestos, presupuesto: vPresupuesto, enviados: vEnviados, equipos: vEquipos, config: vConfig, info: vInfo };
+  const V = { inicio: vInicio, clientes: vClientes, cliente: vCliente, nuevoCliente: vNuevoCliente, equipo: vEquipo, nuevoService: vNuevoService, clave: vClave, mant: vMant, cobros: vCobros, presupuestos: vPresupuestos, presupuesto: vPresupuesto, stickers: vStickers, enviados: vEnviados, equipos: vEquipos, config: vConfig, info: vInfo };
   $('app').innerHTML = (S.msg ? '<div class="aviso">' + esc(S.msg) + '</div>' : '') + (V[S.vista] || vInicio)();
   if (S.vista === 'nuevoService') actualizarDetalle();
 }
@@ -119,6 +119,10 @@ function vInicio() {
     (sig ? '<div class="card tanda"><small>Siguiente aviso (quedan ' + vencen.length + ')</small><h2>' + esc(sig.cliente) + ' · ' + esc((EQ[sig.equipo] || EQ.otro).nombre) + '</h2><p>' + ETIQ[sig.tipo] + '</p><button class="prim grande" data-acc="enviarAviso" data-id="' + sig.id + '">Enviar por WhatsApp</button><button class="sec" data-acc="noMandar" data-id="' + sig.id + '">No mandar</button></div>' : '') +
     '<div class="card"><h2>Para hoy</h2>' + (vencen.length ? vencen.slice(0, MAXH).map(fila).join('') + mas(vencen.length - MAXH) : '<p class="vacio">Nada para hoy.</p>') + '</div>' +
     (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + mas(masProx) + '</div>' : '');
+}
+
+function vStickers() {
+  return '<div class="top"><h1>Stickers</h1></div><p><small>Hoja A3, 16 stickers. Pellizcá para acercar y revisar.</small></p><div class="stv"><img src="stickers-hoja-A3.png?v=1" alt="Hoja de stickers"></div><button class="prim grande" data-acc="stickersPdf">Imprimir o enviar</button><button class="sec grande" data-acc="atras">Volver</button>';
 }
 
 function vCobros() {
@@ -263,7 +267,7 @@ function vConfig() {
       '<div class="fi"><input id="nuevoItem" class="mini" placeholder="Nuevo ítem"><button class="lnk" data-acc="itemAdd">Agregar</button></div>') +
     grupo('Ayuda',
       fi('Cómo funciona cada cosa', '', '<button class="lnk" data-acc="irInfo">Ver info</button>') +
-      fi('Stickers hoja A3', '16 por hoja, listos para imprimir.', '<button class="lnk" data-acc="stickersPdf">Imprimir</button>')) +
+      fi('<span class="lnk" data-acc="irStickers">Stickers hoja A3 ›</span>', '16 por hoja. Tocá el nombre para verlos.', '<button class="lnk" data-acc="stickersPdf">Imprimir o enviar</button>')) +
     (S.user.email.toLowerCase() === 'mauricio.d.bustos@gmail.com' ? grupo('Técnicos habilitados (solo dueño)', '<div class="fi"><input id="nuevoTec" class="mini" type="email" placeholder="mail@gmail.com"><button class="lnk" data-acc="addTec">Habilitar</button></div>') : '') +
     '<button class="lnk salir" data-acc="salir">Cerrar sesión</button>';
 }
@@ -430,6 +434,7 @@ const ACC = {
   itemUp: el => { const k = S.p.cfgEq || 'lavarropas', n = +el.dataset.n; if (!n) return; const a = S.items[k].slice(); [a[n - 1], a[n]] = [a[n], a[n - 1]]; S.items = { ...S.items, [k]: a }; setDoc(doc(db, 'config', 'items'), { [k]: a }, { merge: true }); pintar(); },
   apOrig: () => { guardarCfg({ fondo: 'auto', color: '#0b57d0', letra: 'normal' }); pintar(); },
   irInfo: () => ir('info'),
+  irStickers: () => ir('stickers'),
   stickersPdf: async () => {
     try {
       const r = await fetch('stickers-hoja-A3.pdf'), b = await r.blob(), f = new File([b], 'stickers-hoja-A3.pdf', { type: 'application/pdf' });
