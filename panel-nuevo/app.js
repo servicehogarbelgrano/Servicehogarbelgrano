@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271022';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271053';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -477,7 +477,7 @@ function mostrarComprobante(e, s, monto) {
 const $$ = n => '$' + Math.round(+n || 0).toLocaleString('es-AR');
 const PRES_DEF = { mo: ['Instalación de aire acondicionado', 'Desinstalación de aire acondicionado', 'Mano de obra'], mat: ['Ménsulas', 'Aislante térmico', 'Caño de cobre', 'Cable de conexión', 'Cinta y accesorios', 'Bomba de condensado'] };
 // Cómo se dice cada ítem dentro de la oración
-const PRES_FRASE = { 'instalación de aire acondicionado': 'Instalación de aire acondicionado con sus materiales correspondientes, sellado de tuercas, drenaje, vacío de la tubería de conexión, verificado con manómetro y vacuómetro.', 'desinstalación de aire acondicionado': 'Desinstalación de aire acondicionado ya colocado, con el descolgado de la unidad exterior y de todas sus partes, para dejar el lugar libre para el aire nuevo.', 'mano de obra': 'Mano de obra incluida.' };
+const PRES_FRASE = { 'instalación de aire acondicionado': 'Instalación completa de equipo de aire acondicionado, con los materiales correspondientes. Incluye sellado de tuercas, drenaje, vacío de la tubería de conexión y verificación con manómetro y vacuómetro, dejando el equipo probado y en correcto funcionamiento.', 'desinstalación de aire acondicionado': 'Desinstalación de equipo de aire acondicionado ya instalado, con el descolgado de la unidad exterior y de todas sus partes, dejando el lugar libre y prolijo para la colocación del equipo nuevo.', 'mano de obra': 'Mano de obra profesional incluida.' };
 const NOTAS_DEF = 'Forma de pago: a convenir. Los precios pueden variar si cambian las condiciones de la obra. Los materiales no incluidos en el detalle se presupuestan aparte.';
 const minus = s => s.charAt(0).toLowerCase() + s.slice(1);
 function presNuevo(id) {
