@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611270930';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271000';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -291,7 +291,7 @@ const ACC = {
   presRegen: () => { const p = S.p.pres; p.textoEditado = false; presRedactar(p); pintar(); },
   presGuardar: () => { presGuardar(); history.back(); },
   presVer: () => { presGuardar(); mostrarPresupuesto(S.p.pres); },
-  presWA: () => { const p = S.p.pres; presGuardar(); const tel = limpiarTel(p.cliente.tel); const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.\n' + (p.texto || '') + '\nPrecio total: ' + $$(p.precio) + '\nVálido hasta el ' + fechaCorta(addDias(p.fecha, +p.validez || 0)) + '.'; if (tel) abrirWA(tel, txt); else { S.msg = 'Falta el teléfono del cliente para mandarlo por WhatsApp.'; pintar(); } },
+  presWA: () => { const p = S.p.pres; presGuardar(); const tel = limpiarTel(p.cliente.tel); const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.\n' + (p.texto || '') + (p.items.some(i => i.sec === 'mat' && i.desc) ? '\nMateriales: ' + p.items.filter(i => i.sec === 'mat').map(i => i.desc).join(', ') + '.' : '') + '\nPrecio total: ' + $$(p.precio) + '\nVálido hasta el ' + fechaCorta(addDias(p.fecha, +p.validez || 0)) + '.'; if (tel) abrirWA(tel, txt); else { S.msg = 'Falta el teléfono del cliente para mandarlo por WhatsApp.'; pintar(); } },
   presEstado: el => { const p = S.p.pres; p.estado = el.dataset.v; pintar(); },
   presBorrar: el => { const id = el.dataset.id; if (!confirm('¿Borrar este presupuesto? No se puede deshacer.')) return; deleteDoc(doc(db, 'config', 'pres_' + id)); S.presup = S.presup.filter(x => x.id !== id); if (S.vista === 'presupuesto') history.back(); else pintar(); },
   presDup: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (!p) return; const id = Math.random().toString(36).slice(2, 10); const n = presNuevo(id); n.cliente = { nombre: '', tel: '', dir: '' }; n.items = JSON.parse(JSON.stringify(p.items)); n.notas = p.notas; ir('presupuesto', { pres: n, nuevo: true }); },
@@ -472,10 +472,10 @@ function mostrarComprobante(e, s, monto) {
 }
 
 // ---------------- Presupuestos ----------------
-const $$ = n => '$ ' + Math.round(+n || 0).toLocaleString('es-AR');
+const $$ = n => '$' + Math.round(+n || 0).toLocaleString('es-AR');
 const PRES_DEF = { mo: ['Instalación de aire acondicionado', 'Desinstalación de aire acondicionado', 'Mano de obra'], mat: ['Ménsulas', 'Aislante térmico', 'Caño de cobre', 'Cable de conexión', 'Cinta y accesorios', 'Bomba de condensado'] };
 // Cómo se dice cada ítem dentro de la oración
-const PRES_FRASE = { 'instalación de aire acondicionado': 'la instalación del equipo de aire acondicionado', 'desinstalación de aire acondicionado': 'la desinstalación del equipo de aire acondicionado', 'mano de obra': 'la mano de obra necesaria' };
+const PRES_FRASE = { 'instalación de aire acondicionado': 'Instalación de aire acondicionado con sus materiales correspondientes, sellado de tuercas, drenaje, vacío de la tubería de conexión, verificado con manómetro y vacuómetro.', 'desinstalación de aire acondicionado': 'Desinstalación de aire acondicionado ya colocado, con el descolgado de la unidad exterior y de todas sus partes, para dejar el lugar libre para el aire nuevo.', 'mano de obra': 'Mano de obra incluida.' };
 const NOTAS_DEF = 'Forma de pago: a convenir. Los precios pueden variar si cambian las condiciones de la obra. Los materiales no incluidos en el detalle se presupuestan aparte.';
 const minus = s => s.charAt(0).toLowerCase() + s.slice(1);
 function presNuevo(id) {
@@ -489,12 +489,9 @@ function catDe(sec) {
 }
 function presRedactar(p) {
   if (p.textoEditado) return;
-  const mo = p.items.filter(i => i.sec === 'mo' && i.desc.trim()).map(i => PRES_FRASE[i.desc.trim().toLowerCase()] || minus(i.desc.trim()));
-  const mat = p.items.filter(i => i.sec === 'mat' && i.desc.trim()).map(i => minus(i.desc.trim()));
-  let t = '';
-  if (mo.length && mat.length) t = 'El presupuesto incluye ' + lista(mo) + ', con los siguientes materiales: ' + lista(mat) + '.';
-  else if (mo.length) t = 'El presupuesto incluye ' + lista(mo) + '.';
-  else if (mat.length) t = 'El presupuesto incluye los siguientes materiales: ' + lista(mat) + '.';
+  const orden = x => /^desinstal/i.test(x.desc.trim()) ? 0 : 1;
+  const mo = p.items.filter(i => i.sec === 'mo' && i.desc.trim()).sort((x, y) => orden(x) - orden(y));
+  const t = mo.map(i => PRES_FRASE[i.desc.trim().toLowerCase()] || (i.desc.trim().charAt(0).toUpperCase() + i.desc.trim().slice(1).replace(/\.$/, '') + '.')).join('\n');
   p.texto = t; const e = $('ptexto'); if (e) e.value = t;
 }
 function presGuardar() {
@@ -525,7 +522,7 @@ function vPresupuesto() {
     '<div class="gt">Cliente</div><div class="grupo"><div class="fi col"><input data-pt="nombre" placeholder="Nombre" value="' + esc(p.cliente.nombre) + '" autocomplete="off"><input data-pt="tel" type="tel" placeholder="Teléfono (para mandarlo por WhatsApp)" value="' + esc(p.cliente.tel) + '" autocomplete="off"><input data-pt="dir" placeholder="Dirección o lugar de la instalación" value="' + esc(p.cliente.dir) + '" autocomplete="off"></div></div>' +
     bloque('mo', 'Trabajo a realizar') + bloque('mat', 'Materiales incluidos') +
     '<div class="gt">Texto del presupuesto</div><div class="grupo"><div class="fi col"><textarea id="ptexto" data-pt="texto" rows="4" placeholder="Se arma solo con los ítems que agregues">' + esc(p.texto) + '</textarea><small>Se redacta solo con los ítems. Si lo cambiás a mano, se respeta tu texto.</small><button class="lnk" data-acc="presRegen">Volver a redactar automático</button></div></div>' +
-    '<div class="gt">Precio</div><div class="grupo"><div class="fi tot"><div class="ft"><b>Precio total</b><small>Un solo precio por todo lo detallado.</small></div><span class="nm"><input data-pt="precio" type="number" inputmode="decimal" placeholder="$ 0" value="' + esc(p.precio) + '"></span></div></div>' +
+    '<div class="gt">Precio</div><div class="grupo"><div class="fi tot"><div class="ft"><b>Precio total</b><small>Un solo precio por todo lo detallado.</small></div><span class="nm"><input data-pt="precio" type="number" inputmode="decimal" placeholder="0" value="' + esc(p.precio) + '"><b id="pfmt" class="pfmt">' + (+p.precio ? $$(p.precio) : '') + '</b></span></div></div>' +
     '<div class="gt">Condiciones</div><div class="grupo"><div class="fi"><div class="ft"><b>Válido por</b></div><span class="nm"><input data-pt="validez" type="number" inputmode="numeric" value="' + esc(p.validez) + '"><em>días</em></span></div><div class="fi col"><textarea data-pt="notas" rows="4" placeholder="Condiciones o aclaraciones">' + esc(p.notas) + '</textarea></div><div class="fi"><div class="ft"><b>Estado</b></div><div class="seg">' + [['pendiente', 'Pendiente'], ['aceptado', 'Aceptado'], ['rechazado', 'Rechazado']].map(([v, n]) => '<button data-acc="presEstado" data-v="' + v + '" class="' + (p.estado === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div></div></div>' +
     '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">Enviar por WhatsApp</button><button class="sec grande" data-acc="presGuardar">Guardar</button>' +
     (S.p.nuevo ? '' : '<button class="lnk salir" data-acc="presBorrar" data-id="' + p.id + '">Borrar presupuesto</button>');
@@ -533,7 +530,7 @@ function vPresupuesto() {
 document.addEventListener('input', ev => {
   const el = ev.target, p = S.p && S.p.pres; if (!p || S.vista !== 'presupuesto') return;
   if (el.dataset.pf) { p.items[+el.dataset.i].desc = el.value; presRedactar(p); }
-  else if (el.dataset.pt) { const k = el.dataset.pt; if (['nombre', 'tel', 'dir'].includes(k)) p.cliente[k] = el.value; else { p[k] = el.value; if (k === 'texto') p.textoEditado = true; } }
+  else if (el.dataset.pt) { const k = el.dataset.pt; if (['nombre', 'tel', 'dir'].includes(k)) p.cliente[k] = el.value; else { p[k] = el.value; if (k === 'texto') p.textoEditado = true; if (k === 'precio') { const f = $('pfmt'); if (f) f.textContent = +el.value ? $$(el.value) : ''; } } }
 });
 function mostrarPresupuesto(p) {
   const hasta = addDias(p.fecha, +p.validez || 0);
@@ -543,7 +540,7 @@ function mostrarPresupuesto(p) {
   d.innerHTML = '<div class="barra"><button id="cimp">Imprimir o guardar PDF</button><button class="sec" id="ccer">Cerrar</button></div>' +
     '<div class="pb"><div class="pbh"><img src="' + NEGOCIO.logo + '" alt="" onerror="this.remove()"><div><b>' + NEGOCIO.nombre + '</b><span>Servicio técnico de electrodomésticos y aires acondicionados</span></div></div><div class="pbt"><h1>PRESUPUESTO</h1><span>N° ' + esc(p.numero) + '</span></div></div>' +
     '<div class="pdatos"><div><small>Cliente</small><b>' + esc(p.cliente.nombre || '—') + '</b>' + (p.cliente.tel ? '<span>' + esc(verTel(limpiarTel(p.cliente.tel) || p.cliente.tel)) + '</span>' : '') + (p.cliente.dir ? '<span>' + esc(p.cliente.dir) + '</span>' : '') + '</div><div class="der"><small>Fecha</small><b>' + fechaCorta(p.fecha) + '</b><small>Válido hasta</small><b>' + fechaCorta(hasta) + '</b></div></div>' +
-    '<div class="pdet"><h3>Detalle</h3>' + (p.texto ? '<p>' + esc(p.texto) + '</p>' : '') + (lis('mo') ? '<h4>Trabajo a realizar</h4><ul>' + lis('mo') + '</ul>' : '') + (lis('mat') ? '<h4>Materiales incluidos</h4><ul>' + lis('mat') + '</ul>' : '') + '</div>' +
+    '<div class="pdet"><h3>Detalle</h3>' + (p.texto ? p.texto.split('\n').filter(x => x.trim()).map(x => '<p>' + esc(x) + '</p>').join('') : '') + (lis('mat') ? '<h4>Materiales incluidos</h4><ul>' + lis('mat') + '</ul>' : '') + '</div>' +
     '<div class="ptot"><div class="tt"><span>PRECIO TOTAL</span><span>' + $$(p.precio) + '</span></div></div>' +
     '<div class="pnotas"><b>Condiciones</b><p>' + esc(p.notas || '') + '</p><p>Presupuesto válido por ' + (+p.validez || 0) + ' días, hasta el ' + fechaCorta(hasta) + '.</p></div>' +
     '<div class="pie2"><span>' + esc(NEGOCIO.direccion) + '</span><span>WhatsApp: Mauricio 11 6571-1314 · Bruno 11 6748-9192</span><span>' + NEGOCIO.web + ' · ' + NEGOCIO.instagram + '</span><em>Este documento es un presupuesto y no es una factura.</em></div>';

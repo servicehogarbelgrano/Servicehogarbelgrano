@@ -132,3 +132,5 @@ button.x{border:0;background:transparent;margin:0;padding:2px 8px;font-size:1.2r
 #comp.pres .pdet h4{font-size:.9rem;margin:10px 0 3px}#comp.pres .pdet p{margin:4px 0;font-size:.95rem;line-height:1.45}#comp.pres .pdet ul{margin:2px 0 4px;padding-left:20px}#comp.pres .pdet li{font-size:.92rem;margin:2px 0}
 #comp.pres .ptot{margin-top:16px}#comp.pres .ptot .tt{font-size:1.3rem;padding:12px 14px}
 .pg .pl{display:flex;align-items:center;gap:6px;border-top:1px solid var(--linea)}.pg .pl:first-child{border-top:0}.pg .pd{margin:0}
+
+b.pfmt{min-width:84px;text-align:left;font-size:1.05rem;margin-left:4px}.nm input[data-pt=precio]{width:110px;text-align:right}
