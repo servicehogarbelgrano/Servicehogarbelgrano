@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271017';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611271022';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -108,15 +108,17 @@ const filtroHTML = () => '<div class="filtro"><button data-acc="filtro" data-v="
 function vInicio() {
   const hoy = hoyISO();
   const av = S.avisos.filter(a => activo(a) && miosONo(a)).sort((a, b) => a.fecha.localeCompare(b.fecha));
-  const vencen = av.filter(a => a.fecha <= hoy), prox = av.filter(a => a.fecha > hoy).slice(0, 8);
+  const vencen = av.filter(a => a.fecha <= hoy), prox = av.filter(a => a.fecha > hoy).slice(0, 3), masProx = av.filter(a => a.fecha > hoy).length - prox.length;
+  const MAXH = 4, mas = n => n > 0 ? '<p class="vacio">+ ' + n + ' más (van apareciendo a medida que enviás)</p>' : '';
   const movs = S.movs.filter(m => S.filtro === 'todos' || m.tecnico === S.tec.nombre);
   const fila = a => '<div class="fila"><div><b>' + esc(a.cliente) + '</b> · ' + esc((EQ[a.equipo] || EQ.otro).nombre) + '<br><small>' + ETIQ[a.tipo] + (a.fecha < hoy ? ' · atrasado desde ' + fechaCorta(a.fecha) : a.fecha > hoy ? ' · para el ' + fechaCorta(a.fecha) : ' · hoy') + (S.filtro === 'todos' ? ' · ' + esc(a.tecnico) : '') + '</small></div><div class="bts"><button class="prim" data-acc="enviarAviso" data-id="' + a.id + '">Enviar</button><button class="sec" data-acc="noMandar" data-id="' + a.id + '">No mandar</button></div></div>';
   const sig = vencen[0];
   return '<div class="top"><h1>Inicio</h1>' + filtroHTML() + '</div>' +
     '<div class="tarjetas"><div class="tj"><b>' + movs.length + '</b><span>Services del mes</span></div><div class="tj"><b>' + vencen.length + '</b><span>Para hoy</span></div><div class="tj"><b>' + S.clientes.length + '</b><span>Clientes</span></div><div class="tj"><b>' + S.equipos.length + '</b><span>Equipos</span></div></div>' +
+    '<div class="atajos"><button class="prim" data-acc="irPres">Presupuestos</button><button class="sec" data-acc="irEnviados">Enviados</button><button class="sec" data-acc="irCobros">Cobros</button></div>' +
     (sig ? '<div class="card tanda"><small>Siguiente aviso (quedan ' + vencen.length + ')</small><h2>' + esc(sig.cliente) + ' · ' + esc((EQ[sig.equipo] || EQ.otro).nombre) + '</h2><p>' + ETIQ[sig.tipo] + '</p><button class="prim grande" data-acc="enviarAviso" data-id="' + sig.id + '">Enviar por WhatsApp</button><button class="sec" data-acc="noMandar" data-id="' + sig.id + '">No mandar</button></div>' : '') +
-    '<div class="card"><h2>Para hoy</h2>' + (vencen.length ? vencen.map(fila).join('') : '<p class="vacio">Nada para hoy.</p>') + '</div>' +
-    (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + '</div>' : '') + '<button class="sec grande" data-acc="irEnviados">Ver mensajes enviados</button><button class="sec grande" data-acc="irCobros">Ver cobros del mes</button><button class="prim grande" data-acc="irPres">Presupuestos</button>';
+    '<div class="card"><h2>Para hoy</h2>' + (vencen.length ? vencen.slice(0, MAXH).map(fila).join('') + mas(vencen.length - MAXH) : '<p class="vacio">Nada para hoy.</p>') + '</div>' +
+    (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + mas(masProx) + '</div>' : '');
 }
 
 function vCobros() {
