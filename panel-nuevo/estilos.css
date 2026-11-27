@@ -138,3 +138,4 @@ b.pfmt{min-width:84px;text-align:left;font-size:1.05rem;margin-left:4px}.nm inpu
 .atajos{display:flex;gap:8px;margin:8px 0}.atajos button{flex:1;margin:0;padding:10px 6px}
 .nm input#cobro{width:92px;text-align:right}.dos .nm{min-width:0}.dos b.pfmt{min-width:0}
 .stv{overflow:auto;border:1px solid #ddd;border-radius:10px;background:#fff;margin:8px 0}.stv img{width:100%;display:block}span.lnk{color:inherit;text-decoration:underline;cursor:pointer}
+.masb{display:block;width:100%;text-align:center;padding:10px 0;margin:4px 0 0;font-weight:600}
