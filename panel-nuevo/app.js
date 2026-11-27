@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611270900';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611270930';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -286,11 +286,12 @@ const ACC = {
   irPres: () => ir('presupuestos'),
   nuevoPres: () => { const id = Math.random().toString(36).slice(2, 10); ir('presupuesto', { pres: presNuevo(id), nuevo: true }); },
   abrirPres: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (p) ir('presupuesto', { pres: JSON.parse(JSON.stringify(p)) }); },
-  presAdd: el => { const p = S.p.pres, sec = el.dataset.sec, n = el.dataset.n || ''; const c = catDe(sec).find(x => x.n === n); p.items.push({ sec, desc: n, cant: 1, precio: c ? c.p : '' }); pintar(); setTimeout(() => { const l = document.querySelectorAll('[data-pf=desc]'); const u = l[l.length - 1]; if (u && !n) u.focus(); }, 60); },
-  presDel: el => { S.p.pres.items.splice(+el.dataset.i, 1); pintar(); },
+  presAdd: el => { const p = S.p.pres; p.items.push({ sec: el.dataset.sec, desc: el.dataset.n || '' }); presRedactar(p); pintar(); setTimeout(() => { const l = document.querySelectorAll('[data-pf=desc]'); const u = l[l.length - 1]; if (u && !el.dataset.n) u.focus(); }, 60); },
+  presDel: el => { const p = S.p.pres; p.items.splice(+el.dataset.i, 1); presRedactar(p); pintar(); },
+  presRegen: () => { const p = S.p.pres; p.textoEditado = false; presRedactar(p); pintar(); },
   presGuardar: () => { presGuardar(); history.back(); },
   presVer: () => { presGuardar(); mostrarPresupuesto(S.p.pres); },
-  presWA: () => { const p = S.p.pres; presGuardar(); const t = presTotales(p); const tel = limpiarTel(p.cliente.tel); const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano:\n' + p.items.filter(i => i.desc).map(i => '- ' + i.desc + (+i.cant > 1 ? ' x' + i.cant : '') + ': ' + $$(i.cant * i.precio)).join('\n') + (t.desc ? '\nDescuento: -' + $$(t.desc) : '') + '\nTotal: ' + $$(t.total) + '\nVálido hasta el ' + fechaCorta(addDias(p.fecha, +p.validez || 0)) + '.'; if (tel) abrirWA(tel, txt); else { S.msg = 'Falta el teléfono del cliente para mandarlo por WhatsApp.'; pintar(); } },
+  presWA: () => { const p = S.p.pres; presGuardar(); const tel = limpiarTel(p.cliente.tel); const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.\n' + (p.texto || '') + '\nPrecio total: ' + $$(p.precio) + '\nVálido hasta el ' + fechaCorta(addDias(p.fecha, +p.validez || 0)) + '.'; if (tel) abrirWA(tel, txt); else { S.msg = 'Falta el teléfono del cliente para mandarlo por WhatsApp.'; pintar(); } },
   presEstado: el => { const p = S.p.pres; p.estado = el.dataset.v; pintar(); },
   presBorrar: el => { const id = el.dataset.id; if (!confirm('¿Borrar este presupuesto? No se puede deshacer.')) return; deleteDoc(doc(db, 'config', 'pres_' + id)); S.presup = S.presup.filter(x => x.id !== id); if (S.vista === 'presupuesto') history.back(); else pintar(); },
   presDup: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (!p) return; const id = Math.random().toString(36).slice(2, 10); const n = presNuevo(id); n.cliente = { nombre: '', tel: '', dir: '' }; n.items = JSON.parse(JSON.stringify(p.items)); n.notas = p.notas; ir('presupuesto', { pres: n, nuevo: true }); },
@@ -472,76 +473,78 @@ function mostrarComprobante(e, s, monto) {
 
 // ---------------- Presupuestos ----------------
 const $$ = n => '$ ' + Math.round(+n || 0).toLocaleString('es-AR');
-const PRES_DEF = { mo: ['Instalación de aire acondicionado', 'Desinstalación de aire acondicionado', 'Mano de obra'], mat: ['Ménsulas', 'Aislante térmico', 'Caño de cobre (por metro)', 'Cable de conexión', 'Cinta y accesorios', 'Bomba de condensado'] };
+const PRES_DEF = { mo: ['Instalación de aire acondicionado', 'Desinstalación de aire acondicionado', 'Mano de obra'], mat: ['Ménsulas', 'Aislante térmico', 'Caño de cobre', 'Cable de conexión', 'Cinta y accesorios', 'Bomba de condensado'] };
+// Cómo se dice cada ítem dentro de la oración
+const PRES_FRASE = { 'instalación de aire acondicionado': 'la instalación del equipo de aire acondicionado', 'desinstalación de aire acondicionado': 'la desinstalación del equipo de aire acondicionado', 'mano de obra': 'la mano de obra necesaria' };
 const NOTAS_DEF = 'Forma de pago: a convenir. Los precios pueden variar si cambian las condiciones de la obra. Los materiales no incluidos en el detalle se presupuestan aparte.';
+const minus = s => s.charAt(0).toLowerCase() + s.slice(1);
 function presNuevo(id) {
   const h = hoyISO().replace(/-/g, '').slice(2);
-  return { id, numero: 'P-' + h + '-' + S.tec.letra + String(Math.floor(Math.random() * 90) + 10), fecha: hoyISO(), validez: 15, cliente: { nombre: '', tel: '', dir: '' }, tecnico: S.tec.nombre, items: [{ sec: 'mo', desc: '', cant: 1, precio: '' }], descuento: '', notas: NOTAS_DEF, estado: 'pendiente' };
+  return { id, numero: 'P-' + h + '-' + S.tec.letra + String(Math.floor(Math.random() * 90) + 10), fecha: hoyISO(), validez: 15, cliente: { nombre: '', tel: '', dir: '' }, tecnico: S.tec.nombre, items: [], precio: '', texto: '', textoEditado: false, notas: NOTAS_DEF, estado: 'pendiente' };
 }
 function catDe(sec) {
-  const g = (S.presCat[sec] || []).slice(); const nombres = new Set(g.map(x => x.n.toLowerCase()));
-  PRES_DEF[sec].forEach(n => { if (!nombres.has(n.toLowerCase())) g.push({ n, p: '' }); });
+  const g = (S.presCat[sec] || []).map(x => typeof x === 'string' ? x : x.n); const set = new Set(g.map(x => x.toLowerCase()));
+  PRES_DEF[sec].forEach(n => { if (!set.has(n.toLowerCase())) g.push(n); });
   return g;
 }
-function presTotales(p) {
-  const sub = s => p.items.filter(i => i.sec === s).reduce((t, i) => t + (+i.cant || 0) * (+i.precio || 0), 0);
-  const mo = sub('mo'), mat = sub('mat'), desc = +p.descuento || 0;
-  return { mo, mat, desc, total: Math.max(0, mo + mat - desc) };
+function presRedactar(p) {
+  if (p.textoEditado) return;
+  const mo = p.items.filter(i => i.sec === 'mo' && i.desc.trim()).map(i => PRES_FRASE[i.desc.trim().toLowerCase()] || minus(i.desc.trim()));
+  const mat = p.items.filter(i => i.sec === 'mat' && i.desc.trim()).map(i => minus(i.desc.trim()));
+  let t = '';
+  if (mo.length && mat.length) t = 'El presupuesto incluye ' + lista(mo) + ', con los siguientes materiales: ' + lista(mat) + '.';
+  else if (mo.length) t = 'El presupuesto incluye ' + lista(mo) + '.';
+  else if (mat.length) t = 'El presupuesto incluye los siguientes materiales: ' + lista(mat) + '.';
+  p.texto = t; const e = $('ptexto'); if (e) e.value = t;
 }
 function presGuardar() {
   const p = S.p.pres; if (!p) return;
-  const limpio = { ...p, items: p.items.filter(i => i.desc || +i.precio), tipo: 'presupuesto' }; delete limpio.id;
+  p.items = p.items.filter(i => i.desc.trim());
+  const limpio = { ...p, tipo: 'presupuesto' }; delete limpio.id;
   setDoc(doc(db, 'config', 'pres_' + p.id), limpio).catch(() => { S.msg = 'No se pudo guardar el presupuesto.'; pintar(); });
-  const i = S.presup.findIndex(x => x.id === p.id); const copia = { ...limpio, id: p.id }; if (i >= 0) S.presup[i] = copia; else S.presup.push(copia);
-  const cat = { mo: catDe('mo').filter(x => x.p !== ''), mat: catDe('mat').filter(x => x.p !== '') };
-  let cambio = false;
-  limpio.items.forEach(it => { if (!it.desc || !(+it.precio > 0)) return; const l = cat[it.sec], k = l.find(x => x.n.toLowerCase() === it.desc.toLowerCase()); if (k) { if (k.p !== +it.precio) { k.p = +it.precio; cambio = true; } } else { l.push({ n: it.desc, p: +it.precio }); cambio = true; } });
+  const i = S.presup.findIndex(x => x.id === p.id), copia = { ...limpio, id: p.id }; if (i >= 0) S.presup[i] = copia; else S.presup.push(copia);
+  const cat = { mo: catDe('mo').slice(), mat: catDe('mat').slice() }; let cambio = false;
+  p.items.forEach(it => { const l = cat[it.sec]; if (!l.some(x => x.toLowerCase() === it.desc.trim().toLowerCase())) { l.push(it.desc.trim()); cambio = true; } });
   if (cambio) { S.presCat = { mo: cat.mo.slice(0, 40), mat: cat.mat.slice(0, 40) }; setDoc(doc(db, 'config', 'presCat'), S.presCat).catch(() => {}); }
 }
 function vPresupuestos() {
   const l = S.presup.filter(x => S.filtro === 'todos' || x.tecnico === S.tec.nombre).sort((a, b) => (b.fecha + b.numero).localeCompare(a.fecha + a.numero)).slice(0, 80);
   const col = { pendiente: 'Pendiente', aceptado: 'Aceptado', rechazado: 'Rechazado' };
   return '<div class="top"><h1>Presupuestos</h1>' + filtroHTML() + '</div><button class="prim grande" data-acc="nuevoPres">+ Nuevo presupuesto</button><div class="card">' +
-    (l.length ? l.map(p => '<div class="fila clic" data-acc="abrirPres" data-id="' + p.id + '"><div><b>' + esc(p.cliente && p.cliente.nombre || 'Sin nombre') + '</b><br><small>' + esc(p.numero) + ' · ' + fechaCorta(p.fecha) + ' · ' + (col[p.estado] || 'Pendiente') + (S.filtro === 'todos' ? ' · ' + esc(p.tecnico) : '') + '</small></div><div class="bts"><b>' + $$(presTotales(p).total) + '</b></div></div>').join('') : '<p class="vacio">Todavía no hiciste presupuestos.</p>') + '</div>';
+    (l.length ? l.map(p => '<div class="fila clic" data-acc="abrirPres" data-id="' + p.id + '"><div><b>' + esc(p.cliente && p.cliente.nombre || 'Sin nombre') + '</b><br><small>' + esc(p.numero) + ' · ' + fechaCorta(p.fecha) + ' · ' + (col[p.estado] || 'Pendiente') + (S.filtro === 'todos' ? ' · ' + esc(p.tecnico) : '') + '</small></div><div class="bts"><b>' + $$(p.precio) + '</b></div></div>').join('') : '<p class="vacio">Todavía no hiciste presupuestos.</p>') + '</div>';
 }
 function vPresupuesto() {
   const p = S.p.pres; if (!p) return '';
-  const t = presTotales(p);
   const bloque = (sec, tit) => {
-    const filas = p.items.map((it, i) => it.sec !== sec ? '' : '<div class="pl"><input class="pd" data-pf="desc" data-i="' + i + '" placeholder="Descripción" value="' + esc(it.desc) + '"><div class="pn"><input data-pf="cant" data-i="' + i + '" type="number" inputmode="decimal" min="0" value="' + esc(it.cant) + '" aria-label="Cantidad"><span>×</span><input data-pf="precio" data-i="' + i + '" type="number" inputmode="decimal" min="0" placeholder="$ precio" value="' + esc(it.precio) + '" aria-label="Precio"><b id="l_' + i + '">' + $$(it.cant * it.precio) + '</b><button class="x" aria-label="Quitar" data-acc="presDel" data-i="' + i + '">×</button></div></div>').join('');
+    const filas = p.items.map((it, i) => it.sec !== sec ? '' : '<div class="fi pl"><input class="pd" data-pf="desc" data-i="' + i + '" placeholder="Descripción" value="' + esc(it.desc) + '"><button class="x" aria-label="Quitar" data-acc="presDel" data-i="' + i + '">×</button></div>').join('');
     const usados = new Set(p.items.filter(i => i.sec === sec).map(i => i.desc.toLowerCase()));
-    const chips = catDe(sec).filter(c => !usados.has(c.n.toLowerCase())).slice(0, 14).map(c => '<button class="chip2" data-acc="presAdd" data-sec="' + sec + '" data-n="' + esc(c.n) + '">+ ' + esc(c.n) + (c.p !== '' ? ' · ' + $$(c.p) : '') + '</button>').join('');
-    return '<div class="gt">' + tit + '</div><div class="grupo pg">' + (filas || '<div class="fi"><small>Sin ítems todavía.</small></div>') + '<div class="chips">' + chips + '<button class="chip2 on" data-acc="presAdd" data-sec="' + sec + '">+ Otro ítem</button></div></div>';
+    const chips = catDe(sec).filter(n => !usados.has(n.toLowerCase())).slice(0, 14).map(n => '<button class="chip2" data-acc="presAdd" data-sec="' + sec + '" data-n="' + esc(n) + '">+ ' + esc(n) + '</button>').join('');
+    return '<div class="gt">' + tit + '</div><div class="grupo pg">' + filas + '<div class="chips">' + chips + '<button class="chip2 on" data-acc="presAdd" data-sec="' + sec + '">+ Otro</button></div></div>';
   };
   return '<div class="top"><h1>' + (S.p.nuevo ? 'Nuevo presupuesto' : 'Presupuesto') + '</h1><small>' + esc(p.numero) + '</small></div>' +
     '<div class="gt">Cliente</div><div class="grupo"><div class="fi col"><input data-pt="nombre" placeholder="Nombre" value="' + esc(p.cliente.nombre) + '" autocomplete="off"><input data-pt="tel" type="tel" placeholder="Teléfono (para mandarlo por WhatsApp)" value="' + esc(p.cliente.tel) + '" autocomplete="off"><input data-pt="dir" placeholder="Dirección o lugar de la instalación" value="' + esc(p.cliente.dir) + '" autocomplete="off"></div></div>' +
-    bloque('mo', 'Mano de obra') + bloque('mat', 'Materiales') +
-    '<div class="gt">Totales</div><div class="grupo"><div class="fi"><div class="ft"><b>Mano de obra</b></div><span id="t_mo">' + $$(t.mo) + '</span></div><div class="fi"><div class="ft"><b>Materiales</b></div><span id="t_mat">' + $$(t.mat) + '</span></div><div class="fi"><div class="ft"><b>Descuento</b></div><span class="nm"><input data-pt="descuento" type="number" inputmode="decimal" placeholder="$ 0" value="' + esc(p.descuento) + '"></span></div><div class="fi tot"><div class="ft"><b>Total</b></div><b id="t_tot">' + $$(t.total) + '</b></div></div>' +
-    '<div class="gt">Condiciones</div><div class="grupo"><div class="fi"><div class="ft"><b>Válido por</b></div><span class="nm"><input data-pt="validez" type="number" inputmode="numeric" value="' + esc(p.validez) + '"><em>días</em></span></div><div class="fi col"><textarea data-pt="notas" rows="4">' + esc(p.notas) + '</textarea></div><div class="fi"><div class="ft"><b>Estado</b></div><div class="seg">' + [['pendiente', 'Pendiente'], ['aceptado', 'Aceptado'], ['rechazado', 'Rechazado']].map(([v, n]) => '<button data-acc="presEstado" data-v="' + v + '" class="' + (p.estado === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div></div></div>' +
+    bloque('mo', 'Trabajo a realizar') + bloque('mat', 'Materiales incluidos') +
+    '<div class="gt">Texto del presupuesto</div><div class="grupo"><div class="fi col"><textarea id="ptexto" data-pt="texto" rows="4" placeholder="Se arma solo con los ítems que agregues">' + esc(p.texto) + '</textarea><small>Se redacta solo con los ítems. Si lo cambiás a mano, se respeta tu texto.</small><button class="lnk" data-acc="presRegen">Volver a redactar automático</button></div></div>' +
+    '<div class="gt">Precio</div><div class="grupo"><div class="fi tot"><div class="ft"><b>Precio total</b><small>Un solo precio por todo lo detallado.</small></div><span class="nm"><input data-pt="precio" type="number" inputmode="decimal" placeholder="$ 0" value="' + esc(p.precio) + '"></span></div></div>' +
+    '<div class="gt">Condiciones</div><div class="grupo"><div class="fi"><div class="ft"><b>Válido por</b></div><span class="nm"><input data-pt="validez" type="number" inputmode="numeric" value="' + esc(p.validez) + '"><em>días</em></span></div><div class="fi col"><textarea data-pt="notas" rows="4" placeholder="Condiciones o aclaraciones">' + esc(p.notas) + '</textarea></div><div class="fi"><div class="ft"><b>Estado</b></div><div class="seg">' + [['pendiente', 'Pendiente'], ['aceptado', 'Aceptado'], ['rechazado', 'Rechazado']].map(([v, n]) => '<button data-acc="presEstado" data-v="' + v + '" class="' + (p.estado === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div></div></div>' +
     '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">Enviar por WhatsApp</button><button class="sec grande" data-acc="presGuardar">Guardar</button>' +
     (S.p.nuevo ? '' : '<button class="lnk salir" data-acc="presBorrar" data-id="' + p.id + '">Borrar presupuesto</button>');
 }
-function presActualizarTotales() {
-  const p = S.p.pres, t = presTotales(p), set = (id, v) => { const e = $(id); if (e) e.textContent = v; };
-  set('t_mo', $$(t.mo)); set('t_mat', $$(t.mat)); set('t_tot', $$(t.total));
-  p.items.forEach((it, i) => set('l_' + i, $$(it.cant * it.precio)));
-}
 document.addEventListener('input', ev => {
   const el = ev.target, p = S.p && S.p.pres; if (!p || S.vista !== 'presupuesto') return;
-  if (el.dataset.pf) { p.items[+el.dataset.i][el.dataset.pf] = el.value; presActualizarTotales(); }
-  else if (el.dataset.pt) { const k = el.dataset.pt; if (['nombre', 'tel', 'dir'].includes(k)) p.cliente[k] = el.value; else p[k] = el.value; if (k === 'descuento') presActualizarTotales(); }
+  if (el.dataset.pf) { p.items[+el.dataset.i].desc = el.value; presRedactar(p); }
+  else if (el.dataset.pt) { const k = el.dataset.pt; if (['nombre', 'tel', 'dir'].includes(k)) p.cliente[k] = el.value; else { p[k] = el.value; if (k === 'texto') p.textoEditado = true; } }
 });
 function mostrarPresupuesto(p) {
-  const t = presTotales(p), hasta = addDias(p.fecha, +p.validez || 0);
-  const fila = it => '<tr><td>' + esc(it.desc) + '</td><td class="c">' + esc(+it.cant || 1) + '</td><td class="r">' + $$(it.precio) + '</td><td class="r">' + $$(it.cant * it.precio) + '</td></tr>';
-  const sec = (s, tit) => { const l = p.items.filter(i => i.sec === s && (i.desc || +i.precio)); return l.length ? '<tr class="sec"><td colspan="4">' + tit + '</td></tr>' + l.map(fila).join('') : ''; };
+  const hasta = addDias(p.fecha, +p.validez || 0);
+  const lis = s => { const l = p.items.filter(i => i.sec === s && i.desc.trim()); return l.length ? l.map(i => '<li>' + esc(i.desc) + '</li>').join('') : ''; };
   const old = document.getElementById('comp'); if (old) old.remove();
   const d = document.createElement('div'); d.id = 'comp'; d.className = 'pres';
   d.innerHTML = '<div class="barra"><button id="cimp">Imprimir o guardar PDF</button><button class="sec" id="ccer">Cerrar</button></div>' +
     '<div class="pb"><div class="pbh"><img src="' + NEGOCIO.logo + '" alt="" onerror="this.remove()"><div><b>' + NEGOCIO.nombre + '</b><span>Servicio técnico de electrodomésticos y aires acondicionados</span></div></div><div class="pbt"><h1>PRESUPUESTO</h1><span>N° ' + esc(p.numero) + '</span></div></div>' +
     '<div class="pdatos"><div><small>Cliente</small><b>' + esc(p.cliente.nombre || '—') + '</b>' + (p.cliente.tel ? '<span>' + esc(verTel(limpiarTel(p.cliente.tel) || p.cliente.tel)) + '</span>' : '') + (p.cliente.dir ? '<span>' + esc(p.cliente.dir) + '</span>' : '') + '</div><div class="der"><small>Fecha</small><b>' + fechaCorta(p.fecha) + '</b><small>Válido hasta</small><b>' + fechaCorta(hasta) + '</b></div></div>' +
-    '<table class="pt"><thead><tr><th>Descripción</th><th class="c">Cant.</th><th class="r">Precio unit.</th><th class="r">Importe</th></tr></thead><tbody>' + sec('mo', 'Mano de obra') + sec('mat', 'Materiales') + '</tbody></table>' +
-    '<div class="ptot">' + (t.desc ? '<div><span>Subtotal</span><span>' + $$(t.mo + t.mat) + '</span></div><div><span>Descuento</span><span>- ' + $$(t.desc) + '</span></div>' : '') + '<div class="tt"><span>TOTAL</span><span>' + $$(t.total) + '</span></div></div>' +
+    '<div class="pdet"><h3>Detalle</h3>' + (p.texto ? '<p>' + esc(p.texto) + '</p>' : '') + (lis('mo') ? '<h4>Trabajo a realizar</h4><ul>' + lis('mo') + '</ul>' : '') + (lis('mat') ? '<h4>Materiales incluidos</h4><ul>' + lis('mat') + '</ul>' : '') + '</div>' +
+    '<div class="ptot"><div class="tt"><span>PRECIO TOTAL</span><span>' + $$(p.precio) + '</span></div></div>' +
     '<div class="pnotas"><b>Condiciones</b><p>' + esc(p.notas || '') + '</p><p>Presupuesto válido por ' + (+p.validez || 0) + ' días, hasta el ' + fechaCorta(hasta) + '.</p></div>' +
     '<div class="pie2"><span>' + esc(NEGOCIO.direccion) + '</span><span>WhatsApp: Mauricio 11 6571-1314 · Bruno 11 6748-9192</span><span>' + NEGOCIO.web + ' · ' + NEGOCIO.instagram + '</span><em>Este documento es un presupuesto y no es una factura.</em></div>';
   document.body.appendChild(d); document.body.classList.add('vcomp'); window.scrollTo(0, 0);
