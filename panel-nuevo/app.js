@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281053';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281105';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -493,7 +493,7 @@ document.addEventListener('change', async ev => {
   f.fotoMsg = err; pintar();
 });
 document.addEventListener('click', ev => {
-  const im = ev.target.closest && ev.target.closest('img[data-foto]'); if (im) { const o = document.createElement('div'); o.className = 'fgrande'; o.innerHTML = '<img src="' + im.src + '" alt="">'; o.onclick = () => o.remove(); document.body.appendChild(o); return; }
+  const im = ev.target.closest && ev.target.closest('img[data-foto]'); if (im) { const o = document.createElement('div'); o.className = 'fgrande'; o.innerHTML = '<img src="' + im.src + '" alt=""><button type="button" class="fcerrar">✕ Cerrar</button>'; o.onclick = () => o.remove(); document.body.appendChild(o); return; }
   const nav = ev.target.closest('[data-nav]'); if (nav && S.tec) { S.q = ''; const v = nav.dataset.nav; if (v === 'nuevo') { pickEq = ''; ir('nuevoCliente'); } else ir(v); return; }
   const el = ev.target.closest('[data-acc]'); if (!el || el.closest('details')) return;
   const f = ACC[el.dataset.acc]; if (f) f(el);

@@ -149,3 +149,5 @@ b.pfmt{min-width:84px;text-align:left;font-size:1.05rem;margin-left:4px}.nm inpu
 label.fbt{display:inline-block;border:1.5px solid var(--color);color:var(--color);border-radius:10px;padding:8px 14px;font-weight:600;margin:4px 6px 4px 0;background:transparent}
 
 .fest{margin:4px 0;font-weight:600;color:var(--color)}.fq img{width:72px;height:72px;outline:2px solid #2e7d32;outline-offset:-2px}.fq::after{content:'✓';position:absolute;left:4px;bottom:4px;background:#2e7d32;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;line-height:18px;text-align:center}
+
+.fgrande{flex-direction:column;gap:14px;padding:12px 12px calc(16px + env(safe-area-inset-bottom));box-sizing:border-box}.fgrande img{flex:1;min-height:0;object-fit:contain}.fcerrar{flex:none;margin:0;background:#fff;color:#111;border:0;border-radius:999px;padding:12px 28px;font-size:16px;font-weight:700;width:auto;cursor:pointer}

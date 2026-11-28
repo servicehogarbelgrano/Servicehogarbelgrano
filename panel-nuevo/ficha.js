@@ -106,4 +106,4 @@ document.addEventListener('click', ev => {
 
 function qrSvg(txt) { try { const q = qrcode(0, 'M'); q.addData(txt); q.make(); return q.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); } catch (_) { return ''; } }
 
-document.addEventListener('click', ev => { const im = ev.target.closest && ev.target.closest('img[data-foto]'); if (!im) return; const o = document.createElement('div'); o.className = 'fgrande'; o.innerHTML = '<img src="' + im.src + '" alt="">'; o.onclick = () => o.remove(); document.body.appendChild(o); });
+document.addEventListener('click', ev => { const im = ev.target.closest && ev.target.closest('img[data-foto]'); if (!im) return; const o = document.createElement('div'); o.className = 'fgrande'; o.innerHTML = '<img src="' + im.src + '" alt=""><button type="button" class="fcerrar">✕ Cerrar</button>'; o.onclick = () => o.remove(); document.body.appendChild(o); });
