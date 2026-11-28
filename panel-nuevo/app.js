@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281038';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281041';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -217,6 +217,7 @@ function vNuevoService() {
     (f.mant === 'mantenimiento' ? '<label>Avisar dentro de</label><div class="botones">' + [3, 6, 12].map(m => '<button type="button" data-acc="svcMeses" data-v="' + m + '" class="' + (f.meses === m ? 'sel' : '') + '">' + m + ' meses</button>').join('') + '</div>' : '') +
     '<label>Reseña ' + ayuda('Sí: a los ' + c.resenaDias + ' días te aparece el aviso para pedir la reseña de Google. No: no se crea ningún aviso.') + '</label><div class="botones"><button type="button" data-acc="svcResena" data-v="1" class="' + (f.resena ? 'sel' : '') + '">Sí</button><button type="button" data-acc="svcResena" data-v="0" class="' + (!f.resena ? 'sel' : '') + '">No</button></div>' +
     '<label>Fotos (opcional, hasta 3) ' + ayuda('Se achican solas para que pesen poco. El cliente las ve en su ficha. Usalas solo cuando haga falta (por ejemplo, si el cliente las pide).') + '</label>' + (f.fotos && f.fotos.length ? '<div class="fotos">' + f.fotos.map((u, i) => '<span class="fq"><img src="' + u + '" alt=""><button type="button" class="x" aria-label="Quitar foto" data-acc="fotoDel" data-i="' + i + '">×</button></span>').join('') + '</div>' : '') +
+    '<p class="fest" id="fotoSt">' + esc(f.fotoMsg || ((f.fotos || []).length ? '✓ ' + f.fotos.length + (f.fotos.length === 1 ? ' foto lista' : ' fotos listas') + ' (máximo 3)' : 'Todavía no agregaste fotos.')) + '</p>' +
     ((f.fotos || []).length < 3 ? '<div class="botones"><label class="btn sec fbt">📷 Sacar foto<input id="fotoCam" class="fin" type="file" accept="image/*" capture="environment"></label><label class="btn sec fbt">🖼 Galería<input id="fotoGal" class="fin" type="file" accept="image/*" multiple></label></div>' : '') +
     '<label>Realizado por</label><div class="botones">' + Object.values(TECNICOS).map(t => '<button type="button" data-acc="svcTec" data-v="' + t.nombre + '" class="' + (f.tecnico === t.nombre ? 'sel' : '') + '">' + t.nombre + '</button>').join('') + '</div>' +
     '<p class="err" id="err"></p><button class="prim grande" data-acc="guardarService">Guardar service</button><button class="sec" data-acc="atras">Cancelar</button></div>';
@@ -484,8 +485,10 @@ document.addEventListener('change', async ev => {
   const t = ev.target; if (!t || (t.id !== 'fotoCam' && t.id !== 'fotoGal') || !S.p || !S.p.form) return;
   const files = Array.from(t.files || []); if (!files.length) return; guardarForm();
   const f = S.p.form; f.fotos = f.fotos || [];
-  for (const fl of files) { if (f.fotos.length >= 3) break; try { f.fotos.push(await achicarFoto(fl)); } catch (_) { S.msg = 'No se pudo leer una foto.'; } }
-  pintar();
+  f.fotoMsg = 'Procesando foto…'; pintar();
+  let err = '';
+  for (const fl of files) { if (f.fotos.length >= 3) break; try { f.fotos.push(await achicarFoto(fl)); } catch (er) { err = 'No se pudo leer la foto, probá de nuevo o elegila de la galería.'; } }
+  f.fotoMsg = err; pintar();
 });
 document.addEventListener('click', ev => {
   const im = ev.target.closest && ev.target.closest('img[data-foto]'); if (im) { const o = document.createElement('div'); o.className = 'fgrande'; o.innerHTML = '<img src="' + im.src + '" alt="">'; o.onclick = () => o.remove(); document.body.appendChild(o); return; }
