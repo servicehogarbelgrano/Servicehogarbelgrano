@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281011';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281018';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -275,6 +275,7 @@ function vConfig() {
       fi('Cómo funciona cada cosa', '', '<button class="lnk" data-acc="irInfo">Ver info</button>') +
       fi('<span class="lnk" data-acc="irStickers">Stickers hoja A3 ›</span>', '16 por hoja. Tocá el nombre para verlos.', '<button class="lnk" data-acc="stickersPdf">Imprimir o enviar</button>')) +
     (S.user.email.toLowerCase() === 'mauricio.d.bustos@gmail.com' ? grupo('Técnicos habilitados (solo dueño)', '<div class="fi"><input id="nuevoTec" class="mini" type="email" placeholder="mail@gmail.com"><button class="lnk" data-acc="addTec">Habilitar</button></div>') : '') +
+    '<div class="gt">Aplicación</div><div class="grupo"><div class="fi"><div class="ft"><b>Versión</b><small>' + esc(String(window.__ver || '—')) + '</small></div><button class="prim chico" data-acc="actualizar">Actualizar</button></div></div>' +
     '<button class="lnk salir" data-acc="salir">Cerrar sesión</button>';
 }
 
@@ -301,6 +302,7 @@ const ACC = {
   presAdd: el => { const p = S.p.pres; p.items.push({ sec: el.dataset.sec, desc: el.dataset.n || '' }); presRedactar(p); pintar(); setTimeout(() => { const l = document.querySelectorAll('[data-pf=desc]'); const u = l[l.length - 1]; if (u && !el.dataset.n) u.focus(); }, 60); },
   presDel: el => { const p = S.p.pres; p.items.splice(+el.dataset.i, 1); presRedactar(p); pintar(); },
   presEq: el => { const p = S.p.pres, v = el.dataset.v; if (p.enviado || (p.eq || 'aire') === v) return; if (p.items.some(i => i.desc.trim()) && !confirm('Se borran los ítems cargados para armar el presupuesto de ' + EQ_PRES[v] + '. ¿Seguir?')) return; p.eq = v; p.items = []; p.textoEditado = false; presRedactar(p); pintar(); },
+  actualizar: async () => { try { if (window.caches) for (const k of await caches.keys()) await caches.delete(k); } catch (_) {} try { sessionStorage.clear(); } catch (_) {} location.replace(location.pathname + '?r=' + Date.now()); },
   presRegen: () => { const p = S.p.pres; p.textoEditado = false; presRedactar(p); pintar(); },
   presACliente: () => { const p = S.p.pres, tel = limpiarTel(p.cliente.tel), ex = tel && S.clientes.find(c => c.telefono === tel); pickEq = ''; if (ex) ir('nuevoCliente', { cliente: ex }); else ir('nuevoCliente', { pre: { nombre: p.cliente.nombre, tel: p.cliente.tel, dir: p.cliente.dir } }); },
   presGuardar: () => { presGuardar(); history.back(); },
