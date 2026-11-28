@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281041';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281053';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -191,17 +191,19 @@ function vEquipo() {
 }
 
 const fotosHTML = l => l && l.length ? '<div class="fotos">' + l.map(u => '<img src="' + u + '" alt="Foto del service" data-foto="1">').join('') + '</div>' : '';
-function achicarFoto(file) {
-  return new Promise((ok, ko) => {
-    const url = URL.createObjectURL(file), im = new Image();
-    im.onload = () => {
-      const tam = (max, q) => { const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', q); };
-      let d = tam(900, 0.6); if (d.length > 110000) d = tam(720, 0.5); if (d.length > 110000) d = tam(600, 0.42);
-      URL.revokeObjectURL(url); ok(d);
-    };
-    im.onerror = () => { URL.revokeObjectURL(url); ko(new Error('foto')); };
-    im.src = url;
-  });
+async function achicarFoto(file) {
+  // sin blob: (la política de seguridad no lo permite): createImageBitmap o, si no existe, FileReader -> data:
+  let im, w, h;
+  if (window.createImageBitmap) { try { im = await createImageBitmap(file); w = im.width; h = im.height; } catch (_) { im = null; } }
+  if (!im) {
+    const url = await new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => ko(new Error('leer')); r.readAsDataURL(file); });
+    im = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error('foto')); i.src = url; });
+    w = im.naturalWidth || im.width; h = im.naturalHeight || im.height;
+  }
+  const tam = (max, q) => { const k = Math.min(1, max / Math.max(w, h)), c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', q); };
+  let d = tam(900, 0.6); if (d.length > 110000) d = tam(720, 0.5); if (d.length > 110000) d = tam(600, 0.42);
+  if (im.close) im.close();
+  return d;
 }
 function vNuevoService() {
   const e = S.equipos.find(x => x.id === S.p.id); if (!e) return '';
@@ -487,7 +489,7 @@ document.addEventListener('change', async ev => {
   const f = S.p.form; f.fotos = f.fotos || [];
   f.fotoMsg = 'Procesando foto…'; pintar();
   let err = '';
-  for (const fl of files) { if (f.fotos.length >= 3) break; try { f.fotos.push(await achicarFoto(fl)); } catch (er) { err = 'No se pudo leer la foto, probá de nuevo o elegila de la galería.'; } }
+  for (const fl of files) { if (f.fotos.length >= 3) break; try { f.fotos.push(await achicarFoto(fl)); } catch (er) { err = 'No se pudo leer la foto (' + (er && er.message || 'error') + ').'; } }
   f.fotoMsg = err; pintar();
 });
 document.addEventListener('click', ev => {
