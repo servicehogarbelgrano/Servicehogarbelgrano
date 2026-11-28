@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611272336';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611280025';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -96,7 +96,7 @@ let pend = 0;
 function pintar() { if (pend) return; pend = requestAnimationFrame(() => { pend = 0; dibujar(); }); }
 function dibujar() {
   if (!S.tec) return;
-  document.querySelectorAll('#nav [data-nav]').forEach(b => b.classList.toggle('on', b.dataset.nav === (['cliente', 'nuevoCliente', 'clientes'].includes(S.vista) ? 'clientes' : ['equipo', 'equipos', 'nuevoService', 'clave'].includes(S.vista) ? (S.vista === 'equipos' ? 'equipos' : 'clientes') : S.vista)));
+  document.querySelectorAll('#nav [data-nav]').forEach(b => b.classList.toggle('on', b.dataset.nav === (['cliente', 'nuevoCliente', 'clientes'].includes(S.vista) ? 'clientes' : ['equipo', 'equipos', 'nuevoService', 'clave'].includes(S.vista) ? (S.vista === 'equipos' ? 'inicio' : 'clientes') : S.vista === 'presupuesto' ? 'presupuestos' : S.vista)));
   $('off').hidden = navigator.onLine;
   const V = { inicio: vInicio, clientes: vClientes, cliente: vCliente, nuevoCliente: vNuevoCliente, equipo: vEquipo, nuevoService: vNuevoService, clave: vClave, mant: vMant, cobros: vCobros, presupuestos: vPresupuestos, presupuesto: vPresupuesto, stickers: vStickers, enviados: vEnviados, equipos: vEquipos, config: vConfig, info: vInfo };
   $('app').innerHTML = (S.msg ? '<div class="aviso">' + esc(S.msg) + '</div>' : '') + (V[S.vista] || vInicio)();
@@ -117,7 +117,7 @@ function vInicio() {
   const sig = vencen[0];
   return '<div class="top"><h1>Inicio</h1>' + filtroHTML() + '</div>' +
     '<div class="tarjetas"><div class="tj"><b>' + movs.length + '</b><span>Services del mes</span></div><div class="tj"><b>' + vencen.length + '</b><span>Para hoy</span></div><div class="tj"><b>' + S.clientes.filter(c => { const eq = equiposDe(c.id); return !eq.length || eq.some(esMio); }).length + '</b><span>Clientes</span></div><div class="tj"><b>' + S.equipos.filter(esMio).length + '</b><span>Equipos</span></div></div>' +
-    '<div class="atajos"><button class="prim" data-acc="irPres">Presupuestos</button><button class="sec" data-acc="irEnviados">Enviados</button><button class="sec" data-acc="irCobros">Cobros</button></div>' +
+    '<div class="atajos"><button class="prim" data-nav="equipos">Equipos</button><button class="sec" data-acc="irEnviados">Enviados</button><button class="sec" data-acc="irCobros">Cobros</button></div>' +
     (sig ? '<div class="card tanda"><small>Siguiente aviso (quedan ' + vencen.length + ')</small><h2>' + esc(sig.cliente) + ' · ' + esc((EQ[sig.equipo] || EQ.otro).nombre) + '</h2><p>' + ETIQ[sig.tipo] + '</p><button class="prim grande" data-acc="enviarAviso" data-id="' + sig.id + '">Enviar por WhatsApp</button><button class="sec" data-acc="noMandar" data-id="' + sig.id + '">No mandar</button></div>' : '') +
     '<div class="card"><h2>Para hoy</h2>' + (vencen.length ? (E.h ? vencen : vencen.slice(0, MAXH)).map(fila).join('') + mas(vencen.length - MAXH, 'h') : '<p class="vacio">Nada para hoy.</p>') + '</div>' +
     (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + mas(masProx, 'p') + '</div>' : '');
@@ -222,8 +222,11 @@ function vClave() {
 }
 
 function vMant() {
-  const av = S.avisos.filter(a => (a.tipo === 'mant' || a.tipo === 'seg') && activo(a) && miosONo(a)).sort((a, b) => a.fecha.localeCompare(b.fecha));
-  return '<div class="top"><h1>Mantenimiento</h1>' + filtroHTML() + '</div><div class="card">' + (av.length ? av.map(a => '<div class="fila"><div><b>' + esc(a.cliente) + '</b> · ' + esc((EQ[a.equipo] || EQ.otro).nombre) + '<br><small>' + ETIQ[a.tipo] + ' · ' + fechaCorta(a.fecha) + '</small></div><div class="bts"><button class="prim" data-acc="enviarAviso" data-id="' + a.id + '">Avisar</button><button class="sec" data-acc="noMandar" data-id="' + a.id + '">No mandar</button></div></div>').join('') : '<p class="vacio">No hay avisos de mantenimiento ni seguimiento.</p>') + '</div>';
+  const hoy = hoyISO();
+  const av = S.avisos.filter(a => activo(a) && miosONo(a)).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const fila = a => '<div class="fila"><div><b>' + esc(a.cliente) + '</b> · ' + esc((EQ[a.equipo] || EQ.otro).nombre) + '<br><small>' + (a.fecha < hoy ? 'atrasado desde ' + fechaCorta(a.fecha) : a.fecha > hoy ? 'para el ' + fechaCorta(a.fecha) : 'hoy') + (S.filtro === 'todos' ? ' · ' + esc(a.tecnico) : '') + '</small></div><div class="bts"><button class="prim" data-acc="enviarAviso" data-id="' + a.id + '">Enviar</button><button class="sec" data-acc="noMandar" data-id="' + a.id + '">No mandar</button></div></div>';
+  const grupo = (tit, tipos) => { const l = av.filter(a => tipos.includes(a.tipo)), h = l.filter(a => a.fecha <= hoy).length; return '<div class="card"><h2>' + tit + '</h2><small>' + (h ? '<b>' + h + ' para hoy</b>' : 'Nada para hoy') + (l.length > h ? ' · ' + (l.length - h) + ' más adelante' : '') + '</small>' + (l.length ? l.map(fila).join('') : '<p class="vacio">Sin mensajes.</p>') + '</div>'; };
+  return '<div class="top"><h1>Mensajes</h1>' + filtroHTML() + '</div>' + grupo('Mensaje de los 5 días', ['d5']) + grupo('Reseña', ['resena']) + grupo('Seguimiento y mantenimiento', ['mant', 'seg']);
 }
 
 function vEquipos() {
