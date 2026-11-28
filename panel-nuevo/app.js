@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281003';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281011';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -509,9 +509,10 @@ const PRES_EQ = {
 };
 const NOTAS_DEF = 'Forma de pago: a convenir. Los precios pueden variar si cambian las condiciones de la obra. Los materiales no incluidos en el detalle se presupuestan aparte.';
 const minus = s => s.charAt(0).toLowerCase() + s.slice(1);
+// Numeración correlativa compartida: M-0001, B-0002… (la letra dice quién lo hizo). Si se borra el último, ese número se reutiliza.
+const sigNumero = letra => { let m = 0; S.presup.forEach(x => { const r = /^[MB]-(\d+)$/.exec(x.numero || ''); if (r) m = Math.max(m, +r[1]); }); return letra + '-' + String(m + 1).padStart(4, '0'); };
 function presNuevo(id) {
-  const h = hoyISO().replace(/-/g, '').slice(2);
-  return { id, numero: 'P-' + h + '-' + S.tec.letra + String(Math.floor(Math.random() * 90) + 10), fecha: hoyISO(), validez: 15, cliente: { nombre: '', tel: '', dir: '' }, tecnico: S.tec.nombre, items: [], precio: '', texto: '', textoEditado: false, notas: NOTAS_DEF, estado: 'pendiente', eq: 'aire' };
+  return { id, numero: sigNumero(S.tec.letra), fecha: hoyISO(), validez: 15, cliente: { nombre: '', tel: '', dir: '' }, tecnico: S.tec.nombre, items: [], precio: '', texto: '', textoEditado: false, notas: NOTAS_DEF, estado: 'pendiente', eq: 'aire' };
 }
 const catKey = (sec, t) => !t || t === 'aire' ? sec : sec + '_' + t;
 const baseCat = (sec, t) => !t || t === 'aire' ? PRES_DEF[sec] : sec === 'mo' ? (PRES_EQ[t] || []) : [];
@@ -537,6 +538,7 @@ function presRedactar(p) {
 function presGuardar() {
   const p = S.p.pres; if (!p) return;
   p.items = p.items.filter(i => i.desc.trim());
+  if (!S.presup.some(x => x.id === p.id) && S.presup.some(x => x.numero === p.numero)) p.numero = sigNumero(p.numero.charAt(0));
   const limpio = { ...p, tipo: 'presupuesto' }; delete limpio.id;
   setDoc(doc(db, 'config', 'pres_' + p.id), limpio).catch(() => { S.msg = 'No se pudo guardar el presupuesto.'; pintar(); });
   const i = S.presup.findIndex(x => x.id === p.id), copia = { ...limpio, id: p.id }; if (i >= 0) S.presup[i] = copia; else S.presup.push(copia);
