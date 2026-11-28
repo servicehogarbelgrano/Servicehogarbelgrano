@@ -42,9 +42,11 @@ async function responder(estado) {
   $('app').querySelectorAll('button').forEach(b => b.disabled = true);
   try { await updateDoc(ref, { estado, respuestaTs: Date.now() }); } catch (_) { return ver('No se pudo registrar tu respuesta. Probá de nuevo o escribile por WhatsApp.'); }
   p.estado = estado;
-  const txt = estado === 'aceptado' ? 'Hola ' + tec.nombre + ', acepto el presupuesto ' + p.numero + '. ¿Cuándo coordinamos?' : 'Hola ' + tec.nombre + ', vi el presupuesto ' + p.numero + '. Lo voy a pensar y te aviso.';
-  ver('Listo, registramos tu respuesta.');
-  const b = document.createElement('a'); b.className = 'btn'; b.style.cssText = 'width:100%;display:block;margin-top:8px;text-align:center;box-sizing:border-box'; b.href = waLink(tec.tel, txt); b.textContent = 'Avisar por WhatsApp a ' + tec.nombre; $('app').appendChild(b);
+  if (estado === 'pensando') return ver('Listo, avisamos que lo estás pensando. Cuando quieras, podés aceptarlo desde acá.');
+  const link = waLink(tec.tel, 'Hola ' + tec.nombre + ', acepto el presupuesto ' + p.numero + '. ¿Cuándo coordinamos?');
+  ver('¡Gracias! Registramos que aceptaste el presupuesto.');
+  const b = document.createElement('a'); b.className = 'btn'; b.style.cssText = 'width:100%;display:block;margin-top:8px;text-align:center;box-sizing:border-box'; b.href = link; b.textContent = 'Avisar por WhatsApp a ' + tec.nombre; $('app').appendChild(b);
+  setTimeout(() => { location.href = link; }, 1500);
 }
 (async () => {
   if (!id) return ($('app').innerHTML = '<p class="err">Link incompleto. Pedinos que te lo mandemos de nuevo.</p>');
