@@ -1,9 +1,9 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611272248';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611272254';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
-const { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, getDocs, onSnapshot, query, where, writeBatch, setDoc, deleteDoc } = await import(SDK + 'firebase-firestore.js');
+const { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, getDocs, onSnapshot, query, where, writeBatch, setDoc, deleteDoc, arrayUnion } = await import(SDK + 'firebase-firestore.js');
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -67,6 +67,8 @@ const ir = (vista, p = {}, sinHist) => { S.vista = vista; S.p = p; S.msg = ''; i
 try { history.replaceState({ vista: 'inicio', p: {} }, ''); } catch (_) {}
 window.addEventListener('popstate', ev => { const st = ev.state || { vista: 'inicio', p: {} }; ir(st.vista, st.p || {}, true); if (st.vista === 'equipo' && st.p && st.p.id) cargarSvcs(st.p.id); });
 const clienteDe = e => S.clientes.find(c => c.id === e.clienteId);
+const tecsEq = e => e.tecnicos && e.tecnicos.length ? e.tecnicos : [e.tecnicoAlta];
+const esMio = e => S.filtro === 'todos' || tecsEq(e).includes(S.tec.nombre);
 const equiposDe = cid => S.equipos.filter(e => e.clienteId === cid);
 const ayuda = t => '<details class="ayuda"><summary aria-label="Explicación">?</summary><p>' + esc(t) + '</p></details>';
 function claveNueva() {
@@ -142,8 +144,9 @@ function vEnviados() {
 function vClientes() {
   const q = S.q.toLowerCase();
   const claves = c => equiposDe(c.id).map(e => e.id).join(' ');
-  const l = S.clientes.filter(c => !q || [c.nombre, c.telefono, c.direccion, claves(c)].join(' ').toLowerCase().includes(q)).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '')).slice(0, 60);
-  return '<div class="top"><h1>Clientes</h1></div><input id="buscar" placeholder="Buscar por nombre, teléfono, dirección o clave" value="' + esc(S.q) + '" autocomplete="off"><button class="prim grande" data-acc="irNuevoCliente">+ Nuevo cliente</button>' +
+  const mio = c => { const eq = equiposDe(c.id); return !eq.length || eq.some(esMio); };
+  const l = S.clientes.filter(c => q ? [c.nombre, c.telefono, c.direccion, claves(c)].join(' ').toLowerCase().includes(q) : mio(c)).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '')).slice(0, 60);
+  return '<div class="top"><h1>Clientes</h1>' + filtroHTML() + '</div><input id="buscar" placeholder="Buscar por nombre, teléfono, dirección o clave" value="' + esc(S.q) + '" autocomplete="off"><button class="prim grande" data-acc="irNuevoCliente">+ Nuevo cliente</button>' +
     '<div class="card">' + (l.length ? l.map(c => '<div class="fila clic" data-acc="abrirCliente" data-id="' + c.id + '"><div><b>' + esc(c.nombre) + '</b><br><small>' + equiposDe(c.id).map(e => esc((EQ[e.tipo] || EQ.otro).nombre)).join(', ') + (c.direccion ? ' · ' + esc(c.direccion) : '') + '</small></div><span>›</span></div>').join('') : '<p class="vacio">Sin resultados.</p>') + '</div>';
 }
 
@@ -225,7 +228,7 @@ function vMant() {
 
 function vEquipos() {
   const q = S.q.toLowerCase();
-  const l = S.equipos.filter(e => { const c = clienteDe(e) || {}; return (S.filtro === 'todos' || e.tecnicoAlta === S.tec.nombre) && (!q || [e.id, c.nombre, c.telefono, c.direccion, e.marca, e.modelo, e.tipo].join(' ').toLowerCase().includes(q)); }).sort((a, b) => (b.creado || '').localeCompare(a.creado || '')).slice(0, 80);
+  const l = S.equipos.filter(e => { const c = clienteDe(e) || {}; return (q || esMio(e)) && (!q || [e.id, c.nombre, c.telefono, c.direccion, e.marca, e.modelo, e.tipo].join(' ').toLowerCase().includes(q)); }).sort((a, b) => (b.creado || '').localeCompare(a.creado || '')).slice(0, 80);
   return '<div class="top"><h1>Equipos</h1>' + filtroHTML() + '</div><input id="buscar" placeholder="Buscar por clave, cliente, marca…" value="' + esc(S.q) + '" autocomplete="off"><button class="sec" data-acc="excel">Pasar a Excel</button>' +
     '<div class="card">' + (l.length ? l.map(e => { const c = clienteDe(e) || {}; return '<div class="fila clic" data-acc="abrirEquipo" data-id="' + e.id + '"><div><b>' + fmtClave(e.id) + '</b> · ' + esc((EQ[e.tipo] || EQ.otro).nombre) + ' ' + esc(e.marca) + '<br><small>' + esc(c.nombre) + (e.baja ? ' · dado de baja' : '') + '</small></div><span>›</span></div>'; }).join('') : '<p class="vacio">Sin resultados.</p>') + '</div>';
 }
@@ -354,7 +357,7 @@ const ACC = {
     const b = writeBatch(db);
     if (!cid) { const r = doc(collection(db, 'clientes')); cid = r.id; b.set(r, { nombre, telefono, direccion: dir, creado: hoyISO() }); }
     const clave = claveNueva();
-    b.set(doc(db, 'equipos', clave), { clienteId: cid, clienteNombre: nombre || (c0 && c0.nombre) || '', tipo: pickEq, marca: lee('marca'), modelo: lee('modelo'), serie: lee('serie'), creado: hoyISO(), tecnicoAlta: S.tec.nombre, baja: false, mantenimiento: { tipo: 'ninguno' } });
+    b.set(doc(db, 'equipos', clave), { clienteId: cid, clienteNombre: nombre || (c0 && c0.nombre) || '', tipo: pickEq, marca: lee('marca'), modelo: lee('modelo'), serie: lee('serie'), creado: hoyISO(), tecnicoAlta: S.tec.nombre, tecnicos: [S.tec.nombre], baja: false, mantenimiento: { tipo: 'ninguno' } });
     b.commit().catch(e => { S.msg = 'No se pudo guardar: ' + e.code; pintar(); });
     S.equipos.push({ id: clave, clienteId: cid, clienteNombre: nombre || (c0 && c0.nombre) || '', tipo: pickEq, marca: lee('marca'), modelo: lee('modelo'), tecnicoAlta: S.tec.nombre, mantenimiento: { tipo: 'ninguno' } });
     ir('clave', { id: clave });
@@ -404,7 +407,7 @@ const ACC = {
     const svc = { fecha: f.fecha, tecnico: tec, tipo: f.equipo, items: f.items, detalle: f.detalle, motivo: f.motivo, garantiaDias: +f.garantia || 0, resena: f.resena, mantenimiento: f.mant };
     b.set(doc(db, 'equipos', e.id, 'services', id), svc);
     b.set(doc(db, 'movimientos', id), { fecha: f.fecha, tecnico: tec, clave: e.id, equipo: f.equipo, items: f.items });
-    const upd = { ultimaFecha: f.fecha, ultimoTecnico: tec, garantiaHasta: addDias(f.fecha, +f.garantia || 0) };
+    const upd = { ultimaFecha: f.fecha, ultimoTecnico: tec, tecnicos: arrayUnion(tec), garantiaHasta: addDias(f.fecha, +f.garantia || 0) };
     const base = { estado: 'pendiente', tecnico: tec, clave: e.id, equipo: f.equipo, cliente: c ? c.nombre : '', telefono: c ? c.telefono : '', serviceId: id };
     if (S.cfg.seguimiento5) b.set(doc(db, 'avisos', id + '_d5'), { ...base, tipo: 'd5', fecha: addDias(f.fecha, +S.cfg.d5Dias || 5) });
     if (f.resena && S.cfg.resena) b.set(doc(db, 'avisos', id + '_r'), { ...base, tipo: 'resena', fecha: addDias(f.fecha, +S.cfg.resenaDias || 10) });
@@ -413,14 +416,14 @@ const ACC = {
     b.set(doc(db, 'equipos', e.id), upd, { merge: true });
     if (+f.cobro > 0) setDoc(doc(db, 'cobros', id), { fecha: f.fecha, tecnico: tec, clave: e.id, cliente: c ? c.nombre : '', equipo: f.equipo, monto: +f.cobro, nota: f.cobroNota || '' }).catch(() => { S.msg = 'El service se guardó, pero el cobro no (falta habilitar los cobros en Firebase).'; pintar(); });
     const r = await Promise.race([b.commit().then(() => 'ok'), new Promise(res => setTimeout(() => res('lento'), 5000))]);
-    Object.assign(e, upd);
+    Object.assign(e, upd, { tecnicos: Array.from(new Set((e.tecnicos && e.tecnicos.length ? e.tecnicos : [e.tecnicoAlta]).concat(tec))) });
     ir('equipo', { id: e.id }); cargarSvcs(e.id);
     S.msg = r === 'ok' ? 'Service guardado.' : 'Sin conexión: el service quedó guardado en el celu y se sube solo.'; pintar();
     } catch (er) { const x = $('err'); if (x) x.textContent = 'No se pudo guardar: ' + (er.code || er.message); console.error(er); }
   },
   excel: () => {
     const q = S.q.toLowerCase(); const filas = [['Clave', 'Cliente', 'Teléfono', 'Dirección', 'Equipo', 'Marca', 'Modelo', 'Último service', 'Técnico']];
-    S.equipos.filter(e => { const c = clienteDe(e) || {}; return (S.filtro === 'todos' || e.tecnicoAlta === S.tec.nombre) && (!q || [e.id, c.nombre, c.telefono, e.marca].join(' ').toLowerCase().includes(q)); }).forEach(e => { const c = clienteDe(e) || {}; filas.push([fmtClave(e.id), c.nombre, verTel(c.telefono), c.direccion, (EQ[e.tipo] || EQ.otro).nombre, e.marca, e.modelo, fechaCorta(e.ultimaFecha), e.ultimoTecnico]); });
+    S.equipos.filter(e => { const c = clienteDe(e) || {}; return (q || esMio(e)) && (!q || [e.id, c.nombre, c.telefono, e.marca].join(' ').toLowerCase().includes(q)); }).forEach(e => { const c = clienteDe(e) || {}; filas.push([fmtClave(e.id), c.nombre, verTel(c.telefono), c.direccion, (EQ[e.tipo] || EQ.otro).nombre, e.marca, e.modelo, fechaCorta(e.ultimaFecha), e.ultimoTecnico]); });
     const csv = '﻿' + filas.map(r => r.map(x => '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"').join(';')).join('\r\n');
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'equipos-' + hoyISO() + '.csv'; a.click();
   },
