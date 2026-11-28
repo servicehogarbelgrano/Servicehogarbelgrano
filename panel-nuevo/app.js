@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281105';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281114';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -12,7 +12,7 @@ const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabMana
 const $ = id => document.getElementById(id);
 const S = {
   user: null, tec: null, cfg: JSON.parse(JSON.stringify(DEFAULT_CFG)), items: ITEMS,
-  clientes: [], equipos: [], avisos: [], hechos: [], presup: [], presCat: { mo: [], mat: [] }, cobros: [], cobrosEq: {}, movs: [],
+  clientes: [], equipos: [], avisos: [], hechos: [], presup: [], presCat: { mo: [], mat: [] }, pub: {}, cobros: [], cobrosEq: {}, movs: [],
   vista: 'inicio', p: {}, filtro: 'mine', q: '', svcs: [], msg: ''
 };
 let unsubs = [];
@@ -53,6 +53,7 @@ function iniciar() {
   escuchar(query(collection(db, 'avisos'), where('estado', 'in', ['enviado', 'descartado'])), s => S.hechos = s.docs.map(d => ({ id: d.id, ...d.data() })));
   unsubs.push(onSnapshot(query(collection(db, 'cobros'), where('fecha', '>=', hoyISO().slice(0, 7) + '-01')), s => { S.cobros = s.docs.map(d => ({ id: d.id, ...d.data() })); pintar(); }, () => {}));
   escuchar(query(collection(db, 'config'), where('tipo', '==', 'presupuesto')), s => S.presup = s.docs.map(d => ({ id: d.id.replace(/^pres_/, ''), ...d.data() })));
+  escuchar(collection(db, 'presupuestos_pub'), s => { S.pub = {}; s.docs.forEach(d => S.pub[d.id] = d.data()); });
   unsubs.push(onSnapshot(doc(db, 'config', 'presCat'), s => { S.presCat = s.exists() ? { mo: [], mat: [], ...s.data() } : { mo: [], mat: [] }; }, () => {}));
   const mes = hoyISO().slice(0, 7) + '-01';
   escuchar(query(collection(db, 'movimientos'), where('fecha', '>=', mes)), s => S.movs = s.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -107,6 +108,10 @@ window.addEventListener('online', pintar); window.addEventListener('offline', pi
 const _f = 0;
 const filtroHTML = () => '<div class="filtro"><button data-acc="filtro" data-v="mine" class="' + (S.filtro === 'mine' ? 'sel' : '') + '">' + S.tec.nombre + '</button><button data-acc="filtro" data-v="todos" class="' + (S.filtro === 'todos' ? 'sel' : '') + '">Todos</button></div>';
 
+function respPres() {
+  const lim = Date.now() - 5 * 86400000, l = S.presup.map(x => ({ x, u: S.pub[x.id] })).filter(o => o.u && o.u.respuestaTs > lim && (S.filtro === 'todos' || o.x.tecnico === S.tec.nombre)).sort((a, b) => b.u.respuestaTs - a.u.respuestaTs);
+  return l.length ? '<div class="card"><h2>Respuestas de presupuestos</h2>' + l.map(o => '<div class="fila clic" data-acc="abrirPres" data-id="' + o.x.id + '"><div><b>' + esc(o.x.cliente && o.x.cliente.nombre || 'Sin nombre') + '</b><br><small>' + (o.u.estado === 'aceptado' ? '✅ Aceptó' : '🤔 Lo está pensando') + ' · ' + esc(o.x.numero) + ' · ' + fechaCorta(new Date(o.u.respuestaTs).toISOString().slice(0, 10)) + '</small></div><span>›</span></div>').join('') + '</div>' : '';
+}
 function vInicio() {
   const hoy = hoyISO();
   const av = S.avisos.filter(a => activo(a) && miosONo(a)).sort((a, b) => a.fecha.localeCompare(b.fecha));
@@ -118,6 +123,7 @@ function vInicio() {
   return '<div class="top"><h1>Inicio</h1>' + filtroHTML() + '</div>' +
     '<div class="tarjetas"><div class="tj"><b>' + movs.length + '</b><span>Services del mes</span></div><div class="tj"><b>' + vencen.length + '</b><span>Para hoy</span></div><div class="tj"><b>' + S.clientes.filter(c => { const eq = equiposDe(c.id); return !eq.length || eq.some(esMio); }).length + '</b><span>Clientes</span></div><div class="tj"><b>' + S.equipos.filter(esMio).length + '</b><span>Equipos</span></div></div>' +
     '<div class="atajos"><button class="prim" data-nav="equipos">Equipos</button><button class="sec" data-acc="irEnviados">Enviados</button><button class="sec" data-acc="irCobros">Cobros</button></div>' +
+    respPres() +
     (sig ? '<div class="card tanda"><small>Siguiente aviso (quedan ' + vencen.length + ')</small><h2>' + esc(sig.cliente) + ' · ' + esc((EQ[sig.equipo] || EQ.otro).nombre) + '</h2><p>' + ETIQ[sig.tipo] + '</p><button class="prim grande" data-acc="enviarAviso" data-id="' + sig.id + '">Enviar por WhatsApp</button><button class="sec" data-acc="noMandar" data-id="' + sig.id + '">No mandar</button></div>' : '') +
     '<div class="card"><h2>Para hoy</h2>' + (vencen.length ? (E.h ? vencen : vencen.slice(0, MAXH)).map(fila).join('') + mas(vencen.length - MAXH, 'h') : '<p class="vacio">Nada para hoy.</p>') + '</div>' +
     (prox.length ? '<div class="card"><h2>Próximos</h2>' + prox.map(fila).join('') + mas(masProx, 'p') + '</div>' : '');
@@ -325,8 +331,15 @@ const ACC = {
   presACliente: () => { const p = S.p.pres, tel = limpiarTel(p.cliente.tel), ex = tel && S.clientes.find(c => c.telefono === tel); pickEq = ''; if (ex) ir('nuevoCliente', { cliente: ex }); else ir('nuevoCliente', { pre: { nombre: p.cliente.nombre, tel: p.cliente.tel, dir: p.cliente.dir } }); },
   presGuardar: () => { presGuardar(); history.back(); },
   presVer: () => { presGuardar(); mostrarPresupuesto(S.p.pres); },
-  presWA: () => { const p = S.p.pres; if (!p.enviado) p.enviado = Date.now(); presGuardar(); mostrarPresupuesto(p, true); pintar(); },
-  presEstado: el => { const p = S.p.pres; p.estado = el.dataset.v; pintar(); },
+  presWA: () => {
+    const p = S.p.pres; if (!p.enviado) p.enviado = Date.now(); presGuardar();
+    const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.\nLo ves completo y podés aceptarlo o avisarme que lo estás pensando desde acá (también lo podés bajar en PDF):\n' + PRES_URL + p.id;
+    const tel = limpiarTel(p.cliente.tel);
+    if (tel) abrirWA(tel, txt); else if (navigator.share) navigator.share({ text: txt }).catch(() => {}); else window.open(waLink('', txt), '_blank');
+    pintar();
+  },
+  presPDF: () => { const p = S.p.pres; if (!p.enviado) p.enviado = Date.now(); presGuardar(); mostrarPresupuesto(p, true); pintar(); },
+  presEstado: el => { const p = S.p.pres; p.estado = el.dataset.v; if (p.enviado && S.pub[p.id]) setDoc(doc(db, 'presupuestos_pub', p.id), { estado: p.estado === 'aceptado' ? 'aceptado' : 'pendiente' }, { merge: true }).catch(() => {}); pintar(); },
   presBorrar: el => { const id = el.dataset.id; if (!confirm('¿Borrar este presupuesto? No se puede deshacer.')) return; deleteDoc(doc(db, 'config', 'pres_' + id)); S.presup = S.presup.filter(x => x.id !== id); if (S.vista === 'presupuesto') history.back(); else pintar(); },
   presDup: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (!p) return; const id = Math.random().toString(36).slice(2, 10); const n = presNuevo(id); n.cliente = { nombre: '', tel: '', dir: '' }; n.items = JSON.parse(JSON.stringify(p.items)); n.notas = p.notas; ir('presupuesto', { pres: n, nuevo: true }); },
   comprobante: el => {
@@ -567,11 +580,18 @@ function presRedactar(p) {
   const t = mo.map(i => PRES_FRASE[i.desc.trim().toLowerCase()] || (i.desc.trim().charAt(0).toUpperCase() + i.desc.trim().slice(1).replace(/\.$/, '') + '.')).join('\n');
   p.texto = t; const e = $('ptexto'); if (e) e.value = t;
 }
+const PRES_URL = 'https://servicehogarbelgrano.com.ar/presupuesto.html#';
+function presPublicar(p) {
+  const pub = { numero: p.numero, fecha: p.fecha, validez: +p.validez || 0, cliente: p.cliente.nombre || '', tecnico: p.tecnico, texto: p.texto || '', mat: p.items.filter(i => i.sec === 'mat' && i.desc.trim()).map(i => i.desc.trim()), eq: p.eq || 'aire', precio: +p.precio || 0, notas: p.notas || '' };
+  if (!S.pub[p.id]) pub.estado = 'pendiente';
+  setDoc(doc(db, 'presupuestos_pub', p.id), pub, { merge: true }).catch(() => {});
+}
 function presGuardar() {
   const p = S.p.pres; if (!p) return;
   p.items = p.items.filter(i => i.desc.trim());
   if (!S.presup.some(x => x.id === p.id) && S.presup.some(x => x.numero === p.numero)) p.numero = sigNumero(p.numero.charAt(0));
   const limpio = { ...p, tipo: 'presupuesto' }; delete limpio.id;
+  if (p.enviado) presPublicar(p);
   setDoc(doc(db, 'config', 'pres_' + p.id), limpio).catch(() => { S.msg = 'No se pudo guardar el presupuesto.'; pintar(); });
   const i = S.presup.findIndex(x => x.id === p.id), copia = { ...limpio, id: p.id }; if (i >= 0) S.presup[i] = copia; else S.presup.push(copia);
   const cat = { mo: catDe('mo', p.eq).slice(), mat: catDe('mat', p.eq).slice() }; let cambio = false;
@@ -580,9 +600,10 @@ function presGuardar() {
 }
 function vPresupuestos() {
   const l = S.presup.filter(x => S.filtro === 'todos' || x.tecnico === S.tec.nombre).sort((a, b) => (b.fecha + b.numero).localeCompare(a.fecha + a.numero)).slice(0, 80);
-  const col = { pendiente: 'Pendiente', aceptado: 'Aceptado', rechazado: 'Rechazado' };
+  const col = { pendiente: 'Pendiente', aceptado: 'Aceptado', rechazado: 'Rechazado', pensando: 'Lo está pensando' };
+  const ef = p => { const u = S.pub[p.id]; return u && (u.estado === 'aceptado' || u.estado === 'pensando') ? u.estado : p.estado; };
   return '<div class="top"><h1>Presupuestos</h1>' + filtroHTML() + '</div><button class="prim grande" data-acc="nuevoPres">+ Nuevo presupuesto</button><div class="card">' +
-    (l.length ? l.map(p => '<div class="fila clic" data-acc="abrirPres" data-id="' + p.id + '"><div><b>' + esc(p.cliente && p.cliente.nombre || 'Sin nombre') + '</b><br><small>' + esc(p.numero) + ' · ' + fechaCorta(p.fecha) + ' · ' + (col[p.estado] || 'Pendiente') + (S.filtro === 'todos' ? ' · ' + esc(p.tecnico) : '') + '</small></div><div class="bts"><b>' + $$(p.precio) + '</b>' + (p.enviado ? '<button class="chico gris" disabled>Enviado</button>' : '<button class="chico" data-acc="abrirPres" data-id="' + p.id + '">Editar</button>') + '</div></div>').join('') : '<p class="vacio">Todavía no hiciste presupuestos.</p>') + '</div>';
+    (l.length ? l.map(p => '<div class="fila clic" data-acc="abrirPres" data-id="' + p.id + '"><div><b>' + esc(p.cliente && p.cliente.nombre || 'Sin nombre') + '</b><br><small>' + esc(p.numero) + ' · ' + fechaCorta(p.fecha) + ' · ' + (col[ef(p)] || 'Pendiente') + (S.pub[p.id] && S.pub[p.id].vistoTs ? ' · Visto' : '') + (S.filtro === 'todos' ? ' · ' + esc(p.tecnico) : '') + '</small></div><div class="bts"><b>' + $$(p.precio) + '</b>' + (p.enviado ? '<button class="chico gris" disabled>Enviado</button>' : '<button class="chico" data-acc="abrirPres" data-id="' + p.id + '">Editar</button>') + '</div></div>').join('') : '<p class="vacio">Todavía no hiciste presupuestos.</p>') + '</div>';
 }
 function vPresupuesto() {
   const p = S.p.pres; if (!p) return '';
@@ -600,7 +621,7 @@ function vPresupuesto() {
     '<div class="gt">Texto del presupuesto</div><div class="grupo"><div class="fi col"><textarea id="ptexto" data-pt="texto" rows="4" placeholder="Se arma solo con los ítems que agregues"' + D + '>' + esc(p.texto) + '</textarea>' + (L ? '' : '<small>Se redacta solo con los ítems. Si lo cambiás a mano, se respeta tu texto.</small><button class="lnk" data-acc="presRegen">Volver a redactar automático</button>') + '</div></div>' +
     '<div class="gt">Precio</div><div class="grupo"><div class="fi tot"><div class="ft"><b>Precio total</b><small>Un solo precio por todo lo detallado.</small></div><span class="nm"><input data-pt="precio" type="number" inputmode="decimal" placeholder="0" value="' + esc(p.precio) + '"' + D + '><b id="pfmt" class="pfmt">' + (+p.precio ? $$(p.precio) : '') + '</b></span></div></div>' +
     '<div class="gt">Condiciones</div><div class="grupo"><div class="fi"><div class="ft"><b>Válido por</b></div><span class="nm"><input data-pt="validez" type="number" inputmode="numeric" value="' + esc(p.validez) + '"' + D + '><em>días</em></span></div><div class="fi col"><textarea data-pt="notas" rows="4" placeholder="Condiciones o aclaraciones"' + D + '>' + esc(p.notas) + '</textarea></div><div class="fi"><div class="ft"><b>Estado</b></div><div class="seg">' + [['pendiente', 'Pendiente'], ['aceptado', 'Aceptado'], ['rechazado', 'Rechazado']].map(([v, n]) => '<button data-acc="presEstado" data-v="' + v + '" class="' + (p.estado === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div></div></div>' +
-    '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">' + (L ? 'Reenviar PDF por WhatsApp' : 'Enviar PDF por WhatsApp') + '</button>' + '<button class="sec grande" data-acc="presACliente">Pasar a cliente y crear clave</button><button class="sec grande" data-acc="presGuardar">Guardar</button>' +
+    '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">' + (L ? 'Reenviar link por WhatsApp' : 'Enviar por WhatsApp (link)') + '</button><button class="sec grande" data-acc="presPDF">Enviar como PDF (sin botón de aceptar)</button>' + '<button class="sec grande" data-acc="presACliente">Pasar a cliente y crear clave</button><button class="sec grande" data-acc="presGuardar">Guardar</button>' +
     (S.p.nuevo ? '' : '<button class="lnk salir" data-acc="presBorrar" data-id="' + p.id + '">Borrar presupuesto</button>');
 }
 document.addEventListener('input', ev => {
@@ -614,7 +635,7 @@ function mostrarPresupuesto(p, conPdf) {
   const lis = s => { const l = p.items.filter(i => i.sec === s && i.desc.trim()); return l.length ? l.map(i => '<li>' + esc(i.desc) + '</li>').join('') : ''; };
   const old = document.getElementById('comp'); if (old) old.remove();
   const d = document.createElement('div'); d.id = 'comp'; d.className = 'pres';
-  d.innerHTML = '<div class="barra">' + (conPdf ? '<button id="cwa" disabled>Preparando PDF…</button>' : '<button id="cimp">Imprimir o guardar PDF</button>') + '<button class="sec" id="ccer">Cerrar</button></div>' +
+  d.innerHTML = '<div class="barra">' + (conPdf ? '<button id="cwa" disabled>Preparando PDF…</button>' : '<button id="cimp">Imprimir o guardar PDF</button>') + (conPdf ? '<button class="sec" id="clk">Mandar solo el link</button>' : '') + '<button class="sec" id="ccer">Cerrar</button></div>' +
     '<div class="pb"><div class="pbh"><img src="' + NEGOCIO.logo + '" alt="" onerror="this.remove()"><div><b>' + NEGOCIO.nombre + '</b><span>Servicio técnico de electrodomésticos y aires acondicionados</span></div></div><div class="pbt"><h1>PRESUPUESTO</h1><span>N° ' + esc(p.numero) + '</span></div></div>' +
     '<div class="pdatos"><div><small>Cliente</small><b>' + esc(p.cliente.nombre || '—') + '</b>' + (p.cliente.tel ? '<span>' + esc(verTel(limpiarTel(p.cliente.tel) || p.cliente.tel)) + '</span>' : '') + (p.cliente.dir ? '<span>' + esc(p.cliente.dir) + '</span>' : '') + '</div><div class="der"><small>Fecha</small><b>' + fechaCorta(p.fecha) + '</b><small>Válido hasta</small><b>' + fechaCorta(hasta) + '</b></div></div>' +
     '<div class="pdet"><h3>Detalle</h3>' + (p.texto ? p.texto.split('\n').filter(x => x.trim()).map(x => '<p>' + esc(x) + '</p>').join('') : '') + (lis('mat') ? (p.eq && p.eq !== 'aire' ? '<h4>Repuestos incluidos</h4>' : '<h4>Materiales incluidos</h4>') + '<ul>' + lis('mat') + '</ul>' : '') + '</div>' +
@@ -623,7 +644,7 @@ function mostrarPresupuesto(p, conPdf) {
     '<div class="pie2"><span>' + esc(NEGOCIO.direccion) + '</span><span>WhatsApp: Mauricio 11 6571-1314 · Bruno 11 6748-9192</span><span>' + NEGOCIO.web + ' · ' + NEGOCIO.instagram + '</span><em>Este documento es un presupuesto y no es una factura.</em></div>';
   document.body.appendChild(d); document.body.classList.add('vcomp'); window.scrollTo(0, 0);
   document.getElementById('ccer').onclick = () => { d.remove(); document.body.classList.remove('vcomp'); };
-  if (conPdf) presPdfListo(p);
+  if (conPdf) { const lk = document.getElementById('clk'), t2 = 'Hola ' + primerNombre(p.cliente.nombre) + ', este es el link de tu presupuesto ' + p.numero + ': ' + PRES_URL + p.id + '\nDesde ahí podés aceptarlo o avisarme que lo estás pensando.'; if (lk) lk.onclick = () => { const tel = limpiarTel(p.cliente.tel); if (tel) abrirWA(tel, t2); else if (navigator.share) navigator.share({ text: t2 }).catch(() => {}); else window.open(waLink('', t2), '_blank'); }; presPdfListo(p); }
   else document.getElementById('cimp').onclick = () => window.print();
 }
 function cargarJs(src) { return new Promise((ok, ko) => { if (document.querySelector('script[data-lib="' + src + '"]')) return ok(); const t = document.createElement('script'); t.src = src; t.dataset.lib = src; t.onload = ok; t.onerror = () => ko(new Error('lib')); document.head.appendChild(t); }); }
@@ -639,7 +660,7 @@ async function presPdfListo(p) {
     const f = new File([pdf.output('blob')], 'Presupuesto-' + p.numero + '.pdf', { type: 'application/pdf' });
     b.disabled = false; b.textContent = 'Compartir PDF por WhatsApp';
     b.onclick = () => {
-      const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.';
+      const txt = 'Hola ' + primerNombre(p.cliente.nombre) + ', te paso el presupuesto ' + p.numero + ' de Service Hogar Belgrano.\nPodés verlo y responder desde acá: ' + PRES_URL + p.id;
       if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], title: 'Presupuesto ' + p.numero, text: txt }).catch(() => {});
       else { const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); const tel = limpiarTel(p.cliente.tel); if (tel) abrirWA(tel, txt + ' (te adjunto el PDF)'); }
     };
