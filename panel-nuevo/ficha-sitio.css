@@ -53,3 +53,30 @@ img,svg{max-width:100%}body{overflow-wrap:anywhere}
 .fgrande{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99;display:flex;align-items:center;justify-content:center}.fgrande img{max-width:100%;max-height:100%;border-radius:0}
 
 .fgrande{flex-direction:column;gap:14px;padding:12px 12px calc(16px + env(safe-area-inset-bottom));box-sizing:border-box}.fgrande img{flex:1;min-height:0;object-fit:contain}.fcerrar{flex:none;margin:0;background:#fff;color:#111;border:0;border-radius:999px;padding:12px 28px;font-size:16px;font-weight:700;width:auto;cursor:pointer}
+
+/* Ficha: diseño más armado */
+#app .eqh{background:var(--carbon);color:#fff;border-radius:14px;padding:20px 18px;margin:0 0 14px;border-bottom:6px solid var(--naranja)}
+#app .eqh h2{color:#fff;font-size:36px;line-height:1.02;margin:4px 0 0}
+#app .eqh small{color:#cfd3d7;font-size:16px}
+#app .clavetag{display:inline-block;background:var(--naranja);color:var(--carbon);font:800 24px/1 var(--titulo);letter-spacing:.12em;padding:9px 14px;border-radius:6px;margin-top:14px}
+#app .gar{border-radius:14px;padding:18px;margin:0 0 14px;color:#fff}
+#app .gar.si{background:var(--verde)}#app .gar.no{background:var(--rojo)}
+#app .gar .gt{font:800 16px/1 var(--titulo);letter-spacing:.12em;text-transform:uppercase;opacity:.95}
+#app .gar .gd{font:800 32px/1.05 var(--titulo);margin:6px 0 4px}
+#app .gar small{color:rgba(255,255,255,.92);font-size:17px}
+#app .barra-g{height:12px;background:rgba(255,255,255,.3);border-radius:6px;margin-top:12px;overflow:hidden}#app .barra-g i{display:block;height:100%;background:#fff;border-radius:6px}
+#app .accs{display:grid;gap:12px;margin:0 0 14px}
+#app .accs a.btn{margin:0;font-size:19px;padding:15px 16px;border-radius:12px}
+#app .accs a.btn.grande{font-size:22px;padding:19px 16px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+#app .card.prox{border-left:6px solid var(--naranja)}#app .prox small{color:var(--gris);font-weight:600}#app .prox h2{font-size:28px}
+#app .svc2{display:flex;gap:12px;padding:14px 0;border-top:1px solid var(--linea)}#app .svc2:first-of-type{border-top:0;padding-top:4px}
+#app .sf{flex:none;width:62px;text-align:center;background:var(--carbon);color:#fff;border-radius:10px;padding:8px 0;align-self:flex-start}
+#app .sf b{display:block;font:800 28px/1 var(--titulo)}#app .sf span{display:block;font:700 13px/1.2 var(--titulo);letter-spacing:.1em;color:var(--naranja)}#app .sf em{display:block;font-style:normal;font-size:12px;opacity:.8}
+#app .sc{flex:1;min-width:0}#app .sh{color:var(--gris);font-size:16px}
+#app .cps{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}#app .cp{background:#fff;border:1.5px solid var(--carbon);border-radius:999px;padding:3px 11px;font-weight:600;font-size:15px}
+#app .det,#app .mot{margin:6px 0}
+#app .pill{display:inline-block;margin-top:6px;padding:5px 11px;border-radius:999px;font-weight:700;font-size:15px}
+#app .pill.si{background:#e3f3e9;color:var(--verde)}#app .pill.no{background:#fbe5e3;color:var(--rojo)}
+#app button.chico2{width:100%;margin-top:10px;padding:11px 12px;font-size:16px}
+#app .card.resena{background:#fff4ec;border:2px solid var(--naranja)}
+#app .qrg{width:180px;max-width:70%;margin:12px auto 0;background:#fff;padding:10px;border-radius:8px}#app .qrg svg{width:100%;height:auto;display:block}

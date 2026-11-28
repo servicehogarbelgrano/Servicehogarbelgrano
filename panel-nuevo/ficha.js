@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, EQ, GARANTIA_TEXTO, NEGOCIO, FICHA_URL, esc, normClave, fmtClave, addDias, fechaCorta, waLink, BASE } from './config.js';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, EQ, GARANTIA_TEXTO, NEGOCIO, FICHA_URL, esc, normClave, fmtClave, addDias, fechaCorta, waLink, BASE, LINK_RESENA } from './config.js';
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getFirestore, doc, getDoc, getDocs, collection } = await import(SDK + 'firebase-firestore.js');
 const db = getFirestore(initializeApp(firebaseConfig));
@@ -55,18 +55,41 @@ function vFicha() {
   const any = svcs.some(vigente);
   const tec = e.tipo === 'heladera' ? POR_NOMBRE.Bruno : tecPorNombre(ult ? ult.tecnico : e.tecnicoAlta);
   const lst = todos ? svcs : svcs.slice(0, 5);
-  const svcHTML = s => { const v = addDias(s.fecha, +s.garantiaDias || 0), ok = vigente(s); return '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · Service realizado por ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<div class="cubre">Cubre: ' + esc(s.items.join(', ')) + '</div>' : '') + (s.detalle ? '<div>' + esc(s.detalle) + '</div>' : '') + (s.fotos && s.fotos.length ? '<div class="fotos">' + s.fotos.map(u => '<img src="' + u + '" alt="Foto del service" data-foto="1">').join('') + '</div>' : '') + (s.motivo ? '<small>Motivo: ' + esc(s.motivo) + '</small><br>' : '') + '<span class="' + (ok ? 'ok' : 'mal') + '">Garantía ' + (ok ? 'vigente' : 'vencida') + ' · ' + s.garantiaDias + ' días · vence ' + fechaCorta(v) + '</span><button class="sec chico" data-comp="' + s.id + '">Comprobante (imprimir o guardar PDF)</button><details><summary>Ver condiciones de la garantía</summary><p>' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p></details></div>'; };
+  const largo = iso => new Date(iso + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const dias = iso => Math.round((new Date(iso + 'T12:00:00') - new Date(hoy() + 'T12:00:00')) / 86400000);
+  const lista = (l, mx) => l.join(', ');
+  const svcHTML = s => {
+    const v = addDias(s.fecha, +s.garantiaDias || 0), ok = vigente(s), d = new Date(s.fecha + 'T12:00:00');
+    const mes = d.toLocaleDateString('es-AR', { month: 'short' }).replace('.', '').toUpperCase();
+    return '<div class="svc2"><div class="sf"><b>' + d.getDate() + '</b><span>' + mes + '</span><em>' + d.getFullYear() + '</em></div><div class="sc">' +
+      '<div class="sh">Service realizado por <b>' + esc(s.tecnico) + '</b></div>' +
+      (s.items && s.items.length ? '<div class="cps">' + s.items.map(i => '<span class="cp">' + esc(i) + '</span>').join('') + '</div>' : '') +
+      (s.detalle ? '<p class="det">' + esc(s.detalle) + '</p>' : '') +
+      (s.motivo ? '<p class="mot"><b>Motivo:</b> ' + esc(s.motivo) + '</p>' : '') +
+      (s.fotos && s.fotos.length ? '<div class="fotos">' + s.fotos.map(u => '<img src="' + u + '" alt="Foto del service" data-foto="1">').join('') + '</div>' : '') +
+      '<span class="pill ' + (ok ? 'si' : 'no') + '">' + (ok ? '✔ Garantía vigente' : 'Garantía vencida') + ' · ' + s.garantiaDias + ' días · ' + (ok ? 'vence ' : 'venció ') + fechaCorta(v) + '</span>' +
+      '<button class="sec chico2" data-comp="' + s.id + '">📄 Comprobante (imprimir o guardar PDF)</button>' +
+      '<details><summary>Ver condiciones de la garantía</summary><p>' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p></details></div></div>';
+  };
   const cal = e.mantenimiento && e.mantenimiento.fecha;
   const otros = guardadas().filter(k => k !== clave);
+  const mejor = svcs.reduce((m, x) => { const v = addDias(x.fecha, +x.garantiaDias || 0); return !m || v > m.v ? { v, tot: +x.garantiaDias || 0 } : m; }, null);
+  const resta = mejor ? dias(mejor.v) : 0, pct = mejor && mejor.tot ? Math.max(0, Math.min(100, Math.round(resta * 100 / mejor.tot))) : 0;
+  const garHTML = !svcs.length ? '' : any
+    ? '<div class="gar si"><div class="gt">✔ Garantía vigente</div><div class="gd">Vence el ' + largo(mejor.v) + '</div><small>' + (resta === 0 ? 'Vence hoy' : resta === 1 ? 'Te queda 1 día' : 'Te quedan ' + resta + ' días') + '</small><div class="barra-g"><i style="width:' + pct + '%"></i></div></div>'
+    : '<div class="gar no"><div class="gt">Garantía vencida</div><div class="gd">Venció el ' + largo(mejor.v) + '</div><small>Si el equipo tiene un problema, escribinos y lo revisamos.</small></div>';
+  const nomEq = (eq.nombre + ' ' + (e.marca || '') + ' ' + (e.modelo || '')).trim();
   $('app').innerHTML =
-    '<div class="card"><h2>' + esc(eq.nombre) + ' ' + esc(e.marca || '') + ' ' + esc(e.modelo || '') + '</h2>' + (e.clienteNombre ? '<small>Cliente: ' + esc(e.clienteNombre) + '</small><br>' : '') + '<small>Clave ' + fmtClave(clave) + '</small><br>' +
-    (svcs.length ? '<span class="badge ' + (any ? '' : 'mal') + '">' + (any ? '✔ Garantía vigente' : 'Garantía vencida') + '</span>' : '<small>Sin services registrados.</small>') +
-    (e.baja ? '<p class="mal">Este equipo figura dado de baja.</p>' : '') + '</div>' +
-    '<div class="card"><a class="btn wa" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', consulto por mi ' + eq.nombre.toLowerCase() + ' (clave ' + fmtClave(clave) + ').') + '">Pedir un service a ' + tec.nombre + '</a><a class="btn sec" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', tengo otro equipo con problemas.') + '">Tengo otro equipo con problemas</a>' +
-    (cal ? '<button class="sec" id="bcal">Agregar recordatorio al calendario</button>' : '') + '</div>' +
-    (svcs.length ? '<div class="card"><h2>Historial</h2>' + lst.map(svcHTML).join('') + (svcs.length > 5 && !todos ? '<button class="sec" id="vtodos">Ver lista completa (' + svcs.length + ')</button>' : '') + '</div>' : '') +
-    '<div class="card"><h2>Guardá nuestro contacto</h2><a class="btn sec" href="' + tec.vcf + '">Guardar contacto de ' + tec.nombre + '</a><button class="sec" id="brec">Recomendanos</button></div>' +
-        '<div class="card"><h2>Mis equipos</h2>' + (otros.length ? otros.map(k => '<div class="fila"><b>' + fmtClave(k) + '</b><span><button class="chico sec" data-abrir="' + k + '">Ver</button> <button class="chico sec" data-quitar="' + k + '">Quitar</button></span></div>').join('') : '<small>Acá aparecen los equipos que agregues con su clave.</small>') +
+    '<div class="eqh"><small>' + esc(eq.nombre) + (e.clienteNombre ? ' de ' + esc(e.clienteNombre) : '') + '</small><h2>' + esc(nomEq) + '</h2><span class="clavetag">' + fmtClave(clave) + '</span>' + (svcs.length ? '' : '<p><small>Todavía no hay services registrados.</small></p>') + (e.baja ? '<p class="mal">Este equipo figura dado de baja.</p>' : '') + '</div>' +
+    garHTML +
+    '<div class="accs"><a class="btn oro grande" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', quiero pedir un service para mi ' + eq.nombre.toLowerCase() + ' (clave ' + fmtClave(clave) + ').') + '">🛠 Pedir un service a ' + tec.nombre + '</a>' +
+    '<a class="btn wa grande" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', tengo un problema con mi ' + eq.nombre.toLowerCase() + ' (clave ' + fmtClave(clave) + ').') + '">💬 Tengo un problema</a>' +
+    '<a class="btn sec" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', tengo otro equipo con problemas.') + '">Tengo otro equipo con problemas</a></div>' +
+    (cal ? '<div class="card prox"><small>Próximo mantenimiento</small><h2>' + largo(cal) + '</h2><button class="sec" id="bcal">📅 Agregar recordatorio al calendario</button></div>' : '') +
+    (svcs.length ? '<div class="card"><h2>Historial de services</h2>' + lst.map(svcHTML).join('') + (svcs.length > 5 && !todos ? '<button class="sec" id="vtodos">Ver lista completa (' + svcs.length + ')</button>' : '') + '</div>' : '') +
+    '<div class="card resena"><h2>¿Quedaste conforme?</h2><p>Tu opinión en Google nos ayuda mucho. Es un minuto.</p><a class="btn oro" href="' + LINK_RESENA + '">⭐ Dejanos tu reseña</a><details><summary>Mostrar código QR</summary><div class="qrg">' + qrSvg(LINK_RESENA) + '</div></details></div>' +
+    '<div class="card"><h2>Guardá nuestro contacto</h2><a class="btn sec" href="' + tec.vcf + '">👤 Guardar contacto de ' + tec.nombre + '</a><button class="sec" id="brec">🤝 Recomendanos a un conocido</button></div>' +
+    '<div class="card"><h2>Mis equipos</h2>' + (otros.length ? otros.map(k => '<div class="fila"><b>' + fmtClave(k) + '</b><span><button class="chico sec" data-abrir="' + k + '">Ver</button> <button class="chico sec" data-quitar="' + k + '">Quitar</button></span></div>').join('') : '<small>Acá aparecen los equipos que agregues con su clave.</small>') +
     '<label>Agregar otro equipo</label><input id="otra" placeholder="Clave del otro sticker" autocomplete="off" autocapitalize="characters"><button class="sec" id="bagregar">Agregar</button><p class="err" id="err"></p></div>' +
     '<button class="sec" id="bsalir">← Volver</button>';
   const b = id => $(id);
