@@ -8,7 +8,7 @@ const $$ = n => '$' + Math.round(+n || 0).toLocaleString('es-AR');
 let ref = null, p = null;
 
 function docHTML() {
-  const hasta = addDias(p.fecha, +p.validez || 0), F = 'font-family:Barlow,Arial,sans-serif;', T = 'font-family:"Barlow Condensed",Barlow,Arial,sans-serif;font-weight:800;';
+  const hasta = addDias(p.fecha, +p.validez || 0), F = 'font-family:Barlow,Arial,sans-serif;', T = "font-family:'Barlow Condensed',Barlow,Arial,sans-serif;font-weight:800;";
   const det = (p.texto || '').split('\n').filter(x => x.trim()).map(x => '<p style="margin:0 0 8px;font-size:16px;line-height:1.5;color:#1A1D21">' + esc(x) + '</p>').join('');
   const mat = (p.mat || []).length ? '<div style="margin-top:14px"><div style="' + T + 'font-size:18px;color:#262B30;letter-spacing:.04em;text-transform:uppercase">' + (p.eq && p.eq !== 'aire' ? 'Repuestos incluidos' : 'Materiales incluidos') + '</div><ul style="margin:6px 0 0;padding-left:20px;font-size:15px;line-height:1.55;color:#1A1D21">' + p.mat.map(m => '<li>' + esc(m) + '</li>').join('') + '</ul></div>' : '';
   const col = (k, v) => '<div style="flex:1;min-width:0"><div style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#565C63;font-weight:700">' + k + '</div><div style="font-size:17px;font-weight:700;color:#1A1D21;margin-top:2px">' + v + '</div></div>';
