@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="https://servicehogarbelgrano.com.ar/favicon.png">
 <link rel="apple-touch-icon" href="https://servicehogarbelgrano.com.ar/favicon.png">
-<link rel="stylesheet" href="estilos.css?v=202611281002">
+<link rel="stylesheet" href="estilos.css?v=202611281003">
 </head>
 <body>
 <div id="off" hidden>Sin internet: lo que cargues se guarda en el celu y se sube solo.</div>
@@ -38,7 +38,7 @@
   <button data-nav="mant"><i>🔔</i>Mensajes</button>
   <button data-nav="presupuestos"><i>🧾</i>Presupuesto</button>
 </nav>
-<script>["gesturestart","gesturechange","gestureend"].forEach(function(e){document.addEventListener(e,function(x){x.preventDefault()})});document.addEventListener("dblclick",function(x){x.preventDefault()});</script>
-<script type="module" src="app.js?v=202611281002"></script>
+<script>["gesturestart","gesturechange","gestureend"].forEach(function(e){document.addEventListener(e,function(x){x.preventDefault()})});["touchstart","touchmove"].forEach(function(e){document.addEventListener(e,function(x){if(x.touches&&x.touches.length>1)x.preventDefault()},{passive:false})});document.addEventListener("dblclick",function(x){x.preventDefault()});</script>
+<script type="module" src="app.js?v=202611281003"></script>
 </body>
 </html>
