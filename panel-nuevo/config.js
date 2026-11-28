@@ -96,7 +96,8 @@ export function limpiarTel(t) {
 }
 export function verTel(t) {
   const d = String(t || '');
-  return d.length === 13 && d.startsWith('549') ? '+54 9 ' + d.slice(3, 5) + ' ' + d.slice(5, 9) + '-' + d.slice(9) : d;
+  if (!(d.length === 13 && d.startsWith('549'))) return d;
+  return d.slice(3, 5) === '11' ? '+54 9 11 ' + d.slice(5, 9) + '-' + d.slice(9) : '+54 9 ' + d.slice(3, 6) + ' ' + d.slice(6, 9) + '-' + d.slice(9);
 }
 export const waLink = (tel, texto) => 'https://wa.me/' + tel + '?text=' + encodeURIComponent(texto);
 export const lista = arr => arr.length > 1 ? arr.slice(0, -1).join(', ') + ' y ' + arr[arr.length - 1] : (arr[0] || '');
