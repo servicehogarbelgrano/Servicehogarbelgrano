@@ -49,7 +49,8 @@ async function responder(estado) {
   setTimeout(() => { location.href = link; }, 1500);
 }
 (async () => {
-  if (!id) return ($('app').innerHTML = '<p class="err">Link incompleto. Pedinos que te lo mandemos de nuevo.</p>');
+  if (window.top !== window.self) { try { window.top.location = window.location.href; } catch (_) { document.body.innerHTML = ''; return; } }
+  if (!id || !/^[a-z0-9]{6,20}$/i.test(id)) return ($('app').innerHTML = '<p class="err">Link incompleto. Pedinos que te lo mandemos de nuevo.</p>');
   ref = doc(db, 'presupuestos_pub', id);
   try { const s = await getDoc(ref); if (!s.exists()) return ($('app').innerHTML = '<p class="err">No encontramos este presupuesto. Escribinos por WhatsApp y lo vemos.</p>'); p = s.data(); }
   catch (_) { return ($('app').innerHTML = '<p class="err">No se pudo cargar. Revisá tu internet.</p>'); }

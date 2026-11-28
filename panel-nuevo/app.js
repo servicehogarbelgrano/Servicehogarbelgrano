@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281234';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281236';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -321,7 +321,7 @@ const ACC = {
   irEnviados: () => ir('enviados'),
   irCobros: () => ir('cobros'),
   irPres: () => ir('presupuestos'),
-  nuevoPres: () => { const id = Math.random().toString(36).slice(2, 10); ir('presupuesto', { pres: presNuevo(id), nuevo: true }); },
+  nuevoPres: () => { const id = idSeguro(); ir('presupuesto', { pres: presNuevo(id), nuevo: true }); },
   presLeido: el => { setDoc(doc(db, 'presupuestos_pub', el.dataset.id), { leidoTs: Date.now() }, { merge: true }).catch(() => {}); },
   abrirPres: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (p) ir('presupuesto', { pres: JSON.parse(JSON.stringify(p)) }); },
   presAdd: el => { const p = S.p.pres; p.items.push({ sec: el.dataset.sec, desc: el.dataset.n || '' }); presRedactar(p); pintar(); setTimeout(() => { const l = document.querySelectorAll('[data-pf=desc]'); const u = l[l.length - 1]; if (u && !el.dataset.n) u.focus(); }, 60); },
@@ -342,7 +342,7 @@ const ACC = {
   presPDF: () => { const p = S.p.pres; if (!p.enviado) p.enviado = Date.now(); presGuardar(); mostrarPresupuesto(p, true); pintar(); },
   presEstado: el => { const p = S.p.pres; p.estado = el.dataset.v; if (p.enviado && S.pub[p.id]) S.pub[p.id].estado = ['aceptado', 'pensando'].includes(p.estado) ? p.estado : 'pendiente'; if (p.enviado && S.pub[p.id]) setDoc(doc(db, 'presupuestos_pub', p.id), { estado: ['aceptado', 'pensando'].includes(p.estado) ? p.estado : 'pendiente' }, { merge: true }).catch(() => {}); pintar(); },
   presBorrar: el => { const id = el.dataset.id; if (!confirm('¿Borrar este presupuesto? No se puede deshacer.')) return; deleteDoc(doc(db, 'config', 'pres_' + id)); S.presup = S.presup.filter(x => x.id !== id); if (S.vista === 'presupuesto') history.back(); else pintar(); },
-  presDup: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (!p) return; const id = Math.random().toString(36).slice(2, 10); const n = presNuevo(id); n.cliente = { nombre: '', tel: '', dir: '' }; n.items = JSON.parse(JSON.stringify(p.items)); n.notas = p.notas; ir('presupuesto', { pres: n, nuevo: true }); },
+  presDup: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (!p) return; const id = idSeguro(); const n = presNuevo(id); n.cliente = { nombre: '', tel: '', dir: '' }; n.items = JSON.parse(JSON.stringify(p.items)); n.notas = p.notas; ir('presupuesto', { pres: n, nuevo: true }); },
   comprobante: el => {
     const e = S.equipos.find(x => x.id === S.p.id), s = S.svcs.find(x => x.id === el.dataset.id); if (!e || !s) return;
     let monto = null;
@@ -538,6 +538,7 @@ function mostrarComprobante(e, s, monto) {
 const $$ = n => '$' + Math.round(+n || 0).toLocaleString('es-AR');
 const PRES_DEF = { mo: ['Instalación de aire acondicionado', 'Desinstalación de aire acondicionado', 'Mano de obra'], mat: ['Ménsulas', 'Aislante térmico', 'Caño de cobre', 'Cable de conexión', 'Cinta y accesorios', 'Bomba de condensado'] };
 // Cómo se dice cada ítem dentro de la oración
+function idSeguro() { const a = crypto.getRandomValues(new Uint8Array(14)); return Array.from(a, x => 'abcdefghijkmnpqrstuvwxyz23456789'[x % 32]).join(''); }
 const PRES_FRASE = { 'instalación de aire acondicionado': 'Instalación completa de equipo de aire acondicionado, con los materiales correspondientes. Incluye sellado de tuercas, drenaje, vacío de la tubería de conexión y verificación con manómetro y vacuómetro, dejando el equipo probado y en correcto funcionamiento.', 'desinstalación de aire acondicionado': 'Desinstalación de equipo de aire acondicionado ya instalado, con el descolgado de la unidad exterior y de todas sus partes, dejando el lugar libre y prolijo para la colocación del equipo nuevo.', 'mano de obra': 'Mano de obra profesional incluida.' };
 const EQ_PRES = {
   aire: 'Aire acondicionado', lavarropas: 'Lavarropas', heladera: 'Heladera', horno: 'Horno', cocina: 'Cocina', calefon: 'Calefón', secarropas: 'Secarropas', lavavajillas: 'Lavavajillas', estufa: 'Estufa', otro: 'Otro'
