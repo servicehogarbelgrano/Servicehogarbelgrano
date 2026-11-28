@@ -10,7 +10,7 @@ export const firebaseConfig = {
 
 export const SDK = 'https://www.gstatic.com/firebasejs/10.14.1/';
 export const BASE = 'https://servicehogarbelgrano.com.ar/panel-nuevo/';
-export const FICHA_URL = BASE + 'ficha-nueva.html';
+export const FICHA_URL = 'https://servicehogarbelgrano.com.ar/ficha.html';
 export const LINK_RESENA = 'https://g.page/r/CW5oeg1aJJDeEBE/review';
 export const INSTAGRAM = 'https://www.instagram.com/servicehogarbelgrano';
 

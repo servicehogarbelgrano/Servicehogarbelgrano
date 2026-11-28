@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'none'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https://servicehogarbelgrano.com.ar; connect-src https://script.google.com https://script.googleusercontent.com">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ficha de tu equipo | Service Hogar Belgrano</title>
+<meta name="description" content="Consultá el historial de service y la garantía de tu equipo con la clave del sticker.">
+<link rel="icon" type="image/png" sizes="192x192" href="https://servicehogarbelgrano.com.ar/favicon.png">
+<link rel="apple-touch-icon" href="https://servicehogarbelgrano.com.ar/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@700;800&family=Kalam:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sitio.css">
+</head>
+<body class="angosto">
+<header class="mini">
+  <div class="wrap">
+    <div class="marca">
+      <img class="logo" src="logo.png" alt="Logo de Service Hogar Belgrano" onerror="this.style.display='none'">
+      <div><strong>Service Hogar Belgrano</strong><span>Servicio técnico de electrodomésticos</span></div>
+      <a class="solapa" href="index.html">Inicio</a>
+    </div>
+  </div>
+</header>
+<div class="ficha-p">
+  <div class="wrap ficha-g">
+    <div>
+      <h1>Ficha de tu equipo</h1>
+      <p>Mirá el historial de service y la garantía. Ingresá la clave que escribimos a mano en el sticker de tu equipo.</p>
+    </div>
+    <div class="sticker" aria-hidden="true"><div><small>Service Hogar Belgrano</small><b>K7M-4PX</b><em>Clave de ejemplo</em></div></div>
+  </div>
+</div>
+
+<main>
+  <section>
+    <div class="wrap">
+      <div id="app">
+        <div id="ld">Cargando…</div>
+        <div class="v on" id="login">
+          <div class="card">
+            <h2>Ingresá tu clave</h2><small>Está escrita en el sticker.</small>
+            <label>Clave</label>
+            <input id="cl" placeholder="Ej: K7M-4PX" autocapitalize="characters" autocomplete="off">
+            <button id="bc" type="button">Ver ficha</button>
+          </div>
+        </div>
+        <div class="v" id="ficha">
+          <div id="fv"></div>
+          <button class="s" id="back1">← Volver</button>
+        </div>
+      </div>
+      <noscript><p>Necesitás activar JavaScript para ver tu ficha.</p></noscript>
+    </div>
+  </section>
+  <section class="rep">
+    <div class="wrap">
+      <h2>Qué reparamos</h2>
+      <ul>
+        <li><a href="servicios/aires-acondicionados-belgrano.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="7" width="26" height="11" rx="2"/><path d="M7 14h18M9 22c0 2-2 2-2 4M16 22c0 2-2 2-2 4M23 22c0 2-2 2-2 4"/></svg>Aires acondicionados</a></li>
+        <li><a href="servicios/lavarropas-belgrano.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="3" width="22" height="26" rx="2"/><circle cx="16" cy="18" r="6.5"/><path d="M9 8h4M23 8h.01M10 18c3-2 5 2 12 0"/></svg>Lavarropas, lavavajillas y secarropas</a></li>
+        <li><a href="servicios/heladeras-belgrano.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="8" y="3" width="16" height="26" rx="2"/><path d="M8 13h16M12 7v3M12 17v5"/></svg>Heladeras</a></li>
+        <li><a href="servicios/cocinas-hornos-calefones-belgrano.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="4" width="22" height="25" rx="2"/><path d="M5 11h22M10 7.5h.01M16 7.5h.01M22 7.5h.01"/><rect x="9" y="15" width="14" height="9" rx="1"/></svg>Cocinas, hornos y calefones</a></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<nav class="barra" aria-label="Contacto rápido">
+  <div>
+    <a class="btn wa" href="https://wa.me/5491167489192?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Bruno</a>
+    <a class="btn wa" href="https://wa.me/5491165711314?text=Hola%2C%20consulto%20por%20la%20ficha%20de%20mi%20equipo.">WhatsApp Mauricio</a>
+  </div>
+</nav>
+
+<script>
+  const APP_URL = "https://script.google.com/macros/s/AKfycbwTp6vLxClVClJ10mtN99URYymwLQ2TIlppeHxueZec-Xk2slxhg8lbnl3leiwOzYsR/exec";
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const fmt=d=>d?String(d).split('-').reverse().join('/'):'';
+  let pend=0;
+  
+  const run=async(fn,...args)=>{
+    pend++;$('ld').style.display='block';
+    try{
+      let r;try{r=await fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})})}
+      catch(e){throw new Error('No se pudo conectar. Revisá tu internet y probá de nuevo.')}
+      const j=await r.json();if(!j.ok)throw new Error(j.error);return j.data;
+    }finally{pend--;if(!pend)$('ld').style.display='none'}
+  };
+  
+  fetch(APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:'ping',args:[]})}).catch(()=>{});
+  const show=id=>{document.querySelectorAll('.v').forEach(e=>e.classList.toggle('on',e.id===id))};
+  const guard=async f=>{try{await f()}catch(e){alert(e.message||e)}};
+  
+  function venc(s){const d=new Date(s.fecha+'T12:00:00');d.setDate(d.getDate()+(+s.garantia||0));return d}
+  function vigente(s){return venc(s)>=new Date()}
+
+  let FF=null,FMODE='res',FPAG=0;
+  const PORPAG=20,ULT=5;
+  const dsvc=s=>(s.detalle?'<div class="kv"><span>Detalle</span><span>'+esc(s.detalle)+'</span></div>':'')+
+    (s.repuestos?'<div class="kv"><span>Repuestos</span><span>'+esc(s.repuestos)+'</span></div>':'')+
+    (s.tecnico?'<div class="kv"><span>Técnico</span><span>'+esc(s.tecnico)+'</span></div>':'');
+  const garS=s=>esc(s.garantia)+' días · vence '+venc(s).toLocaleDateString('es-AR');
+  const cardSvc=s=>'<div class="card"><div class="kv"><span>Fecha</span><span>'+esc(fmt(s.fecha))+'</span></div>'+
+    '<div class="kv"><span>Trabajo</span><span>'+esc(s.tipo)+'</span></div>'+dsvc(s)+
+    '<div class="kv"><span>Garantía</span><span class="'+(vigente(s)?'ok':'bad')+'">'+garS(s)+'</span></div></div>';
+  const filaSvc=s=>'<div class="it" style="cursor:default"><b>'+esc(fmt(s.fecha))+'</b> · '+esc(s.tipo)+
+    (s.detalle?'<br><small>'+esc(s.detalle)+'</small>':'')+
+    (s.repuestos?'<br><small>Repuestos: '+esc(s.repuestos)+'</small>':'')+
+    (s.tecnico?'<br><small>Técnico: '+esc(s.tecnico)+'</small>':'')+
+    '<br><small class="'+(vigente(s)?'ok':'bad')+'">Garantía: '+garS(s)+'</small></div>';
+    
+  // ---- Próximo service + recordatorio en el calendario del cliente ----
+  const TECS={bruno:{n:'Bruno',tel:'5491167489192',vis:'15 6748 9192'},mauricio:{n:'Mauricio',tel:'5491165711314',vis:'15 6571 1314'}};
+  const LOCAL="O'Higgins 2183 Local 11, Belgrano, CABA";
+  const mesesDe=eq=>/aire/i.test(eq||'')?6:12; // aires cada 6 meses, el resto cada 12
+  function proximo(L,e){
+    const u=L[0],m=mesesDe(e.equipo);
+    const d=new Date(u.fecha+'T12:00:00');d.setMonth(d.getMonth()+m);
+    const hoy=new Date();hoy.setHours(12,0,0,0);
+    const vencido=d<=hoy;
+    if(vencido){d.setTime(hoy.getTime());d.setDate(d.getDate()+1)}
+    const k=Object.keys(TECS).find(x=>String(u.tecnico||'').toLowerCase().includes(x));
+    return {fecha:d,vencido,meses:m,tec:k?[TECS[k]]:[TECS.bruno,TECS.mauricio]};
+  }
+  const ymd=d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  const nombreEq=e=>[e.equipo,e.marca,e.modelo].filter(Boolean).join(' ');
+  function textoRec(e,p){
+    return 'Ya toca el service de tu '+nombreEq(e)+'.\n'+
+      p.tec.map(t=>'Escribile a '+t.n+' por WhatsApp: https://wa.me/'+t.tel+' (tel. '+t.vis+')').join('\n')+
+      '\nService Hogar Belgrano - '+LOCAL;
+  }
+  const icsEsc=s=>String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+  const fold=l=>{const o=[];while(l.length>73){o.push(l.slice(0,73));l=' '+l.slice(73)}o.push(l);return o.join('\r\n')};
+  function bajarIcs(e,p){
+    const f=p.fecha,sig=new Date(f.getTime());sig.setDate(sig.getDate()+1);
+    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Service Hogar Belgrano//Ficha//ES','CALSCALE:GREGORIAN','BEGIN:VEVENT',
+      'UID:'+Date.now()+'-'+Math.random().toString(36).slice(2)+'@servicehogarbelgrano.com.ar',
+      'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,''),
+      'DTSTART;VALUE=DATE:'+ymd(f),'DTEND;VALUE=DATE:'+ymd(sig),
+      'SUMMARY:'+icsEsc('Service '+nombreEq(e)+' - Service Hogar Belgrano'),
+      'DESCRIPTION:'+icsEsc(textoRec(e,p)),'LOCATION:'+icsEsc(LOCAL),
+      'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc('Se viene el service de tu '+nombreEq(e)),'TRIGGER:-P6DT15H','END:VALARM',
+      'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc('Hoy toca el service de tu '+nombreEq(e)),'TRIGGER:PT9H','END:VALARM',
+      'END:VEVENT','END:VCALENDAR'];
+    const blob=new Blob([L.map(fold).join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='proximo-service.ics';
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  }
+  function urlGcal(e,p){
+    const f=p.fecha,sig=new Date(f.getTime());sig.setDate(sig.getDate()+1);
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Service '+nombreEq(e)+' - Service Hogar Belgrano')+
+      '&dates='+ymd(f)+'/'+ymd(sig)+'&details='+encodeURIComponent(textoRec(e,p))+'&location='+encodeURIComponent(LOCAL);
+  }
+  function cardProximo(L,e){
+    if(!L.length)return '';
+    const p=proximo(L,e);
+    return '<div class="card"><h2>Próximo service</h2>'+
+      '<div class="kv"><span>Te recomendamos</span><span>'+(p.vencido?'Ya toca':esc(p.fecha.toLocaleDateString('es-AR')))+'</span></div>'+
+      '<small>Cada '+p.meses+' meses para que tu equipo siga andando bien.</small>'+
+      '<button type="button" class="s vall" data-acc="ics">🔔 Recordame el próximo service</button>'+
+      '<a class="s vall" style="display:block;text-align:center;margin-top:8px" target="_blank" rel="noopener" href="'+esc(urlGcal(e,p))+'">Agregar a Google Calendar</a></div>';
+  }
+
+  function pintarFicha(){
+    const f=FF,e=f.equipo;
+    const L=f.services.slice().sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+    const any=L.some(vigente),pags=Math.max(1,Math.ceil(L.length/PORPAG));
+    FPAG=Math.min(Math.max(FPAG,0),pags-1);
+    let h='<div class="card"><h2>'+esc(e.equipo)+' '+esc(e.marca)+' '+esc(e.modelo)+'</h2>'+
+      (e.cliente?'<small>Cliente: '+esc(e.cliente)+'</small><br>':'')+
+      (e.serie?'<small>N° de serie: '+esc(e.serie)+'</small><br>':'')+
+      (L.length?'<span class="b '+(any?'ok':'bad')+'">'+(any?'✔ Garantía vigente':'Garantía vencida')+'</span>':'<small>Sin services registrados.</small>')+'</div>';
+    
+    h+=cardProximo(L,e);
+    if(FMODE==='res'||L.length<=ULT){
+      h+=L.slice(0,ULT).map(cardSvc).join('');
+      if(L.length>ULT)h+='<button type="button" class="s vall" data-acc="all">Ver lista completa ('+L.length+' services)</button>';
+    }else{
+      h+='<div class="card"><h2>Lista completa</h2><small>'+L.length+' services · del más reciente al más antiguo</small>'+
+        L.slice(FPAG*PORPAG,(FPAG+1)*PORPAG).map(filaSvc).join('')+
+        '<div class="pag"><button type="button" class="s" data-acc="prev"'+(FPAG===0?' disabled':'')+'>← Anterior</button>'+
+        '<span>Página '+(FPAG+1)+' de '+pags+'</span>'+
+        '<button type="button" class="s" data-acc="next"'+(FPAG>=pags-1?' disabled':'')+'>Siguiente →</button></div></div>'+
+        '<button type="button" class="s vall" data-acc="res">Ver solo los últimos '+ULT+'</button>';
+    }
+    $('fv').innerHTML=h;
+  }
+  
+  $('fv').onclick=ev=>{
+    const b=ev.target.closest('[data-acc]');if(!b||b.disabled)return;
+    const a=b.dataset.acc;
+    if(a==='ics'){const L=FF.services.slice().sort((x,y)=>String(y.fecha).localeCompare(String(x.fecha)));bajarIcs(FF.equipo,proximo(L,FF.equipo));return}
+    if(a==='all'){FMODE='lista';FPAG=0}else if(a==='res'){FMODE='res'}else if(a==='prev'){FPAG--}else if(a==='next'){FPAG++}
+    pintarFicha();window.scrollTo({top:0,behavior:'smooth'})
+  };
+  
+  $('bc').onclick=()=>guard(async()=>{
+    const f=await run('getFicha',$('cl').value);
+    if(!f){alert('Clave no encontrada. Revisá cómo está escrita en el sticker.');return}
+    FF=f;FMODE='res';FPAG=0;pintarFicha();
+    show('ficha')
+  });
+  
+  $('cl').onkeydown=e=>{if(e.key==='Enter')$('bc').click()};
+  $('back1').onclick=()=>{$('cl').value='';FF=null;FMODE='res';FPAG=0;show('login')};
+</script>
+</body>
+</html>
