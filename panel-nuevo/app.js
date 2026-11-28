@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281228';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281229';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -323,7 +323,7 @@ const ACC = {
   irPres: () => ir('presupuestos'),
   nuevoPres: () => { const id = Math.random().toString(36).slice(2, 10); ir('presupuesto', { pres: presNuevo(id), nuevo: true }); },
   presLeido: el => { setDoc(doc(db, 'presupuestos_pub', el.dataset.id), { leidoTs: Date.now() }, { merge: true }).catch(() => {}); },
-  abrirPres: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (p) { const u = S.pub[p.id]; if (u && u.respuestaTs > (u.leidoTs || 0)) setDoc(doc(db, 'presupuestos_pub', p.id), { leidoTs: Date.now() }, { merge: true }).catch(() => {}); ir('presupuesto', { pres: JSON.parse(JSON.stringify(p)) }); } },
+  abrirPres: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (p) { const u = S.pub[p.id]; if (u && u.estado === 'pensando' && u.respuestaTs > (u.leidoTs || 0)) setDoc(doc(db, 'presupuestos_pub', p.id), { leidoTs: Date.now() }, { merge: true }).catch(() => {}); ir('presupuesto', { pres: JSON.parse(JSON.stringify(p)) }); } },
   presAdd: el => { const p = S.p.pres; p.items.push({ sec: el.dataset.sec, desc: el.dataset.n || '' }); presRedactar(p); pintar(); setTimeout(() => { const l = document.querySelectorAll('[data-pf=desc]'); const u = l[l.length - 1]; if (u && !el.dataset.n) u.focus(); }, 60); },
   presDel: el => { const p = S.p.pres; p.items.splice(+el.dataset.i, 1); presRedactar(p); pintar(); },
   presEq: el => { const p = S.p.pres, v = el.dataset.v; if (p.enviado || (p.eq || 'aire') === v) return; if (p.items.some(i => i.desc.trim()) && !confirm('Se borran los ítems cargados para armar el presupuesto de ' + EQ_PRES[v] + '. ¿Seguir?')) return; p.eq = v; p.items = []; p.textoEditado = false; presRedactar(p); pintar(); },
