@@ -55,7 +55,7 @@ function vFicha() {
   const any = svcs.some(vigente);
   const tec = e.tipo === 'heladera' ? POR_NOMBRE.Bruno : tecPorNombre(ult ? ult.tecnico : e.tecnicoAlta);
   const lst = todos ? svcs : svcs.slice(0, 5);
-  const svcHTML = s => { const v = addDias(s.fecha, +s.garantiaDias || 0), ok = vigente(s); return '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · Service realizado por ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<div class="cubre">Cubre: ' + esc(s.items.join(', ')) + '</div>' : '') + (s.detalle ? '<div>' + esc(s.detalle) + '</div>' : '') + (s.motivo ? '<small>Motivo: ' + esc(s.motivo) + '</small><br>' : '') + '<span class="' + (ok ? 'ok' : 'mal') + '">Garantía ' + (ok ? 'vigente' : 'vencida') + ' · ' + s.garantiaDias + ' días · vence ' + fechaCorta(v) + '</span><button class="sec chico" data-comp="' + s.id + '">Comprobante (imprimir o guardar PDF)</button><details><summary>Ver condiciones de la garantía</summary><p>' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p></details></div>'; };
+  const svcHTML = s => { const v = addDias(s.fecha, +s.garantiaDias || 0), ok = vigente(s); return '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · Service realizado por ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<div class="cubre">Cubre: ' + esc(s.items.join(', ')) + '</div>' : '') + (s.detalle ? '<div>' + esc(s.detalle) + '</div>' : '') + (s.fotos && s.fotos.length ? '<div class="fotos">' + s.fotos.map(u => '<img src="' + u + '" alt="Foto del service" data-foto="1">').join('') + '</div>' : '') + (s.motivo ? '<small>Motivo: ' + esc(s.motivo) + '</small><br>' : '') + '<span class="' + (ok ? 'ok' : 'mal') + '">Garantía ' + (ok ? 'vigente' : 'vencida') + ' · ' + s.garantiaDias + ' días · vence ' + fechaCorta(v) + '</span><button class="sec chico" data-comp="' + s.id + '">Comprobante (imprimir o guardar PDF)</button><details><summary>Ver condiciones de la garantía</summary><p>' + esc(GARANTIA_TEXTO.replace('{dias}', s.garantiaDias)) + '</p></details></div>'; };
   const cal = e.mantenimiento && e.mantenimiento.fecha;
   const otros = guardadas().filter(k => k !== clave);
   $('app').innerHTML =
@@ -105,3 +105,5 @@ document.addEventListener('click', ev => {
 });
 
 function qrSvg(txt) { try { const q = qrcode(0, 'M'); q.addData(txt); q.make(); return q.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); } catch (_) { return ''; } }
+
+document.addEventListener('click', ev => { const im = ev.target.closest && ev.target.closest('img[data-foto]'); if (!im) return; const o = document.createElement('div'); o.className = 'fgrande'; o.innerHTML = '<img src="' + im.src + '" alt="">'; o.onclick = () => o.remove(); document.body.appendChild(o); });

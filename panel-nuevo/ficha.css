@@ -45,3 +45,8 @@ img,svg{max-width:100%}body{overflow-wrap:anywhere}
   #comp .qrb{display:flex;gap:12px;align-items:center;margin-top:14px}#comp .qrb svg{width:90px;height:90px;flex-shrink:0}
   #comp .cg{white-space:pre-line;font-size:9.5pt}#comp .pie{margin-top:16px;font-size:9pt}
 }
+
+.fotos{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.fotos img{width:88px;height:88px;object-fit:cover;border-radius:8px;border:1px solid #ddd;cursor:pointer}
+.fq{position:relative;display:inline-block}.fq .x{position:absolute;top:-6px;right:-6px;width:22px;height:22px;padding:0;border-radius:50%;background:#c62828;color:#fff;border:0;font-size:14px;line-height:1}
+.fbt{position:relative;overflow:hidden;cursor:pointer;text-align:center}.fin{position:absolute;inset:0;opacity:0;width:100%;height:100%;font-size:0;cursor:pointer}
+.fgrande{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99;display:flex;align-items:center;justify-content:center}.fgrande img{max-width:100%;max-height:100%;border-radius:0}

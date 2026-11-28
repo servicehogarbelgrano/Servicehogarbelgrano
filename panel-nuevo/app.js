@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281022';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281032';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -186,10 +186,23 @@ function vEquipo() {
     '<button class="prim grande" data-acc="nuevoService" data-id="' + e.id + '">+ Nuevo service</button>' +
     '<div class="card"><button class="sec" data-acc="enviarFicha" data-id="' + e.id + '">Enviar clave / ficha por WhatsApp</button></div>' +
     '<div class="card"><h2>Mantenimiento</h2><div class="botones">' + ['ninguno', 'seguimiento', 'mantenimiento'].map(t => '<button data-acc="setMant" data-id="' + e.id + '" data-v="' + t + '" class="' + (m.tipo === t ? 'sel' : '') + '">' + t[0].toUpperCase() + t.slice(1) + '</button>').join('') + '</div>' + (m.fecha ? '<small>Próximo aviso: ' + fechaCorta(m.fecha) + '</small>' : '') + '</div>' +
-    '<div class="card"><h2>Historial</h2>' + (S.svcs.length ? S.svcs.map(s => '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<small>Ítems: ' + esc(s.items.join(', ')) + '</small><br>' : '') + esc(s.detalle || '') + (s.motivo ? '<br><small>Motivo: ' + esc(s.motivo) + '</small>' : '') + (S.cobrosEq[s.id] ? '<br><small class="priv">Cobrado $' + S.cobrosEq[s.id].monto + (S.cobrosEq[s.id].nota ? ' · ' + esc(S.cobrosEq[s.id].nota) : '') + ' (solo técnicos)</small>' : '<br><button class="sec chico" data-acc="anotarCobro" data-id="' + s.id + '" data-clave="' + e.id + '">Anotar cobro</button>') + '<br><button class="sec chico gris" data-acc="comprobante" data-id="' + s.id + '" data-precio="0">Comprobante</button> <button class="sec chico gris" data-acc="comprobante" data-id="' + s.id + '" data-precio="1">Comprobante con precio</button><br><small>Garantía ' + s.garantiaDias + ' días (vence ' + fechaCorta(addDias(s.fecha, +s.garantiaDias || 0)) + ')</small></div>').join('') : '<p class="vacio">Todavía no hay services.</p>') + '</div>' +
+    '<div class="card"><h2>Historial</h2>' + (S.svcs.length ? S.svcs.map(s => '<div class="svc"><b>' + fechaCorta(s.fecha) + '</b> · ' + esc(s.tecnico) + '<br>' + (s.items && s.items.length ? '<small>Ítems: ' + esc(s.items.join(', ')) + '</small><br>' : '') + esc(s.detalle || '') + (s.motivo ? '<br><small>Motivo: ' + esc(s.motivo) + '</small>' : '') + fotosHTML(s.fotos) + (S.cobrosEq[s.id] ? '<br><small class="priv">Cobrado $' + S.cobrosEq[s.id].monto + (S.cobrosEq[s.id].nota ? ' · ' + esc(S.cobrosEq[s.id].nota) : '') + ' (solo técnicos)</small>' : '<br><button class="sec chico" data-acc="anotarCobro" data-id="' + s.id + '" data-clave="' + e.id + '">Anotar cobro</button>') + '<br><button class="sec chico gris" data-acc="comprobante" data-id="' + s.id + '" data-precio="0">Comprobante</button> <button class="sec chico gris" data-acc="comprobante" data-id="' + s.id + '" data-precio="1">Comprobante con precio</button><br><small>Garantía ' + s.garantiaDias + ' días (vence ' + fechaCorta(addDias(s.fecha, +s.garantiaDias || 0)) + ')</small></div>').join('') : '<p class="vacio">Todavía no hay services.</p>') + '</div>' +
     (!e.baja ? '<button class="sec chico" data-acc="baja" data-id="' + e.id + '">Dar de baja el equipo</button> ' : '') + '<button class="sec chico" data-acc="borrarEquipo" data-id="' + e.id + '">Borrar equipo</button>';
 }
 
+const fotosHTML = l => l && l.length ? '<div class="fotos">' + l.map(u => '<img src="' + u + '" alt="Foto del service" data-foto="1">').join('') + '</div>' : '';
+function achicarFoto(file) {
+  return new Promise((ok, ko) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const tam = (max, q) => { const k = Math.min(1, max / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', q); };
+      let d = tam(900, 0.6); if (d.length > 110000) d = tam(720, 0.5); if (d.length > 110000) d = tam(600, 0.42);
+      URL.revokeObjectURL(url); ok(d);
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); ko(new Error('foto')); };
+    im.src = url;
+  });
+}
 function vNuevoService() {
   const e = S.equipos.find(x => x.id === S.p.id); if (!e) return '';
   const f = S.p.form, c = S.cfg;
@@ -203,6 +216,8 @@ function vNuevoService() {
     '<label>Mantenimiento ' + ayuda('Ninguno: no se avisa. Seguimiento: un aviso corto para preguntar cómo anda. Mantenimiento: aviso para volver a hacer el service (aires, lavarropas con abono, etc.).') + '</label><div class="botones">' + ['ninguno', 'seguimiento', 'mantenimiento'].map(t => '<button type="button" data-acc="svcMant" data-v="' + t + '" class="' + (f.mant === t ? 'sel' : '') + '">' + t[0].toUpperCase() + t.slice(1) + '</button>').join('') + '</div>' +
     (f.mant === 'mantenimiento' ? '<label>Avisar dentro de</label><div class="botones">' + [3, 6, 12].map(m => '<button type="button" data-acc="svcMeses" data-v="' + m + '" class="' + (f.meses === m ? 'sel' : '') + '">' + m + ' meses</button>').join('') + '</div>' : '') +
     '<label>Reseña ' + ayuda('Sí: a los ' + c.resenaDias + ' días te aparece el aviso para pedir la reseña de Google. No: no se crea ningún aviso.') + '</label><div class="botones"><button type="button" data-acc="svcResena" data-v="1" class="' + (f.resena ? 'sel' : '') + '">Sí</button><button type="button" data-acc="svcResena" data-v="0" class="' + (!f.resena ? 'sel' : '') + '">No</button></div>' +
+    '<label>Fotos (opcional, hasta 3) ' + ayuda('Se achican solas para que pesen poco. El cliente las ve en su ficha. Usalas solo cuando haga falta (por ejemplo, si el cliente las pide).') + '</label>' + (f.fotos && f.fotos.length ? '<div class="fotos">' + f.fotos.map((u, i) => '<span class="fq"><img src="' + u + '" alt=""><button type="button" class="x" aria-label="Quitar foto" data-acc="fotoDel" data-i="' + i + '">×</button></span>').join('') + '</div>' : '') +
+    ((f.fotos || []).length < 3 ? '<div class="botones"><label class="btn sec fbt">📷 Sacar foto<input id="fotoCam" class="fin" type="file" accept="image/*" capture="environment"></label><label class="btn sec fbt">🖼 Galería<input id="fotoGal" class="fin" type="file" accept="image/*" multiple></label></div>' : '') +
     '<label>Realizado por</label><div class="botones">' + Object.values(TECNICOS).map(t => '<button type="button" data-acc="svcTec" data-v="' + t.nombre + '" class="' + (f.tecnico === t.nombre ? 'sel' : '') + '">' + t.nombre + '</button>').join('') + '</div>' +
     '<p class="err" id="err"></p><button class="prim grande" data-acc="guardarService">Guardar service</button><button class="sec" data-acc="atras">Cancelar</button></div>';
 }
@@ -396,8 +411,9 @@ const ACC = {
   reactivar: el => { const e = S.equipos.find(x => x.id === el.dataset.id); e.baja = false; setDoc(doc(db, 'equipos', e.id), { baja: false }, { merge: true }); pintar(); },
   nuevoService: el => {
     const e = S.equipos.find(x => x.id === el.dataset.id);
-    ir('nuevoService', { id: e.id, form: { equipo: e.tipo, items: [], detalle: '', detalleEditado: false, motivo: '', garantia: S.cfg.garantia, fecha: hoyISO(), mant: S.cfg.mantDefault, meses: 6, resena: S.cfg.resena, tecnico: S.tec.nombre, cobro: '', cobroNota: '' } });
+    ir('nuevoService', { id: e.id, form: { equipo: e.tipo, items: [], detalle: '', detalleEditado: false, motivo: '', garantia: S.cfg.garantia, fecha: hoyISO(), mant: S.cfg.mantDefault, meses: 6, resena: S.cfg.resena, tecnico: S.tec.nombre, cobro: '', cobroNota: '', fotos: [] } });
   },
+  fotoDel: el => { guardarForm(); S.p.form.fotos.splice(+el.dataset.i, 1); pintar(); },
   svcEq: el => { guardarForm(); S.p.form.equipo = el.dataset.v; S.p.form.items = []; S.p.form.detalleEditado = false; pintar(); },
   svcItem: el => { guardarForm(); const f = S.p.form, i = el.dataset.v; f.items = f.items.includes(i) ? f.items.filter(x => x !== i) : f.items.concat(i); pintar(); },
   svcMant: el => { guardarForm(); S.p.form.mant = el.dataset.v; pintar(); },
@@ -411,6 +427,7 @@ const ACC = {
     if (!f.equipo) return $('err').textContent = 'Elegí el equipo.';
     const id = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-3), b = writeBatch(db), tec = f.tecnico;
     const svc = { fecha: f.fecha, tecnico: tec, tipo: f.equipo, items: f.items, detalle: f.detalle, motivo: f.motivo, garantiaDias: +f.garantia || 0, resena: f.resena, mantenimiento: f.mant };
+    if (f.fotos && f.fotos.length) svc.fotos = f.fotos.slice(0, 3);
     b.set(doc(db, 'equipos', e.id, 'services', id), svc);
     b.set(doc(db, 'movimientos', id), { fecha: f.fecha, tecnico: tec, clave: e.id, equipo: f.equipo, items: f.items });
     const upd = { ultimaFecha: f.fecha, ultimoTecnico: tec, tecnicos: arrayUnion(tec), garantiaHasta: addDias(f.fecha, +f.garantia || 0) };
@@ -463,7 +480,15 @@ async function borrarEquipoDatos(clave) {
 }
 function guardarForm() { const f = S.p.form; if (!f) return; const d = $('detalle'); if (d && d.value !== f.detalle) { f.detalle = d.value; f.detalleEditado = true; } f.motivo = lee('motivo'); const g = $('gar'); if (g) f.garantia = g.value; const fe = $('fecha'); if (fe) f.fecha = fe.value; const co = $('cobro'); if (co) f.cobro = co.value; const cn = $('cobroNota'); if (cn) f.cobroNota = cn.value.trim(); }
 
+document.addEventListener('change', async ev => {
+  const t = ev.target; if (!t || (t.id !== 'fotoCam' && t.id !== 'fotoGal') || !S.p || !S.p.form) return;
+  const files = Array.from(t.files || []); if (!files.length) return; guardarForm();
+  const f = S.p.form; f.fotos = f.fotos || [];
+  for (const fl of files) { if (f.fotos.length >= 3) break; try { f.fotos.push(await achicarFoto(fl)); } catch (_) { S.msg = 'No se pudo leer una foto.'; } }
+  pintar();
+});
 document.addEventListener('click', ev => {
+  const im = ev.target.closest && ev.target.closest('img[data-foto]'); if (im) { const o = document.createElement('div'); o.className = 'fgrande'; o.innerHTML = '<img src="' + im.src + '" alt="">'; o.onclick = () => o.remove(); document.body.appendChild(o); return; }
   const nav = ev.target.closest('[data-nav]'); if (nav && S.tec) { S.q = ''; const v = nav.dataset.nav; if (v === 'nuevo') { pickEq = ''; ir('nuevoCliente'); } else ir(v); return; }
   const el = ev.target.closest('[data-acc]'); if (!el || el.closest('details')) return;
   const f = ACC[el.dataset.acc]; if (f) f(el);
