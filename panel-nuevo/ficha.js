@@ -21,7 +21,7 @@ async function cargar(clave) {
 }
 
 function vLogin(msg) {
-  $('app').innerHTML = '<div class="card"><h1>Ficha de tu equipo</h1><p>Mirá el historial de service y la garantía. Ingresá la clave que escribimos a mano en el sticker.</p><label>Clave</label><input id="cl" placeholder="Ej: M7K-4X9" autocomplete="off" autocapitalize="characters"><button id="ver">Ver ficha</button><p class="err">' + esc(msg || '') + '</p></div>' + misEquipos(true);
+  $('app').innerHTML = '<div class="card"><h2>Ingresá tu clave</h2><small>Está escrita en el sticker.</small><label>Clave</label><input id="cl" placeholder="Ej: M7K-4X9" autocomplete="off" autocapitalize="characters"><button id="ver">Ver ficha</button><p class="err">' + esc(msg || '') + '</p></div>' + misEquipos(true);
   $('ver').onclick = () => abrir($('cl').value, true);
   $('cl').onkeydown = ev => { if (ev.key === 'Enter') $('ver').click(); };
 }
@@ -50,15 +50,14 @@ function vFicha() {
   const cal = e.mantenimiento && e.mantenimiento.fecha;
   const otros = guardadas().filter(k => k !== clave);
   $('app').innerHTML =
-    '<div class="card"><h1>' + esc(eq.nombre) + ' ' + esc(e.marca || '') + ' ' + esc(e.modelo || '') + '</h1>' + (e.clienteNombre ? '<small>Cliente: ' + esc(e.clienteNombre) + '</small><br>' : '') + '<small>Clave ' + fmtClave(clave) + '</small><br>' +
+    '<div class="card"><h2>' + esc(eq.nombre) + ' ' + esc(e.marca || '') + ' ' + esc(e.modelo || '') + '</h2>' + (e.clienteNombre ? '<small>Cliente: ' + esc(e.clienteNombre) + '</small><br>' : '') + '<small>Clave ' + fmtClave(clave) + '</small><br>' +
     (svcs.length ? '<span class="badge ' + (any ? '' : 'mal') + '">' + (any ? '✔ Garantía vigente' : 'Garantía vencida') + '</span>' : '<small>Sin services registrados.</small>') +
     (e.baja ? '<p class="mal">Este equipo figura dado de baja.</p>' : '') + '</div>' +
-    '<div class="card"><a class="btn wa" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', consulto por mi ' + eq.nombre.toLowerCase() + ' (clave ' + fmtClave(clave) + ').') + '">Pedir un service a ' + tec.nombre + '</a>' +
+    '<div class="card"><a class="btn wa" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', consulto por mi ' + eq.nombre.toLowerCase() + ' (clave ' + fmtClave(clave) + ').') + '">Pedir un service a ' + tec.nombre + '</a><a class="btn sec" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', tengo otro equipo con problemas.') + '">Tengo otro equipo con problemas</a>' +
     (cal ? '<button class="sec" id="bcal">Agregar recordatorio al calendario</button>' : '') + '</div>' +
     (svcs.length ? '<div class="card"><h2>Historial</h2>' + lst.map(svcHTML).join('') + (svcs.length > 5 && !todos ? '<button class="sec" id="vtodos">Ver lista completa (' + svcs.length + ')</button>' : '') + '</div>' : '') +
     '<div class="card"><h2>Guardá nuestro contacto</h2><a class="btn sec" href="' + tec.vcf + '">Guardar contacto de ' + tec.nombre + '</a><button class="sec" id="brec">Recomendanos</button></div>' +
-    '<div class="card"><h2>También arreglamos</h2><div class="tipos">' + ['Aires', 'Lavarropas', 'Secarropas', 'Heladeras', 'Hornos', 'Cocinas', 'Estufas', 'Calefones'].map(t => { const t2 = t === 'Heladeras' ? POR_NOMBRE.Bruno : tec; return '<a href="' + waLink(t2.tel, 'Hola ' + t2.nombre + ', tengo un problema con mi ' + t.toLowerCase().replace(/s$/, '') + '.') + '">' + t + '</a>'; }).join('') + '</div><a class="btn sec" href="' + waLink(tec.tel, 'Hola ' + tec.nombre + ', tengo otro equipo con problemas.') + '">Tengo otro equipo con problemas</a></div>' +
-    '<div class="card"><h2>Mis equipos</h2>' + (otros.length ? otros.map(k => '<div class="fila"><b>' + fmtClave(k) + '</b><span><button class="chico sec" data-abrir="' + k + '">Ver</button> <button class="chico sec" data-quitar="' + k + '">Quitar</button></span></div>').join('') : '<small>Acá aparecen los equipos que agregues con su clave.</small>') +
+        '<div class="card"><h2>Mis equipos</h2>' + (otros.length ? otros.map(k => '<div class="fila"><b>' + fmtClave(k) + '</b><span><button class="chico sec" data-abrir="' + k + '">Ver</button> <button class="chico sec" data-quitar="' + k + '">Quitar</button></span></div>').join('') : '<small>Acá aparecen los equipos que agregues con su clave.</small>') +
     '<label>Agregar otro equipo</label><input id="otra" placeholder="Clave del otro sticker" autocomplete="off" autocapitalize="characters"><button class="sec" id="bagregar">Agregar</button><p class="err" id="err"></p></div>' +
     '<button class="sec" id="bsalir">← Volver</button>';
   const b = id => $(id);
