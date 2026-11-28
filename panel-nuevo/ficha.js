@@ -30,11 +30,20 @@ function misEquipos(soloLista) {
   return '<div class="card"><h2>Mis equipos</h2>' + l.map(k => '<div class="fila"><span><b>' + fmtClave(k) + '</b></span><span><button class="chico sec" data-abrir="' + k + '">Ver</button> <button class="chico sec" data-quitar="' + k + '">Quitar</button></span></div>').join('') + '</div>';
 }
 
+// Límite de intentos: 5 claves incorrectas -> espera de 15 minutos (se guarda en este celular)
+const LIM = { n: 5, ms: 15 * 60000 };
+const intentos = () => { try { return JSON.parse(localStorage.getItem('intentos') || '{}'); } catch (_) { return {}; } };
+const bloqueado = () => { const i = intentos(); return i.hasta && i.hasta > Date.now() ? Math.ceil((i.hasta - Date.now()) / 60000) : 0; };
+const fallo = () => { const i = intentos(), n = (i.hasta && i.hasta <= Date.now() ? 0 : i.n || 0) + 1; try { localStorage.setItem('intentos', JSON.stringify(n >= LIM.n ? { n: 0, hasta: Date.now() + LIM.ms } : { n })); } catch (_) {} };
+const acerto = () => { try { localStorage.removeItem('intentos'); } catch (_) {} };
+
 async function abrir(clave, recordar) {
+  const bl = bloqueado(); if (bl) return vLogin('Demasiados intentos. Probá de nuevo en ' + bl + ' minuto' + (bl > 1 ? 's' : '') + '.');
   $('app').innerHTML = '<p class="cargando">Cargando…</p>';
   try {
     const f = await cargar(clave);
-    if (!f) return vLogin('Clave no encontrada. Revisá cómo está escrita en el sticker.');
+    if (!f) { fallo(); return vLogin('Clave no encontrada. Revisá cómo está escrita en el sticker.'); }
+    acerto();
     if (recordar) { const l = guardadas(); if (!l.includes(f.clave)) { l.push(f.clave); guardar(l); } }
     actual = f; todos = false; history.replaceState(null, '', location.pathname); vFicha();
   } catch (e) { vLogin(e.message); }
