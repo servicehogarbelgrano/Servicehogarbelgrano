@@ -80,3 +80,5 @@ img,svg{max-width:100%}body{overflow-wrap:anywhere}
 #app button.chico2{width:100%;margin-top:10px;padding:11px 12px;font-size:16px}
 #app .card.resena{background:#fff4ec;border:2px solid var(--naranja)}
 #app .qrg{width:180px;max-width:70%;margin:12px auto 0;background:#fff;padding:10px;border-radius:8px}#app .qrg svg{width:100%;height:auto;display:block}
+
+#comp th{color:#000!important;background:#eee!important}
