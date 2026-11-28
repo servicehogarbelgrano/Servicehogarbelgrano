@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="https://servicehogarbelgrano.com.ar/favicon.png">
 <link rel="apple-touch-icon" href="https://servicehogarbelgrano.com.ar/favicon.png">
-<link rel="stylesheet" href="estilos.css?v=202611281032">
+<link rel="stylesheet" href="estilos.css?v=202611281038">
 </head>
 <body>
 <div id="off" hidden>Sin internet: lo que cargues se guarda en el celu y se sube solo.</div>
@@ -38,8 +38,7 @@
   <button data-nav="mant"><i>🔔</i>Mensajes</button>
   <button data-nav="presupuestos"><i>🧾</i>Presupuesto</button>
 </nav>
-<script>["gesturestart","gesturechange","gestureend"].forEach(function(e){document.addEventListener(e,function(x){x.preventDefault()})});["touchstart","touchmove"].forEach(function(e){document.addEventListener(e,function(x){if(x.touches&&x.touches.length>1)x.preventDefault()},{passive:false})});document.addEventListener("dblclick",function(x){x.preventDefault()});</script>
-<script type="module" src="app.js?v=202611281032"></script>
-<script>(function(){try{var s=document.querySelector('script[src^="app.js"]');var cur=(s.getAttribute('src').match(/v=(\d+)/)||[])[1];window.__ver=cur;fetch(location.pathname+'?c='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(x){var m=x.match(/app\.js\?v=(\d+)/);if(m&&cur&&m[1]!==cur&&!sessionStorage.getItem('upd'+m[1])){sessionStorage.setItem('upd'+m[1],1);location.replace(location.pathname+'?r='+Date.now())}}).catch(function(){})}catch(e){}})();</script>
+<script type="module" src="app.js?v=202611281038"></script>
+<script src="arranque.js?v=202611281038"></script>
 </body>
 </html>
