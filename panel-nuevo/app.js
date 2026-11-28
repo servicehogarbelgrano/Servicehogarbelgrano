@@ -1,5 +1,5 @@
 import qrcode from './qrcode.mjs';
-import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281217';
+import { firebaseConfig, SDK, TECNICOS, POR_NOMBRE, ALFABETO, LETRAS, EQUIPOS, EQ, ITEMS, DEFAULT_CFG, GARANTIA_TEXTO, NEGOCIO, FRASES, demostrativo, FICHA_URL, esc, normClave, fmtClave, hoyISO, addDias, addMeses, fechaCorta, primerNombre, limpiarTel, verTel, waLink, lista, relleno } from './config.js?v=202611281228';
 
 const { initializeApp } = await import(SDK + 'firebase-app.js');
 const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } = await import(SDK + 'firebase-auth.js');
@@ -109,8 +109,8 @@ const _f = 0;
 const filtroHTML = () => '<div class="filtro"><button data-acc="filtro" data-v="mine" class="' + (S.filtro === 'mine' ? 'sel' : '') + '">' + S.tec.nombre + '</button><button data-acc="filtro" data-v="todos" class="' + (S.filtro === 'todos' ? 'sel' : '') + '">Todos</button></div>';
 
 function respPres() {
-  const lim = Date.now() - 5 * 86400000, l = S.presup.map(x => ({ x, u: S.pub[x.id] })).filter(o => o.u && o.u.respuestaTs > lim && (S.filtro === 'todos' || o.x.tecnico === S.tec.nombre)).sort((a, b) => b.u.respuestaTs - a.u.respuestaTs);
-  return l.length ? '<div class="card"><h2>Respuestas de presupuestos</h2>' + l.map(o => '<div class="fila clic" data-acc="abrirPres" data-id="' + o.x.id + '"><div><b>' + esc(o.x.cliente && o.x.cliente.nombre || 'Sin nombre') + '</b><br><small>' + (o.u.estado === 'aceptado' ? '✅ Aceptó' : '🤔 Lo está pensando') + ' · ' + esc(o.x.numero) + ' · ' + fechaCorta(new Date(o.u.respuestaTs).toISOString().slice(0, 10)) + '</small></div><span>›</span></div>').join('') + '</div>' : '';
+  const l = S.presup.map(x => ({ x, u: S.pub[x.id] })).filter(o => o.u && o.u.respuestaTs > (o.u.leidoTs || 0) && (S.filtro === 'todos' || o.x.tecnico === S.tec.nombre)).sort((a, b) => b.u.respuestaTs - a.u.respuestaTs);
+  return l.length ? '<div class="card"><h2>Respuestas de presupuestos</h2>' + l.map(o => '<div class="fila clic" data-acc="abrirPres" data-id="' + o.x.id + '"><div><b>' + esc(o.x.cliente && o.x.cliente.nombre || 'Sin nombre') + '</b><br><small>' + (o.u.estado === 'aceptado' ? '✅ Aceptó' : '🤔 Lo está pensando') + ' · ' + esc(o.x.numero) + ' · ' + fechaCorta(new Date(o.u.respuestaTs).toISOString().slice(0, 10)) + '</small></div><span><button class="chico sec" data-acc="presLeido" data-id="' + o.x.id + '">Quitar</button></span></div>').join('') + '</div>' : '';
 }
 function vInicio() {
   const hoy = hoyISO();
@@ -322,7 +322,8 @@ const ACC = {
   irCobros: () => ir('cobros'),
   irPres: () => ir('presupuestos'),
   nuevoPres: () => { const id = Math.random().toString(36).slice(2, 10); ir('presupuesto', { pres: presNuevo(id), nuevo: true }); },
-  abrirPres: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (p) ir('presupuesto', { pres: JSON.parse(JSON.stringify(p)) }); },
+  presLeido: el => { setDoc(doc(db, 'presupuestos_pub', el.dataset.id), { leidoTs: Date.now() }, { merge: true }).catch(() => {}); },
+  abrirPres: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (p) { const u = S.pub[p.id]; if (u && u.respuestaTs > (u.leidoTs || 0)) setDoc(doc(db, 'presupuestos_pub', p.id), { leidoTs: Date.now() }, { merge: true }).catch(() => {}); ir('presupuesto', { pres: JSON.parse(JSON.stringify(p)) }); } },
   presAdd: el => { const p = S.p.pres; p.items.push({ sec: el.dataset.sec, desc: el.dataset.n || '' }); presRedactar(p); pintar(); setTimeout(() => { const l = document.querySelectorAll('[data-pf=desc]'); const u = l[l.length - 1]; if (u && !el.dataset.n) u.focus(); }, 60); },
   presDel: el => { const p = S.p.pres; p.items.splice(+el.dataset.i, 1); presRedactar(p); pintar(); },
   presEq: el => { const p = S.p.pres, v = el.dataset.v; if (p.enviado || (p.eq || 'aire') === v) return; if (p.items.some(i => i.desc.trim()) && !confirm('Se borran los ítems cargados para armar el presupuesto de ' + EQ_PRES[v] + '. ¿Seguir?')) return; p.eq = v; p.items = []; p.textoEditado = false; presRedactar(p); pintar(); },
@@ -339,7 +340,7 @@ const ACC = {
     pintar();
   },
   presPDF: () => { const p = S.p.pres; if (!p.enviado) p.enviado = Date.now(); presGuardar(); mostrarPresupuesto(p, true); pintar(); },
-  presEstado: el => { const p = S.p.pres; p.estado = el.dataset.v; if (p.enviado && S.pub[p.id]) setDoc(doc(db, 'presupuestos_pub', p.id), { estado: p.estado === 'aceptado' ? 'aceptado' : 'pendiente' }, { merge: true }).catch(() => {}); pintar(); },
+  presEstado: el => { const p = S.p.pres; p.estado = el.dataset.v; if (p.enviado && S.pub[p.id]) S.pub[p.id].estado = ['aceptado', 'pensando'].includes(p.estado) ? p.estado : 'pendiente'; if (p.enviado && S.pub[p.id]) setDoc(doc(db, 'presupuestos_pub', p.id), { estado: ['aceptado', 'pensando'].includes(p.estado) ? p.estado : 'pendiente' }, { merge: true }).catch(() => {}); pintar(); },
   presBorrar: el => { const id = el.dataset.id; if (!confirm('¿Borrar este presupuesto? No se puede deshacer.')) return; deleteDoc(doc(db, 'config', 'pres_' + id)); S.presup = S.presup.filter(x => x.id !== id); if (S.vista === 'presupuesto') history.back(); else pintar(); },
   presDup: el => { const p = S.presup.find(x => x.id === el.dataset.id); if (!p) return; const id = Math.random().toString(36).slice(2, 10); const n = presNuevo(id); n.cliente = { nombre: '', tel: '', dir: '' }; n.items = JSON.parse(JSON.stringify(p.items)); n.notas = p.notas; ir('presupuesto', { pres: n, nuevo: true }); },
   comprobante: el => {
@@ -620,7 +621,7 @@ function vPresupuesto() {
     bloque('mo', 'Trabajo a realizar') + bloque('mat', (p.eq || 'aire') === 'aire' ? 'Materiales incluidos' : 'Repuestos incluidos (opcional)') +
     '<div class="gt">Texto del presupuesto</div><div class="grupo"><div class="fi col"><textarea id="ptexto" data-pt="texto" rows="4" placeholder="Se arma solo con los ítems que agregues"' + D + '>' + esc(p.texto) + '</textarea>' + (L ? '' : '<small>Se redacta solo con los ítems. Si lo cambiás a mano, se respeta tu texto.</small><button class="lnk" data-acc="presRegen">Volver a redactar automático</button>') + '</div></div>' +
     '<div class="gt">Precio</div><div class="grupo"><div class="fi tot"><div class="ft"><b>Precio total</b><small>Un solo precio por todo lo detallado.</small></div><span class="nm"><input data-pt="precio" type="number" inputmode="decimal" placeholder="0" value="' + esc(p.precio) + '"' + D + '><b id="pfmt" class="pfmt">' + (+p.precio ? $$(p.precio) : '') + '</b></span></div></div>' +
-    '<div class="gt">Condiciones</div><div class="grupo"><div class="fi"><div class="ft"><b>Válido por</b></div><span class="nm"><input data-pt="validez" type="number" inputmode="numeric" value="' + esc(p.validez) + '"' + D + '><em>días</em></span></div><div class="fi col"><textarea data-pt="notas" rows="4" placeholder="Condiciones o aclaraciones"' + D + '>' + esc(p.notas) + '</textarea></div><div class="fi"><div class="ft"><b>Estado</b></div><div class="seg">' + [['pendiente', 'Pendiente'], ['aceptado', 'Aceptado'], ['rechazado', 'Rechazado']].map(([v, n]) => '<button data-acc="presEstado" data-v="' + v + '" class="' + (p.estado === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div></div></div>' +
+    '<div class="gt">Condiciones</div><div class="grupo"><div class="fi"><div class="ft"><b>Válido por</b></div><span class="nm"><input data-pt="validez" type="number" inputmode="numeric" value="' + esc(p.validez) + '"' + D + '><em>días</em></span></div><div class="fi col"><textarea data-pt="notas" rows="4" placeholder="Condiciones o aclaraciones"' + D + '>' + esc(p.notas) + '</textarea></div><div class="fi"><div class="ft"><b>Estado</b></div><div class="seg">' + [['pendiente', 'Pendiente'], ['pensando', 'Pensando'], ['aceptado', 'Aceptado'], ['rechazado', 'Rechazado']].map(([v, n]) => '<button data-acc="presEstado" data-v="' + v + '" class="' + ((S.pub[p.id] && ['aceptado', 'pensando'].includes(S.pub[p.id].estado) && ['pendiente', 'aceptado', 'pensando'].includes(p.estado) ? S.pub[p.id].estado : p.estado) === v ? 'on' : '') + '">' + n + '</button>').join('') + '</div></div></div>' +
     '<button class="prim grande" data-acc="presVer">Ver e imprimir presupuesto</button><button class="sec grande" data-acc="presWA">' + (L ? 'Reenviar link por WhatsApp' : 'Enviar por WhatsApp (link)') + '</button><button class="sec grande" data-acc="presPDF">Enviar como PDF (sin botón de aceptar)</button>' + '<button class="sec grande" data-acc="presACliente">Pasar a cliente y crear clave</button><button class="sec grande" data-acc="presGuardar">Guardar</button>' +
     (S.p.nuevo ? '' : '<button class="lnk salir" data-acc="presBorrar" data-id="' + p.id + '">Borrar presupuesto</button>');
 }
